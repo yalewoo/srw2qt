@@ -24,7 +24,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp \
-    button.cpp
+    button.cpp \
+    game.cpp \
+    map.cpp \
+    maprect.cpp \
+    robot.cpp \
+    point.cpp
 
 HEADERS  += \
-    button.h
+    button.h \
+    game.h \
+    map.h \
+    maprect.h \
+    robot.h \
+    point.h
