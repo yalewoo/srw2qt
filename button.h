@@ -17,7 +17,8 @@ public:
     void  hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 signals:
-    void clicked();
+    void leftButtonClicked();
+    void rightButtonClicked();
 
 private:
     QGraphicsTextItem * text;

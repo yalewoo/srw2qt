@@ -1,9 +1,8 @@
 #include "maprect.h"
+#include "game.h"
+#include "map.h"
 
-#include <QPixmap>
-
-#include <QDebug>
-#include <QString>
+extern Game * game;
 
 static QString gAImgPaths[16] = {
     "_00.png",
@@ -29,7 +28,7 @@ MapRect::MapRect(int kindOfMap, QGraphicsItem *parent) : QGraphicsPixmapItem(par
     style = 'A';
     kind = kindOfMap;
 
-    setPixmap(QPixmap("../srw2QT/res/images/map32/" + style + gAImgPaths[kind]));
+    setPixmap(QPixmap(game->workDir + "res/images/map32/" + style + gAImgPaths[kind]));
 
     setMoveConsume();
 }
@@ -47,4 +46,57 @@ void MapRect::setMoveConsume()
 
     if (style == "C" && kind == 1)
         moveConsume[0] = 1;
+}
+
+void MapRect::setxy(int xPos, int yPos)
+{
+    x = xPos;
+    y = yPos;
+
+    setPos(32*x, 32*y);
+}
+
+void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        //如果有选中的机器 并且 点击的地图格子可以到达
+        if (game->canMoveStatus)
+        {
+            if (game->selectedRobot && game->map->moveMap[x][y] >= 0)
+            {
+                game->map->move(game->selectedRobot, x, y);
+
+                game->map->UnshowMoveRange();   //消除不能移动的格子的灰色效果
+                //game->selectedRobot = 0;    //设置状态没有选中机器
+
+                game->canMoveStatus = false;
+
+                game->displayMenu2(game->selectedRobot);
+            }
+        }
+    }
+    else if (event->button() == Qt::RightButton)
+    {
+        game->cancel();
+    }
+
+
+
+
+}
+
+void MapRect::showString(QString textToShow)
+{
+    text = new QGraphicsTextItem(textToShow, this);
+    //game->scene->addItem(text);
+}
+
+void MapRect::UnshowString()
+{
+    if (text)
+    {
+        game->scene->removeItem(text);
+        text = 0;
+    }
 }

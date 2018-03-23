@@ -2,10 +2,14 @@
 
 #include <QBrush>
 
+#include "game.h"
+
+extern Game * game;
+
 Button::Button(QString name, QGraphicsItem *parent) : QGraphicsRectItem(parent)
 {
     //draw the rect
-    setRect(0, 0, 200, 50);
+    setRect(0, 0, 40, 30);
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
     brush.setColor(Qt::darkCyan);
@@ -21,12 +25,20 @@ Button::Button(QString name, QGraphicsItem *parent) : QGraphicsRectItem(parent)
     setAcceptHoverEvents(true);
 
 
-
+    game->connect(this, SIGNAL(rightButtonClicked()), game, SLOT(cancel()));
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    emit clicked();
+    if (event->button() == Qt::LeftButton)
+    {
+        emit leftButtonClicked();
+    }
+    else if (event->button() == Qt::RightButton)
+    {
+        emit rightButtonClicked();
+    }
+
 }
 
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
