@@ -9,14 +9,25 @@ extern Game * game;
 #include <cstdlib>
 #include <QDebug>
 
+#include <QFile>
+
 #include <QGraphicsColorizeEffect>
 
+#include "people.h"
 
-Map::Map(int width2, int height2) : width(width2+2), height(height2+2)
+Map::Map(QString mapfilename)
 {
-    robots = QVector<QVector<Robot *> >(width, QVector<Robot *>(height, 0));
+    loadMapFromCsv(mapfilename);
 
-    loadMapFromTxt(game->workDir + "input/map/map1.txt");
+
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            map[i][j]->setxy(i, j);
+            game->scene->addItem(map[i][j]);
+        }
+    }
 }
 
 void Map::loadMapFromTxt(QString filename)
@@ -27,11 +38,18 @@ void Map::loadMapFromTxt(QString filename)
     FILE * fp = fopen(filename.toLatin1().data(), "r");
     if (!fp)
     {
-        qDebug() << "open failed";
+        qDebug() << filename << " open failed";
         return;
     }
 
     int one = 0;
+
+    fscanf(fp, "%x", &width);
+    fscanf(fp, "%x", &height);
+    width += 2;
+    height += 2;
+    robots = QVector<QVector<Robot *> >(width, QVector<Robot *>(height, 0));
+
 
     while (fscanf(fp, "%x", &one) == 1)
     {
@@ -88,14 +106,123 @@ void Map::loadMapFromTxt(QString filename)
         map.append(v);
     }
 
+
+}
+
+void Map::loadMapFromCsv(QString filename)
+{
+    QVector<MapRect *> map1D;
+    QVector<QVector<MapRect *> > map2D;
+
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << filename << " open failed";
+        exit(-1);
+
+    }
+    QTextStream in(&file);
+
+    QString line = in.readLine();
+    QStringList t = line.split(",");
+
+    width = QString(t[1]).toInt() + 2;
+    height = QString(t[0]).toInt() + 2;
+
+    robots = QVector<QVector<Robot *> >(width, QVector<Robot *>(height, 0));
+
+    //第一行0
+    QVector<MapRect *> v;
     for (int i = 0; i < width; ++i)
     {
+        MapRect * rect = new MapRect(0);
+        v.append(rect);
+    }
+    map2D.append(v);
+
+    //中间地图 最左和最右0
+    while(!in.atEnd())
+    {
+        QString line = in.readLine();
+
+        QStringList t = line.split(",");
+
+        v.clear();
+        MapRect * rect = new MapRect(0);
+        v.append(rect);
+        for (int j = 1; j < width-1; ++j)
+        {
+            MapRect * rect = new MapRect(QString(t[j-1]).toInt());
+            v.append(rect);
+        }
+        rect = new MapRect(0);
+        v.append(rect);
+        map2D.append(v);
+    }
+
+
+    //最后一行0
+    v.clear();
+    for (int i = 0; i < width; ++i)
+    {
+        MapRect * rect = new MapRect(0);
+        v.append(rect);
+    }
+    map2D.append(v);
+
+
+    for (int i = 0; i < width; ++i)
+    {
+        QVector<MapRect *> v;
         for (int j = 0; j < height; ++j)
         {
-            map[i][j]->setxy(i, j);
-            game->scene->addItem(map[i][j]);
+            v.append(map2D[j][i]);
         }
+        map.append(v);
     }
+
+    file.close();
+}
+
+
+
+void Map::placeRobot_init(QString filename, int player)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << filename << "open failed";
+        exit(-1);
+
+    }
+    QTextStream in(&file);
+
+    QString line = in.readLine();
+
+    while(!in.atEnd())
+    {
+        QString line = in.readLine();
+
+        QStringList t = line.split(",");
+
+        if (t.size() == 0)
+            continue;
+
+        int x = QString(t[0]).toInt() + 1;
+        int y = QString(t[1]).toInt() + 1;
+        People * people = new People(QString(t[2]).toInt(), player);
+        Robot * robot = new Robot(QString(t[4]).toInt(), people, QString(t[6]).toInt()+1);
+
+        addRobot(robot, x, y);
+    }
+}
+void Map::placePlayerRobot_init(QString filename)
+{
+    placeRobot_init(filename, 0);
+}
+void Map::placeEnemyRobot_init(QString filename)
+{
+    placeRobot_init(filename, 1);
 }
 
 int Map::getMoveConsume(Robot *robot, int x, int y)
@@ -112,7 +239,7 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot)
     int yPos = robot->y;
     QVector<QVector<int> > m = QVector<QVector<int> >(width, QVector<int>(height, -99));
     m[xPos][yPos] = robot->move;    //行动力
-    int moveKind = robot->type; //类型 (海陆空)
+
 
     QList<Point> visited;
     visited.append(Point(xPos, yPos));
@@ -342,9 +469,12 @@ void Map::showAttackRange(Robot *robot, Weapon *weapon)
     }
 }
 
+//robot能不能攻击enemy
 bool Map::canAttack(Robot *robot, Weapon *weapon, Robot *enemy)
 {
     QVector<QVector<int> > m = calculateAttackRange(robot, weapon);
+    if (robot->player == enemy->player)
+        return false;
     if (m[enemy->x][enemy->y] >= 0 && weapon->firepower[enemy->type] > 0)
         return true;
     else
@@ -360,9 +490,9 @@ void Map::move(Robot *selectedRobot, int xTo, int yTo)
     robots[xTo][yTo]->setxy(xTo, yTo);
 }
 
-void Map::addRobot(int xPos, int yPos, int id, int player)
+void Map::addRobot(Robot * robot, int xPos, int yPos)
 {
-    robots[xPos][yPos] = new Robot(id, player);
+    robots[xPos][yPos] = robot;
     robots[xPos][yPos]->setxy(xPos,yPos);
     game->scene->addItem(robots[xPos][yPos]);
 }

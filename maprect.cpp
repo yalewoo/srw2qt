@@ -4,6 +4,9 @@
 
 extern Game * game;
 
+#include <QDebug>
+
+
 static QString gAImgPaths[16] = {
     "_00.png",
     "_01.png",
@@ -25,6 +28,7 @@ static QString gAImgPaths[16] = {
 
 MapRect::MapRect(int kindOfMap, QGraphicsItem *parent) : QGraphicsPixmapItem(parent)
 {
+
     style = 'A';
     kind = kindOfMap;
 
@@ -34,9 +38,9 @@ MapRect::MapRect(int kindOfMap, QGraphicsItem *parent) : QGraphicsPixmapItem(par
 }
 
 static int moveConsumeTable[3][16] = {
-    {999,2,2,3,4,1,3,3,3,2,2,2,2,2,2,2},
-    {999,1,1,2,3,3,2,2,2,1,1,1,1,1,1,1},
-    {999,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+    {999,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {999,1,1,2,3,3,2,2,2,1,1,1,1,1,1,1},
+        {999,2,2,3,4,1,3,3,3,2,2,2,2,2,2,2}
 };
 void MapRect::setMoveConsume()
 {
@@ -45,7 +49,7 @@ void MapRect::setMoveConsume()
     moveConsume[2] = moveConsumeTable[2][kind];
 
     if (style == "C" && kind == 1)
-        moveConsume[0] = 1;
+        moveConsume[2] = 1;
 }
 
 void MapRect::setxy(int xPos, int yPos)
@@ -60,6 +64,18 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
+        static QString t[16] = {QString("墙壁"), QString("平地"), QString("平地"), QString("戈壁"), QString("山地"), QString("海"), QString("草地"), QString("森林"), QString("沙漠"), QString("建筑物"), QString("回复站"), QString("基地"), QString("基地"), QString("基地"), QString("基地"), QString("基地")};
+        //qDebug() << "mouse Hover mapRect";
+
+        QString s;
+        s += t[kind] + "\n";
+        s += QString("\n") + QString("空 ") + QString::number(moveConsume[0]) + "\n";
+        s += QString("陆 ") + QString::number(moveConsume[1]) + "\n";
+        s += QString("海 ") + QString::number(moveConsume[2]) + "\n";
+
+
+        game->board->setString(s);
+
         //如果有选中的机器 并且 点击的地图格子可以到达
         if (game->canMoveStatus)
         {
@@ -85,6 +101,8 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 
 }
+
+
 
 void MapRect::showString(QString textToShow)
 {

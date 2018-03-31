@@ -7,6 +7,12 @@ extern Game * game;
 
 #include "point.h"
 
+#include "people.h"
+
+#include <QTime>
+#include <QDebug>
+
+
 void BattleGround::setSize(int width, int height)
 {
     int x = 0;
@@ -41,6 +47,7 @@ BattleGround::BattleGround(Robot *robot2, Weapon *weapon2, Robot *enemy2):
     enemy_text->setScale(1.7);
     enemy_text->setPos(this->x() + 10 + 200, this->y() + 300);
 
+
     enemy_rate = calcRadio(enemy, enemy_weapon, robot);
     player_rate = calcRadio(robot, weapon, enemy);
 
@@ -65,31 +72,49 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QString s;
     if (stage == 0)
     {
-        s = robot->driverName + QString("：打！\n");
+        s = robot->pilot->name + QString("：打！\n");
         battle_text->setPlainText(s);
 
+        if (prob(player_rate))
+        {
+            int damage = getEnemyDamage();
+            enemy->hp -= damage;
+            showHpAndRate();
 
-        int damage = getEnemyDamage();
-        enemy->hp -= damage;
-        showHpAndRate();
+            s += enemy->robotName + QString("损坏") + QString::number(damage) + "\n" + enemy->pilot->name + QString(": 被打中了!");
+        }
+        else
+        {
+            s += QString("攻击失败!");
+        }
 
-        s += enemy->robotName + QString("损坏") + QString::number(damage) + "\n" + enemy->driverName + QString(": 被打中了!");
         battle_text->setPlainText(s);
 
         ++stage;
     }
     else if (stage == 1)
     {
-        s = enemy->driverName + QString("反击\n");
-        battle_text->setPlainText(s);
+        if (enemy_weapon == 0)
+        {
+            s = enemy->pilot->name + QString("无力反击\n");
+            s += robot->pilot->name + QString("：便宜你了!");
+            battle_text->setPlainText(s);
+        }
+        else
+        {
+            s = enemy->pilot->name + QString("反击\n");
+            battle_text->setPlainText(s);
 
 
-        int damage = getPlayerDamage();
-        robot->hp -= damage;
-        showHpAndRate();
+            int damage = getPlayerDamage();
+            robot->hp -= damage;
+            showHpAndRate();
 
-        s += robot->robotName + QString("损坏") + QString::number(damage) + "\n" + robot->driverName + QString(": 被打中了!");
-        battle_text->setPlainText(s);
+            s += robot->robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->name + QString(": 被打中了!");
+            battle_text->setPlainText(s);
+
+        }
+
 
         ++stage;
     }
@@ -130,26 +155,29 @@ int BattleGround::getPlayerDamage()
 }
 
 
-double BattleGround::calcRadio(Robot *robot, Weapon *weapon, Robot *enemy)
+double BattleGround::calcRadio(Robot *robot2, Weapon *weapon2, Robot *enemy2)
 {
-    int base = robot->speed + weapon->hitRadio - enemy->speed;
+    if (weapon2 == 0)
+        return 0;
+
+    int base = robot2->speed + weapon2->hitRadio - enemy2->speed;
 
 
     static double typeRadioTable[16] = {1,1,0.8,0.8,0.85,0.9,0.9,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8};
     double typeRadio;
-    if (enemy->type == 2)
+    if (enemy2->type == 2)
     {
         typeRadio = 1;
     }
     else
     {
-        typeRadio = typeRadioTable[game->map->map[enemy->x][enemy->y]->kind];
+        typeRadio = typeRadioTable[game->map->map[enemy2->x][enemy2->y]->kind];
     }
 
 
 
     double distanceRadio;
-    int d = game->map->calcDistance(robot, enemy);
+    int d = game->map->calcDistance(robot2, enemy2);
     if (d <= 1)
     {
         distanceRadio = 1;
@@ -163,4 +191,19 @@ double BattleGround::calcRadio(Robot *robot, Weapon *weapon, Robot *enemy)
     if (res > 100)
         res = 100;
     return res;
+}
+
+bool BattleGround::prob(double p)
+{
+    return true;
+
+
+    qsrand(QTime::currentTime().msec());
+    int r = qrand() % 100;
+    double newp = r;
+    qDebug() << newp << p;
+    if (newp < p)
+        return true;
+    else
+        return false;
 }

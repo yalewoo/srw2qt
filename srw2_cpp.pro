@@ -32,7 +32,9 @@ SOURCES += main.cpp \
     button.cpp \
     menu.cpp \
     weapon.cpp \
-    battleground.cpp
+    battleground.cpp \
+    people.cpp \
+    board.cpp
 
 HEADERS  += \
     game.h \
@@ -43,4 +45,6 @@ HEADERS  += \
     button.h \
     menu.h \
     weapon.h \
-    battleground.h
+    battleground.h \
+    people.h \
+    board.h

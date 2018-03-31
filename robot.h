@@ -8,32 +8,66 @@
 #include "point.h"
 #include "weapon.h"
 
+#include <QHoverEvent>
+
+class People;
+
 class Robot : public QGraphicsPixmapItem
 {
 public:
-    Robot(int id, int player = 0, QGraphicsItem * parent = 0);
+    Robot(int id, People * pilot, int level2, QGraphicsItem * parent = 0);
 
     //event
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
 
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+
+
     int player; //表示属于玩家(0)还是电脑(1)
+
+    People * pilot = 0;
+
+    static int exp_update_table[128];
+
+    void get_exp_update_table(QString filename);
+    int exp;    //当前经验
+    int exp_dievalue;  //本机死亡带来的固定经验
+    int money;  //金钱
+    int level = 1;
 
     //基本属性
     int id;
     QString robotName;  //机体名
-    QString driverName;//驾驶员
+    int type_original;//原始类型
+    int type;   //类型 0=空，1=陆，2=海
+    int robot_move;   //机动
 
+    //等级1时数据
+    int robot_hp0; //Hp
+    int robot_strength0;   //强度
+    int robot_defense0;    //防卫
+    int robot_speed0;  //速度
+    //成长方式
+    int robot_hp_plus; //Hp
+    int robot_strength_plus;   //强度
+    int robot_defense_plus;    //防卫
+    int robot_speed_plus;  //速度
+
+    //当前level数据
+    int robot_hp; //Hp
+    int robot_strength;   //强度
+    int robot_defense;    //防卫
+    int robot_speed;  //速度
+    void calcLevelValue();
+
+    //驾驶员加成最终数据
+    int hp_total;   //总hp
     int hp; //现有Hp
-    int hp_total; //总Hp
-
-    int type;   //类型 0=海，1=陆，2=空
     int move;   //机动
-
-    int spirit; //剩余精神
-    int spirit_total; //精神
     int strength;   //强度
     int defense;    //防卫
     int speed;  //速度
+
 
     //武器
     Weapon * weapon1;
@@ -49,7 +83,7 @@ public:
     void setxy(Point pos);
 
     //methods
-    void Attributes();
+    void getAttributes();
 
 
 };

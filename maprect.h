@@ -12,7 +12,7 @@ public:
     QString style;  //风格ABCD
     int kind;   //16种地形
 
-    int moveConsume[3]; //移动需要的行动力 [0 1 2] -> [海 陆 空]
+    int moveConsume[3]; //移动需要的行动力 [0 1 2] -> [空 陆 海]
     void setMoveConsume();
 
     int x;

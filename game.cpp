@@ -6,6 +6,8 @@
 
 #include "button.h"
 
+#include "people.h"
+
 Game::Game(QWidget *parent)
 {
     //设置不显示滚动条
@@ -21,17 +23,23 @@ Game::Game(QWidget *parent)
     setScene(scene);
 
     workDir = QString("F:/Project/srw2_cpp/");
+    robot_value_path = workDir + "input/value/robot.csv";
+    weapon_value_path = workDir + "input/value/weapon.csv";
+    people_value_path = workDir + "input/value/people.csv";
 
-    selectedRobot = 0;
+
 }
 
 void Game::start()
 {
-    //test
-    map = new Map(16, 20);
+    board = new Board();
+    scene->addItem(board);
 
-    map->addRobot(6,5,0x0001,0);
-    map->addRobot(5,5,0x1001,1);
+    //test
+    map = new Map(workDir + "input/map/map1.csv");
+
+    map->placePlayerRobot_init(workDir + "input/stage/1/robot_init.csv");
+    map->placeEnemyRobot_init(workDir + "input/stage/1/enemy_init.csv");
 
 
 
@@ -133,7 +141,8 @@ void Game::cancel()
 {
     deleteMenu();
 
-    map->move(selectedRobot, originalPosition.x, originalPosition.y);
+    if (selectedRobot)
+        map->move(selectedRobot, originalPosition.x, originalPosition.y);
 
     map->UnshowMoveRange();
     canMoveStatus = false;

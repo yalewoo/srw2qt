@@ -4,15 +4,36 @@
 extern Game * game;
 #include <QDebug>
 
-Robot::Robot(int id, int player, QGraphicsItem *parent):id(id), player(player)
+#include <QFile>
+
+#include "people.h"
+
+#include <qmath.h>
+
+int Robot::exp_update_table[128] = {99999};
+
+
+Robot::Robot(int id, People *pilot2, int level2, QGraphicsItem *parent):id(id), pilot(pilot2),level(level2), QGraphicsPixmapItem(parent)
 {
-    QString filename;
-    filename.sprintf("%04x.png", id);
+    get_exp_update_table(game->workDir + "input/value/exp_table.txt");
 
-    qDebug() << filename;
-    setPixmap(QPixmap(game->workDir + "res/images/robot32/" + filename));
+    setAcceptHoverEvents(true);
 
-    Attributes();
+    player = pilot->player;
+
+    getAttributes();
+
+    pilot->spirit = pilot->spirit_total;
+    hp = hp_total;
+
+    if (player == 1)
+    {
+        exp = exp_dievalue;
+    }
+    else
+    {
+
+    }
 }
 
 void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -40,6 +61,91 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 }
 
+void Robot::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    game->board->showRobot(this);
+
+    update();
+}
+
+void Robot::get_exp_update_table(QString filename)
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << filename << "open failed";
+        exit(-1);
+
+    }
+    QTextStream in(&file);
+
+    while(!in.atEnd())
+    {
+        QString line = in.readLine();
+
+        QStringList t = line.split(":");
+
+        int le = QString(t[0]).toInt();
+        int value = QString(t[1]).toInt();
+
+        exp_update_table[le] = value;
+    }
+
+    file.close();
+}
+
+void Robot::calcLevelValue()
+{
+    int * v[5];
+    v[0] = &robot_hp;
+    v[1] = &robot_strength;
+    v[2] = &robot_defense;
+    v[3] = &robot_speed;
+    v[4] = &(pilot->spirit_total);
+
+    int v0[5] = {robot_hp0, robot_strength0, robot_defense0, robot_speed0, pilot->spirit_total0};
+
+    int ps[5] = {robot_hp_plus,robot_strength_plus,robot_defense_plus,robot_speed_plus,pilot->spirit_increase};
+
+    for (int i = 0; i < 5; ++i)
+    {
+        switch(ps[i])
+        {
+        case 0:
+            *(v[i]) = v0[i] + qCeil(1.5*(level-1));
+            break;
+        case 1:
+            *(v[i]) = v0[i] + 2*(level-1);
+            break;
+        case 2:
+            *(v[i]) = v0[i] + 5*(level-1);
+            break;
+        case 3:
+            *(v[i]) = v0[i] + 10*(level-1);
+            break;
+        case 4:
+            *(v[i]) = v0[i] + 4*(level-1);
+            break;
+        case 5:
+            *(v[i]) = v0[i] + 0*(level-1);
+            break;
+        case 6:
+            *(v[i]) = v0[i] + 0*(level-1);
+            break;
+        case 7:
+            *(v[i]) = v0[i] + qFloor(2.5*(level-1));
+            break;
+        case 8:
+            *(v[i]) = v0[i] + 3*(level-1);
+            break;
+
+        }
+    }
+
+
+}
+
+//攻击范围内有没有可以攻击的机体
 bool Robot::canAttack(Weapon *weapon)
 {
     QVector<QVector<int> > m = game->map->calculateAttackRange(this, weapon);
@@ -50,7 +156,7 @@ bool Robot::canAttack(Weapon *weapon)
             if (m[i][j] >= 0)
             {
                 Robot * enemy = game->map->robots[i][j];
-                if (enemy && enemy != this && weapon->firepower[enemy->type])
+                if (enemy && enemy != this && enemy->player != this->player && weapon->firepower[enemy->type])
                 {
                     return true;
                 }
@@ -73,44 +179,84 @@ void Robot::setxy(Point pos)
     setxy(pos.x, pos.y);
 }
 
-void Robot::Attributes()
+void Robot::getAttributes()
 {
-    if (id == 1)
+    QFile file(game->robot_value_path);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        robotName = QString("刚达");
-        driverName = QString("大卫");
+        qDebug() << game->robot_value_path << "open failed";
+        exit(-1);
 
-        hp_total = 320;
-        hp = 320;
-
-        type = 1;
-        move = 6;
-        spirit = 40;
-        spirit_total = 40;
-        strength = 70;
-        defense = 55;
-        speed = 72;
-
-        weapon1 = new Weapon(1);
-        weapon2 = new Weapon(2);
     }
-    else if (id == 0x1001)
+    QTextStream in(&file);
+
+    while(!in.atEnd())
     {
-        robotName = QString("乍克");
-        driverName = QString("士兵");
+        QString line = in.readLine();
 
-        hp_total = 300;
-        hp = 300;
+        QStringList t = line.split(",");
 
-        type = 1;
-        move = 5;
-        spirit = 40;
-        spirit_total = 40;
-        strength = 50;
-        defense = 45;
-        speed = 62;
+        QString thisid = t.at(0);
+        int int_id = thisid.toInt();
+        if (id == int_id)
+        {
+            robotName = QString(t.at(1));
+            //driverName = QString("大卫");
+            type_original = QString(t[3]).toInt();
+            type = type_original & 0x3;
 
-        weapon1 = new Weapon(1);
-        weapon2 = new Weapon(2);
+            robot_hp0 = QString(t[19]).toInt();
+            robot_move = QString(t[6]).toInt();
+            robot_speed0 = QString(t[7]).toInt();
+            robot_strength0 = QString(t[8]).toInt();
+            robot_defense0 = QString(t[9]).toInt();
+
+            robot_hp_plus = QString(t[18]).toInt();
+            robot_strength_plus = QString(t[16]).toInt();
+            robot_defense_plus = QString(t[17]).toInt();
+            robot_speed_plus = QString(t[15]).toInt();
+
+            exp_dievalue = QString(t[13]).toInt();
+            money = QString(t[10]).toInt();
+
+
+            weapon1 = new Weapon(QString(t[24]).toInt());
+            weapon2 = new Weapon(QString(t[25]).toInt());
+
+
+            //机体图标
+            int img_id;
+            QString filename;
+            if (player == 0)
+            {
+                img_id = QString(t[20]).toInt();
+                filename.sprintf("1/%d.png", img_id);
+            }
+            else
+            {
+                img_id = QString(t[20]).toInt() - 32;
+                filename.sprintf("1enemy/%d.png", img_id);
+            }
+
+
+
+
+            qDebug() << filename;
+            setPixmap(QPixmap(game->workDir + "res/images/robot32/" + filename));
+
+            break;
+        }
     }
+
+    calcLevelValue();
+
+    hp_total = robot_hp + pilot->hp;
+    move = robot_move + pilot->move;
+    speed = robot_speed + pilot->speed;
+    strength = robot_strength + pilot->strength;
+    defense = robot_defense + pilot->defense;
+
+
+
+    file.close();
 }

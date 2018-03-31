@@ -1,5 +1,11 @@
 #include "weapon.h"
 
+#include <QDebug>
+#include <QFile>
+
+#include "game.h"
+extern Game * game;
+
 Weapon::Weapon(int id): id(id)
 {
     getAttribute();
@@ -7,26 +13,42 @@ Weapon::Weapon(int id): id(id)
 
 void Weapon::getAttribute()
 {
-    if (id == 1)
+    QFile file(game->weapon_value_path);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        name = QString("光剑");
-        range = 1;  //射程
+        qDebug() << "open people.csv failed";
+        exit(-1);
 
-        firepower[0] = 110;
-        firepower[1] = 120;
-        firepower[2] = 120;
-
-        hitRadio = 110;   //命中率
     }
-    else if (id == 2)
+    QTextStream in(&file);
+
+    while(!in.atEnd())
     {
-        name = QString("导弹");
-        range = 4;  //射程
+        QString line = in.readLine();
 
-        firepower[0] = 0;
-        firepower[1] = 130;
-        firepower[2] = 140;
+        QStringList t = line.split(",");
 
-        hitRadio = 85;   //命中率
+        QString thisid = t.at(0);
+        int int_id = thisid.toInt();
+        if (id == int_id)
+        {
+            name = QString(t.at(1));
+
+            range = QString(t[3]).toInt();
+
+            firepower[0] = QString(t[8]).toInt();
+            firepower[1] = QString(t[7]).toInt();
+            firepower[2] = QString(t[6]).toInt();
+
+            hitRadio = QString(t[4]).toInt();   //命中率
+
+            break;
+        }
     }
+
+    file.close();
+
+
+
+
 }

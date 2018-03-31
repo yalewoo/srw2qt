@@ -45,6 +45,9 @@ public:
 
     //计算命中率
     double calcRadio(Robot * robot, Weapon * weapon, Robot * enemy);
+
+    //计算是否命中
+    bool prob(double p);
 };
 
 #endif // BATTLEGROUND_H
