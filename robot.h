@@ -23,12 +23,14 @@ public:
     QString robotName;  //机体名
     QString driverName;//驾驶员
 
-    int hp; //Hp
+    int hp; //现有Hp
+    int hp_total; //总Hp
 
     int type;   //类型 0=海，1=陆，2=空
     int move;   //机动
 
-    int spirit; //精神
+    int spirit; //剩余精神
+    int spirit_total; //精神
     int strength;   //强度
     int defense;    //防卫
     int speed;  //速度

@@ -217,6 +217,18 @@ void Map::UnshowMoveRange()
     }
 }
 
+int Map::calcDistance(Robot *robot1, Robot *robot2)
+{
+    int x1 = robot1->x;
+    int y1 = robot1->y;
+    int x2 = robot2->x;
+    int y2 = robot2->y;
+
+    int dx = abs(x1-x2);
+    int dy = abs(y1-y2);
+    return dx + dy;
+}
+
 QVector<QVector<int> > Map::calculateAttackRange(Robot *robot, Weapon *weapon)
 {
     int xPos = robot->x;
@@ -240,7 +252,7 @@ QVector<QVector<int> > Map::calculateAttackRange(Robot *robot, Weapon *weapon)
         int x = now.x;
         int y = now.y;
         //up
-        if (m[x][y-1] < m[x][y] - 1)
+        if (y-1 >= 0 && m[x][y-1] < m[x][y] - 1)
         {
             m[x][y-1] = m[x][y] - 1;
             if (m[x][y-1] >= 0)
@@ -250,7 +262,7 @@ QVector<QVector<int> > Map::calculateAttackRange(Robot *robot, Weapon *weapon)
         }
 
         //down
-        if (m[x][y+1] < m[x][y] - 1)
+        if (y+1 < height && m[x][y+1] < m[x][y] - 1)
         {
             m[x][y+1] = m[x][y] - 1;
             if (m[x][y+1] >= 0)
@@ -260,7 +272,7 @@ QVector<QVector<int> > Map::calculateAttackRange(Robot *robot, Weapon *weapon)
         }
 
         //left
-        if (m[x-1][y] < m[x][y] - 1)
+        if (x-1 >= 0 && m[x-1][y] < m[x][y] - 1)
         {
             m[x-1][y] = m[x][y] - 1;
             if (m[x-1][y] >= 0)
@@ -270,7 +282,7 @@ QVector<QVector<int> > Map::calculateAttackRange(Robot *robot, Weapon *weapon)
         }
 
         //right
-        if (m[x+1][y] < m[x][y] - 1)
+        if (x+1 < width && m[x+1][y] < m[x][y] - 1)
         {
             m[x+1][y] = m[x][y] - 1;
             if (m[x+1][y] >= 0)
@@ -328,6 +340,15 @@ void Map::showAttackRange(Robot *robot, Weapon *weapon)
             }
         }
     }
+}
+
+bool Map::canAttack(Robot *robot, Weapon *weapon, Robot *enemy)
+{
+    QVector<QVector<int> > m = calculateAttackRange(robot, weapon);
+    if (m[enemy->x][enemy->y] >= 0 && weapon->firepower[enemy->type] > 0)
+        return true;
+    else
+        return false;
 }
 
 void Map::move(Robot *selectedRobot, int xTo, int yTo)

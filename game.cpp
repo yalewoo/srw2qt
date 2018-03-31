@@ -30,8 +30,11 @@ void Game::start()
     //test
     map = new Map(16, 20);
 
-    map->addRobot(6,15,0x0001,0);
+    map->addRobot(6,5,0x0001,0);
     map->addRobot(5,5,0x1001,1);
+
+
+
 }
 
 
@@ -60,6 +63,17 @@ void Game::displayMenu(Robot *robot)
     Button * button_move = menu->addButton(QString("移动"));
     connect(button_move, SIGNAL(leftButtonClicked()), this, SLOT(move()));
 
+    if (robot->canAttack1())
+    {
+        Button * button_attack1 = menu->addButton(robot->weapon1->name);
+        connect(button_attack1, SIGNAL(leftButtonClicked()), this, SLOT(attack1()));
+    }
+    if (robot->canAttack2())
+    {
+        Button * button_attack2 = menu->addButton(robot->weapon2->name);
+        connect(button_attack2, SIGNAL(leftButtonClicked()), this, SLOT(attack2()));
+    }
+
     Button * button_ok = menu->addButton(QString("待命"));
     connect(button_ok, SIGNAL(leftButtonClicked()), this, SLOT(finished()));
 }
@@ -70,10 +84,15 @@ void Game::displayMenu2(Robot *robot)
     int y = robot->pos().y();
     menu = drawMenu(x+20, y, 50, 120, Qt::darkCyan, 0.5);
 
-    if (robot->canAttack1())
+    if (robot->weapon1->range == 1 && robot->canAttack1())
     {
         Button * button_attack1 = menu->addButton(robot->weapon1->name);
         connect(button_attack1, SIGNAL(leftButtonClicked()), this, SLOT(attack1()));
+    }
+    if (robot->weapon2->range == 1 && robot->canAttack2())
+    {
+        Button * button_attack2 = menu->addButton(robot->weapon2->name);
+        connect(button_attack2, SIGNAL(leftButtonClicked()), this, SLOT(attack2()));
     }
 
 
@@ -90,6 +109,8 @@ void Game::deleteMenu()
         menu = 0;
     }
 }
+
+
 
 void Game::move()
 {
@@ -117,9 +138,57 @@ void Game::cancel()
     map->UnshowMoveRange();
     canMoveStatus = false;
     selectedRobot = 0;
+    selectedWeapon = 0;
+
 }
 
 void Game::attack1()
 {
+    selectedWeapon = selectedRobot->weapon1;
+    showAttackRange();
+}
+
+void Game::attack2()
+{
+    selectedWeapon = selectedRobot->weapon2;
+    showAttackRange();
+}
+
+void Game::showAttackRange()
+{
+    deleteMenu();
+
+    map->UnshowMoveRange();
+
+    map->showAttackRange(selectedRobot, selectedWeapon);
+}
+
+void Game::attack(Robot *enemy)
+{
+    battleGround = new BattleGround(selectedRobot, selectedWeapon, enemy);
+
+    battleGround->setSize(map->width*32, map->height*32);
+    scene->addItem(battleGround);
+
 
 }
+
+void Game::attackDone()
+{
+    deleteMenu();
+
+
+    map->UnshowMoveRange();
+    canMoveStatus = false;
+    selectedRobot = 0;
+    selectedWeapon = 0;
+
+    if (battleGround)
+    {
+        scene->removeItem(this->battleGround);
+        delete battleGround;
+    }
+
+}
+
+

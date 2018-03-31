@@ -19,12 +19,16 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if (game->menu == 0 && !game->canMoveStatus)
+        if (game->menu == 0 && !game->canMoveStatus && !game->selectedWeapon)
         {
             game->selectedRobot = this;
             game->originalPosition = Point(x, y);
 
             game->displayMenu(this);
+        }
+        else if (game->selectedWeapon)
+        {
+            game->attack(this);
         }
 
     }
@@ -71,18 +75,42 @@ void Robot::setxy(Point pos)
 
 void Robot::Attributes()
 {
-    robotName = QString("刚达");
-    driverName = QString("大卫");
+    if (id == 1)
+    {
+        robotName = QString("刚达");
+        driverName = QString("大卫");
 
-    hp = 320;
+        hp_total = 320;
+        hp = 320;
 
-    type = 1;
-    move = 6;
-    spirit = 40;
-    strength = 70;
-    defense = 55;
-    speed = 72;
+        type = 1;
+        move = 6;
+        spirit = 40;
+        spirit_total = 40;
+        strength = 70;
+        defense = 55;
+        speed = 72;
 
-    weapon1 = new Weapon(1);
-    weapon2 = new Weapon(2);
+        weapon1 = new Weapon(1);
+        weapon2 = new Weapon(2);
+    }
+    else if (id == 0x1001)
+    {
+        robotName = QString("乍克");
+        driverName = QString("士兵");
+
+        hp_total = 300;
+        hp = 300;
+
+        type = 1;
+        move = 5;
+        spirit = 40;
+        spirit_total = 40;
+        strength = 50;
+        defense = 45;
+        speed = 62;
+
+        weapon1 = new Weapon(1);
+        weapon2 = new Weapon(2);
+    }
 }
