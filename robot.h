@@ -22,8 +22,15 @@ public:
 
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
 
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
 
     int player; //表示属于玩家(0)还是电脑(1)
+
+    bool active = true;
+    void setNotActive();
+    void setActive();
+
 
     People * pilot = 0;
 
@@ -72,9 +79,9 @@ public:
     //武器
     Weapon * weapon1;
     Weapon * weapon2;
-    bool canAttack1(){return canAttack(weapon1);}
-    bool canAttack2(){return canAttack(weapon2);}
-    bool canAttack(Weapon * weapon);
+    Robot *  canAttack1(){return canAttack(weapon1);}
+    Robot *  canAttack2(){return canAttack(weapon2);}
+    Robot *  canAttack(Weapon * weapon);
 
     //位置
     int x;
@@ -84,6 +91,7 @@ public:
 
     //methods
     void getAttributes();
+
 
 
 };

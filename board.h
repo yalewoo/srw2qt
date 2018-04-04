@@ -10,11 +10,17 @@ class Board : public QObject, public QGraphicsRectItem
 {
     Q_OBJECT
 public:
-    Board();
+    Board(int width, int height);
 
     QGraphicsTextItem * text = 0;
 
+    QGraphicsPixmapItem * pilotImage;
+    QGraphicsPixmapItem * robotImage;
+
     void setString(QString s);
+
+    void showPilotImage(Robot * robot);
+    void showRobotImage(Robot * robot);
 
     void showRobot(Robot * robot);
 };

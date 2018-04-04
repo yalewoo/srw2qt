@@ -8,7 +8,9 @@ extern Game * game;
 #include "people.h"
 #include "weapon.h"
 
-Board::Board()
+#include <QDebug>
+
+Board::Board(int width, int height)
 {
     QPen pen;
     pen.setWidth(2);
@@ -25,21 +27,44 @@ Board::Board()
 
     setOpacity(0);
 
-    setRect(0, 0, 200, 800);
-    setPos(580, 100);
+    setRect(0, 0, width, height);
+    setPos(580, 0);
 
-    QString s = QString("");
+    QString s = QString("初始");
 
     text = new QGraphicsTextItem(s, this);
     text->setScale(1.5);
-    text->setPos(this->x(), this->y());
+    text->setPos(this->x(), this->y() + 150);
 
     game->scene->addItem(text);
+
+    pilotImage = new QGraphicsPixmapItem(this);
+    pilotImage->setPos(this->x() + 220, this->y() + 370);
+
+    robotImage = new QGraphicsPixmapItem(this);
+    robotImage->setPos(this->x() + 200, this->y() + 10);
+
+    game->scene->addItem(pilotImage);
+    game->scene->addItem(robotImage);
 }
 
 void Board::setString(QString s)
 {
     text->setPlainText(s);
+}
+
+void Board::showPilotImage(Robot *robot)
+{
+    QString path = game->workDir + QString("res/images/people/") + QString::number(robot->pilot->id) + QString(".png");
+    pilotImage->setPixmap(QPixmap(path));
+    qDebug() << path;
+}
+
+void Board::showRobotImage(Robot *robot)
+{
+    QString path = game->workDir + QString("res/images/robotImg/") + QString::number(robot->id) + QString(".png");
+    robotImage->setPixmap(QPixmap(path));
+    qDebug() << path;
 }
 
 void Board::showRobot(Robot *robot)
@@ -81,7 +106,7 @@ void Board::showRobot(Robot *robot)
     {
         s += weapon1->name + QString("\n命中 ") + QString::number(weapon1->hitRadio) + "\t";
         s += QString("射程\t") + QString::number(weapon1->range) + " ";
-        tmp.sprintf("\n  火力：空 %d\t陆 %d\t海 %d", weapon1->firepower[2], weapon1->firepower[1], weapon1->firepower[0]);
+        tmp.sprintf("\n  火力：空 %d\t陆 %d\t海 %d", weapon1->firepower[2] + robot->strength, weapon1->firepower[1] + robot->strength, weapon1->firepower[0] + robot->strength);
         s += tmp;
     }
     if (weapon2)
@@ -89,7 +114,7 @@ void Board::showRobot(Robot *robot)
         s += "\n\n";
         s += weapon2->name + QString("\n命中 ") + QString::number(weapon2->hitRadio) + "\t";
         s += QString("射程\t") + QString::number(weapon2->range) + " ";
-        tmp.sprintf("\n  火力：空 %d\t陆 %d\t海 %d", weapon2->firepower[2], weapon2->firepower[1], weapon2->firepower[0]);
+        tmp.sprintf("\n  火力：空 %d\t陆 %d\t海 %d", weapon2->firepower[2] + robot->strength, weapon2->firepower[1] + robot->strength, weapon2->firepower[0] + robot->strength);
         s += tmp;
     }
 
@@ -101,5 +126,8 @@ void Board::showRobot(Robot *robot)
 
 
     setString(s);
+
+    showPilotImage(robot);
+    showRobotImage(robot);
 
 }

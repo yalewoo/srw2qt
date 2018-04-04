@@ -6,10 +6,10 @@
 
 extern Game * game;
 
-Button::Button(QString name, QGraphicsItem *parent) : QGraphicsRectItem(parent)
+Button::Button(QString name, QGraphicsItem *parent, int width, int height) : QGraphicsRectItem(parent)
 {
     //draw the rect
-    setRect(0, 0, 40, 30);
+    setRect(0, 0, width, height);
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
     brush.setColor(Qt::darkCyan);
@@ -57,4 +57,9 @@ void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     brush.setStyle(Qt::SolidPattern);
     brush.setColor(Qt::darkCyan);
     setBrush(brush);
+}
+
+void Button::setText(QString s)
+{
+    text->setPlainText(s);
 }

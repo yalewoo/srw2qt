@@ -9,10 +9,14 @@
 #include "menu.h"
 #include "point.h"
 
-#include "battleground.h"
+#include "battle.h"
 
 
 #include "board.h"
+
+void waitVariableToBeTrueAllEvents(bool & b);
+void waitVariableToBeTrueExcludeUserInput(bool & b);
+
 
 class Game : public QGraphicsView
 {
@@ -35,13 +39,18 @@ public:
     //地图
     Map * map = 0;
     //资料面板
-    Board * board;
+    Board * board = 0;
+
+    Button * next_turn_button;
+    int turn = 1;
 
 
     //选中的
     Robot * selectedRobot = 0;  //选中的机器人
     Point originalPosition;     //选中机器人的原始位置，用于右键取消
     Weapon * selectedWeapon = 0;    //选中的机器
+
+    Robot * enemy = 0;  //敌人
 
     //显示菜单
     Menu * drawMenu(int x, int y, int width, int height, QColor color, double opacity = 1);
@@ -52,7 +61,7 @@ public:
     void deleteMenu();
 
     //战斗画面
-    BattleGround * battleGround = 0;
+    Battle * battle = 0;
 
     //处于可移动状态
     bool canMoveStatus = false;
@@ -71,6 +80,10 @@ public slots:
     void cancel();  //按下右键后，取消行动
     void attack1(); //使用武器1
     void attack2(); //使用武器2
+
+    void AI();  //AI自动行动
+
+    void next_turn();   //回合结束
 };
 
 #endif // GAME_H

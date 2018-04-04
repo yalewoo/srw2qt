@@ -38,9 +38,9 @@ MapRect::MapRect(int kindOfMap, QGraphicsItem *parent) : QGraphicsPixmapItem(par
 }
 
 static int moveConsumeTable[3][16] = {
-    {999,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {999,1,1,2,3,3,2,2,2,1,1,1,1,1,1,1},
-        {999,2,2,3,4,1,3,3,3,2,2,2,2,2,2,2}
+    {9999,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {9999,1,1,2,3,3,2,2,2,1,1,1,1,1,1,1},
+        {9999,2,2,3,4,1,3,3,3,2,2,2,2,2,2,2}
 };
 void MapRect::setMoveConsume()
 {
@@ -83,12 +83,8 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
             {
                 game->map->move(game->selectedRobot, x, y);
 
-                game->map->UnshowMoveRange();   //消除不能移动的格子的灰色效果
-                //game->selectedRobot = 0;    //设置状态没有选中机器
-
-                game->canMoveStatus = false;
-
                 game->displayMenu2(game->selectedRobot);
+
             }
         }
     }

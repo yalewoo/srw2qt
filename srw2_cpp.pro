@@ -11,6 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = srw2_cpp
 TEMPLATE = app
 
+PRECOMPILED_HEADER = stable.h
+
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -34,7 +37,8 @@ SOURCES += main.cpp \
     weapon.cpp \
     battleground.cpp \
     people.cpp \
-    board.cpp
+    board.cpp \
+    battle.cpp
 
 HEADERS  += \
     game.h \
@@ -47,4 +51,6 @@ HEADERS  += \
     weapon.h \
     battleground.h \
     people.h \
-    board.h
+    board.h \
+    stable.h \
+    battle.h

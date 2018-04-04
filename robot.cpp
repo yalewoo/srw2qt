@@ -10,6 +10,8 @@ extern Game * game;
 
 #include <qmath.h>
 
+#include <QGraphicsColorizeEffect>
+
 int Robot::exp_update_table[128] = {99999};
 
 
@@ -40,14 +42,14 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if (game->menu == 0 && !game->canMoveStatus && !game->selectedWeapon)
+        if (active && game->menu == 0 && !game->canMoveStatus && !game->selectedWeapon)
         {
             game->selectedRobot = this;
             game->originalPosition = Point(x, y);
 
             game->displayMenu(this);
         }
-        else if (game->selectedWeapon)
+        else if (game->selectedWeapon && game->map->AttackMap[x][y] >= 0)
         {
             game->attack(this);
         }
@@ -66,6 +68,35 @@ void Robot::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     game->board->showRobot(this);
 
     update();
+}
+
+void Robot::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    if (!active)
+    {
+        QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
+        e1->setColor(QColor(66,66,66));
+        setGraphicsEffect(e1);
+    }
+    else
+    {
+
+    }
+    QGraphicsPixmapItem::paint(painter, option, widget);
+}
+
+void Robot::setNotActive()
+{
+    active = false;
+    update();
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
+void Robot::setActive()
+{
+    active = true;
+    update();
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
 void Robot::get_exp_update_table(QString filename)
@@ -146,8 +177,11 @@ void Robot::calcLevelValue()
 }
 
 //攻击范围内有没有可以攻击的机体
-bool Robot::canAttack(Weapon *weapon)
+Robot * Robot::canAttack(Weapon *weapon)
 {
+    if (weapon == 0)
+        return 0;
+
     QVector<QVector<int> > m = game->map->calculateAttackRange(this, weapon);
     for (int i = 0; i < game->map->width; ++i)
     {
@@ -158,12 +192,18 @@ bool Robot::canAttack(Weapon *weapon)
                 Robot * enemy = game->map->robots[i][j];
                 if (enemy && enemy != this && enemy->player != this->player && weapon->firepower[enemy->type])
                 {
-                    return true;
+                    return enemy;
+                }
+
+                //修理装置
+                if (weapon->id == 164 && enemy && enemy->player == this->player && enemy->hp < enemy->hp_total)
+                {
+                    return enemy;
                 }
             }
         }
     }
-    return false;
+    return 0;
 }
 
 void Robot::setxy(int xPos, int yPos)

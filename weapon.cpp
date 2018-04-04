@@ -42,6 +42,15 @@ void Weapon::getAttribute()
 
             hitRadio = QString(t[4]).toInt();   //命中率
 
+            if (id == 164)
+            {
+                range = 1;
+                firepower[0] = 0;
+                firepower[1] = 0;
+                firepower[2] = 0;
+                hitRadio = 100;
+            }
+
             break;
         }
     }

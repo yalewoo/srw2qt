@@ -1,3 +1,7 @@
+#include <QCoreApplication>
+#include <QEventLoop>
+
+
 #include "battleground.h"
 
 #include <QBrush>
@@ -11,7 +15,9 @@ extern Game * game;
 
 #include <QTime>
 #include <QDebug>
+#include <QTimer>
 
+#include <QtMath>
 
 void BattleGround::setSize(int width, int height)
 {
@@ -25,12 +31,60 @@ void BattleGround::setSize(int width, int height)
     brush.setStyle(Qt::SolidPattern);
     brush.setColor(Qt::gray);
     setBrush(brush);
-    setOpacity(0.7);
+    setOpacity(0.85);
+}
+
+void BattleGround::showAttackAnimation(Robot *robot)
+{
+    weapon_image = new QGraphicsPixmapItem(this);
+    if (robot->player == 0)
+    {
+        //玩家攻击 从左向右
+        move_left = true;
+        weapon_image->setPixmap(QPixmap(game->workDir + "/res/images/weapon/fire.png"));
+        weapon_image->setPos(this->x() + 250, this->y() + 10);
+
+        move_timer = new QTimer(this);
+        connect(move_timer, SIGNAL(timeout()), this, SLOT(moveAnimation()));
+        move_timer->start(1000/fps);
+    }
+    else
+    {
+        //电脑攻击 从右向左
+        move_left = false;
+        weapon_image->setPixmap(QPixmap(game->workDir + "/res/images/weapon/fire.png"));
+        weapon_image->setPos(this->x() + 100, this->y() + 10);
+
+        move_timer = new QTimer(this);
+        connect(move_timer, SIGNAL(timeout()), this, SLOT(moveAnimation()));
+        move_timer->start(1000/fps);
+    }
 }
 
 BattleGround::BattleGround(Robot *robot2, Weapon *weapon2, Robot *enemy2):
     robot(robot2),weapon(weapon2),enemy(enemy2)
 {
+    playerRobot = new QGraphicsPixmapItem(this);
+    QString path = game->workDir + QString("res/images/robotImg/") + QString::number(robot->id) + QString(".png");
+    playerRobot->setPixmap(QPixmap(path));
+
+    enemyRobot = new QGraphicsPixmapItem(this);
+    path = game->workDir + QString("res/images/robotImg/") + QString::number(enemy->id) + QString(".png");
+    enemyRobot->setPixmap(QPixmap(path));
+
+    if (robot->player == 1)
+    {
+        playerRobot->setPos(this->x() + 10, this->y() + 10);
+        enemyRobot->setPos(this->x() + 300, this->y() + 10);
+
+    }
+    else
+    {
+        playerRobot->setPos(this->x() + 300, this->y() + 10);
+        enemyRobot->setPos(this->x() + 10, this->y() + 10);
+    }
+
+
     QString s;
     s = robot->robotName + QString("攻击!");
     battle_text = new QGraphicsTextItem(s, this);
@@ -52,6 +106,8 @@ BattleGround::BattleGround(Robot *robot2, Weapon *weapon2, Robot *enemy2):
     player_rate = calcRadio(robot, weapon, enemy);
 
     showHpAndRate();
+
+
 }
 
 
@@ -59,26 +115,45 @@ BattleGround::BattleGround(Robot *robot2, Weapon *weapon2, Robot *enemy2):
 void BattleGround::showHpAndRate()
 {
     QString s;
-    s.sprintf("HP %d\n命中 %.0f %%", robot->hp, player_rate);
-    player_text->setPlainText(s);
+    s.sprintf("HP %d/%d\n命中 %.0f %%", robot->hp, robot->hp_total,player_rate);
+
+    if (robot->player == 1)
+    {
+        player_text->setPlainText(s);
+        s.sprintf("HP %d/%d\n命中 %.0f %%", enemy->hp, enemy->hp_total, enemy_rate);
+        enemy_text->setPlainText(s);
+    }
+    else
+    {
+        enemy_text->setPlainText(s);
+        s.sprintf("HP %d/%d\n命中 %.0f %%", enemy->hp, enemy->hp_total, enemy_rate);
+        player_text->setPlainText(s);
+    }
 
 
-    s.sprintf("HP %d\n命中 %.0f %%", enemy->hp, enemy_rate);
-    enemy_text->setPlainText(s);
 }
 
 void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if (!move_finished)
+        return;
+
     QString s;
     if (stage == 0)
     {
         s = robot->pilot->name + QString("：打！\n");
         battle_text->setPlainText(s);
 
+        move_finished = false;
+        showAttackAnimation(robot);
+        while (!move_finished)
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+
+
         if (prob(player_rate))
         {
             int damage = getEnemyDamage();
-            enemy->hp -= damage;
+            enemy->hp = qMax(enemy->hp - damage, 0);
             showHpAndRate();
 
             s += enemy->robotName + QString("损坏") + QString::number(damage) + "\n" + enemy->pilot->name + QString(": 被打中了!");
@@ -90,14 +165,17 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
         battle_text->setPlainText(s);
 
-        ++stage;
+        if (enemy->hp > 0)
+            ++stage;
+        else
+            stage = 3;
     }
     else if (stage == 1)
     {
         if (enemy_weapon == 0)
         {
             s = enemy->pilot->name + QString("无力反击\n");
-            s += robot->pilot->name + QString("：便宜你了!");
+            s += enemy->pilot->name + QString("：便宜你了!");
             battle_text->setPlainText(s);
         }
         else
@@ -105,9 +183,13 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
             s = enemy->pilot->name + QString("反击\n");
             battle_text->setPlainText(s);
 
+            move_finished = false;
+            showAttackAnimation(enemy);
+            while (!move_finished)
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 
             int damage = getPlayerDamage();
-            robot->hp -= damage;
+            robot->hp  = qMax(robot->hp - damage, 0);
             showHpAndRate();
 
             s += robot->robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->name + QString(": 被打中了!");
@@ -115,12 +197,71 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
         }
 
+        if (robot->hp > 0)
+            ++stage;
+        else
+        {
+            stage = 3;
+        }
+    }
+    else if (stage == 2)
+    {
+        if (enemy->hp > 0 && robot->speed - enemy->speed >= 50)
+        {
+            s = robot->robotName + QString("再次攻击\n");
+            battle_text->setPlainText(s);
 
-        ++stage;
+            move_finished = false;
+            showAttackAnimation(robot);
+            while (!move_finished)
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+
+
+            if (prob(player_rate))
+            {
+                int damage = getEnemyDamage();
+                enemy->hp = qMax(enemy->hp - damage, 0);
+                showHpAndRate();
+
+                s += enemy->robotName + QString("损坏") + QString::number(damage) + "\n" + enemy->pilot->name + QString(": 被打中了!");
+            }
+            else
+            {
+                s += QString("攻击失败!");
+            }
+
+            battle_text->setPlainText(s);
+
+            ++stage;
+        }
+        else if (robot->hp >= 0 && enemy->speed - robot->speed >= 50)
+        {
+            s = enemy->robotName + QString("再次反击\n");
+            battle_text->setPlainText(s);
+
+            move_finished = false;
+            showAttackAnimation(enemy);
+            while (!move_finished)
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+
+            int damage = getPlayerDamage();
+            robot->hp  = qMax(robot->hp - damage, 0);
+            showHpAndRate();
+
+            s += robot->robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->name + QString(": 被打中了!");
+            battle_text->setPlainText(s);
+
+            ++stage;
+        }
+        else
+        {
+            battlefinished = true;
+        }
     }
     else
     {
-        game->attackDone();
+
+        battlefinished = true;
     }
 }
 
@@ -206,4 +347,41 @@ bool BattleGround::prob(double p)
         return true;
     else
         return false;
+}
+
+void BattleGround::moveAnimation()
+{
+    if (move_left)
+    {
+        if (weapon_image->x() > 100)
+            weapon_image->setPos(weapon_image->x() - 1, weapon_image->y());
+        else
+        {
+            move_finished = true;
+            disconnect(move_timer, SIGNAL(timeout()), this, SLOT(moveAnimation()));
+            move_timer->stop();
+            delete move_timer;
+
+            game->scene->removeItem(weapon_image);
+            delete weapon_image;
+        }
+    }
+    else
+    {
+        if (weapon_image->x() < 250)
+            weapon_image->setPos(weapon_image->x() + 1, weapon_image->y());
+        else
+        {
+            move_finished = true;
+            disconnect(move_timer, SIGNAL(timeout()), this, SLOT(moveAnimation()));
+            move_timer->stop();
+            delete move_timer;
+
+            game->scene->removeItem(weapon_image);
+            delete weapon_image;
+        }
+    }
+
+
+
 }
