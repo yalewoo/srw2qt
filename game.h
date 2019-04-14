@@ -14,6 +14,8 @@
 
 #include "board.h"
 
+#include "music.h"
+
 void waitVariableToBeTrueAllEvents(bool & b);
 void waitVariableToBeTrueExcludeUserInput(bool & b);
 
@@ -40,6 +42,13 @@ public:
     Map * map = 0;
     //资料面板
     Board * board = 0;
+
+
+    //music
+    Music * music_background;
+    Music * music_effect;
+    Music * music_battle;
+
 
     Button * next_turn_button;
     int turn = 1;
@@ -84,6 +93,7 @@ public slots:
     void AI();  //AI自动行动
 
     void next_turn();   //回合结束
+
 };
 
 #endif // GAME_H

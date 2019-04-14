@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -38,7 +39,8 @@ SOURCES += main.cpp \
     battleground.cpp \
     people.cpp \
     board.cpp \
-    battle.cpp
+    battle.cpp \
+    music.cpp
 
 HEADERS  += \
     game.h \
@@ -53,4 +55,5 @@ HEADERS  += \
     people.h \
     board.h \
     stable.h \
-    battle.h
+    battle.h \
+    music.h

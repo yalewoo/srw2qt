@@ -31,6 +31,8 @@ public:
     int speed;  //速度
     int hp; //hp
 
+    int music_id;
+
 
     bool spirit_table[19];
     static QString spirit_name[19];

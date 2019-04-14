@@ -51,6 +51,8 @@ People::People(int id2, int player2) : id(id2), player(player2)
             speed = QString(t[26]).toInt();
             hp = QString(t[27]).toInt();
 
+            music_id = QString(t[28]).toInt(0,16);
+
             break;
         }
     }

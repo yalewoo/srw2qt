@@ -8,6 +8,8 @@
 
 #include "people.h"
 
+#include <QCoreApplication>
+
 
 void waitVariableToBeTrueAllEvents(bool & b)
 {
@@ -34,7 +36,7 @@ Game::Game(QWidget *parent)
     //将scene和View绑定
     setScene(scene);
 
-    workDir = QString("F:/Project/srw2_cpp/");
+    workDir = QString("C:/code/srw2_cpp/");
     robot_value_path = workDir + "input/value/robot.csv";
     weapon_value_path = workDir + "input/value/weapon.csv";
     people_value_path = workDir + "input/value/people.csv";
@@ -57,12 +59,20 @@ void Game::start()
     //test
     map = new Map(workDir + "input/map/map1.csv");
 
-    map->placePlayerRobot_init(workDir + "input/stage/robot_init_test.csv", 1);
+    map->placePlayerRobot_init(workDir + "input/stage/robot_init.csv", 1);
     map->placeEnemyRobot_init(workDir + "input/stage/enemy_init.csv", 1);
 
 
+    music_background = new Music();
+    music_background->setMusicLoop(workDir + "/res/music/87.wav");
+    music_battle = new Music();
+    music_effect = new Music();
+
+    connect(music_battle, SIGNAL(stateChanged(QMediaPlayer::State)), music_background, SLOT(state_change_slot(QMediaPlayer::State)));
+
 
 }
+
 
 
 Menu * Game::drawMenu(int x, int y, int width, int height, QColor color, double opacity)
@@ -227,6 +237,8 @@ void Game::AI()
 
 void Game::next_turn()
 {
+    music_background->setMusicLoop(workDir + "/res/music/88.wav");
+
     QList<Robot *> & robots = map->player_robots;
     for (int i = 0; i < robots.size(); ++i)
     {
@@ -247,14 +259,20 @@ void Game::next_turn()
         enemys[i]->setActive();
 
     }
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+
+
+    QCoreApplication::processEvents(QEventLoop::AllEvents);
 
     QString s;
     s.sprintf("结束第%d回合", ++turn);
     next_turn_button->setText(s);
 
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+
+
+    music_background->setMusicLoop(workDir + "/res/music/87.wav");
 }
+
+
 
 void Game::showAttackRange()
 {

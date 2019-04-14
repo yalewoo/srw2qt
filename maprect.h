@@ -4,6 +4,8 @@
 #include <QGraphicsPixmapItem>
 #include <QGraphicsSceneMouseEvent>
 
+
+
 class MapRect : public QGraphicsPixmapItem
 {
 public:
@@ -26,6 +28,8 @@ public:
     void showString(QString text);
     QGraphicsTextItem * text = 0;
     void UnshowString();
+
+
 };
 
 #endif // MAPRECT_H

@@ -57,14 +57,14 @@ void Board::showPilotImage(Robot *robot)
 {
     QString path = game->workDir + QString("res/images/people/") + QString::number(robot->pilot->id) + QString(".png");
     pilotImage->setPixmap(QPixmap(path));
-    qDebug() << path;
+    //qDebug() << path;
 }
 
 void Board::showRobotImage(Robot *robot)
 {
     QString path = game->workDir + QString("res/images/robotImg/") + QString::number(robot->id) + QString(".png");
     robotImage->setPixmap(QPixmap(path));
-    qDebug() << path;
+    //qDebug() << path;
 }
 
 void Board::showRobot(Robot *robot)

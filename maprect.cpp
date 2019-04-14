@@ -76,6 +76,11 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
         game->board->setString(s);
 
+
+
+
+
+
         //如果有选中的机器 并且 点击的地图格子可以到达
         if (game->canMoveStatus)
         {

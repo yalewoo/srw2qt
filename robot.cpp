@@ -44,6 +44,8 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         if (active && game->menu == 0 && !game->canMoveStatus && !game->selectedWeapon)
         {
+            game->music_effect->setMusicOnce(game->workDir + "res/wav/pushbutton.mp3");
+
             game->selectedRobot = this;
             game->originalPosition = Point(x, y);
 
@@ -51,6 +53,7 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
         else if (game->selectedWeapon && game->map->AttackMap[x][y] >= 0)
         {
+            game->music_effect->setMusicOnce(game->workDir + "res/wav/pushbutton.mp3");
             game->attack(this);
         }
 
@@ -88,6 +91,9 @@ void Robot::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 void Robot::setNotActive()
 {
     active = false;
+    QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
+    e1->setColor(QColor(66,66,66));
+    setGraphicsEffect(e1);
     update();
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
@@ -95,6 +101,7 @@ void Robot::setNotActive()
 void Robot::setActive()
 {
     active = true;
+    setGraphicsEffect(0);
     update();
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
@@ -281,7 +288,7 @@ void Robot::getAttributes()
 
 
 
-            qDebug() << filename;
+            //qDebug() << filename;
             setPixmap(QPixmap(game->workDir + "res/images/robot32/" + filename));
 
             break;

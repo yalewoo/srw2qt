@@ -36,6 +36,8 @@ void BattleGround::setSize(int width, int height)
 
 void BattleGround::showAttackAnimation(Robot *robot)
 {
+    game->music_effect->setMusicOnce(game->workDir + "res/wav/huoqiu.mp3");
+
     weapon_image = new QGraphicsPixmapItem(this);
     if (robot->player == 0)
     {
@@ -72,20 +74,29 @@ BattleGround::BattleGround(Robot *robot2, Weapon *weapon2, Robot *enemy2):
     path = game->workDir + QString("res/images/robotImg/") + QString::number(enemy->id) + QString(".png");
     enemyRobot->setPixmap(QPixmap(path));
 
+    int music_id;
     if (robot->player == 1)
     {
+        music_id = enemy->pilot->music_id;
         playerRobot->setPos(this->x() + 10, this->y() + 10);
         enemyRobot->setPos(this->x() + 300, this->y() + 10);
 
     }
     else
     {
+        music_id = robot->pilot->music_id;
         playerRobot->setPos(this->x() + 300, this->y() + 10);
         enemyRobot->setPos(this->x() + 10, this->y() + 10);
     }
 
-
     QString s;
+
+    s.sprintf("res/music/%X.wav", music_id);
+    qDebug() << s;
+    s = game->workDir + s;
+    game->music_battle->setMusicLoop(s);
+
+
     s = robot->robotName + QString("攻击!");
     battle_text = new QGraphicsTextItem(s, this);
     battle_text->setScale(2);
@@ -255,12 +266,13 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
         else
         {
+            game->music_battle->stop();
             battlefinished = true;
         }
     }
     else
     {
-
+        game->music_battle->stop();
         battlefinished = true;
     }
 }
