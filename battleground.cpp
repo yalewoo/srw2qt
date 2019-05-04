@@ -199,11 +199,18 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
             while (!move_finished)
                 QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 
-            int damage = getPlayerDamage();
-            robot->hp  = qMax(robot->hp - damage, 0);
-            showHpAndRate();
+            if (prob(enemy_rate))
+            {
+                int damage = getPlayerDamage();
+                robot->hp  = qMax(robot->hp - damage, 0);
+                showHpAndRate();
 
-            s += robot->robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->name + QString(": 被打中了!");
+                s += robot->robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->name + QString(": 被打中了!");
+            }
+            else {
+                s += QString("攻击失败!");
+            }
+
             battle_text->setPlainText(s);
 
         }
@@ -245,7 +252,7 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
             ++stage;
         }
-        else if (robot->hp >= 0 && enemy->speed - robot->speed >= 50)
+        else if (robot->hp >= 0 && enemy->speed - robot->speed >= 50 && enemy_weapon != 0)
         {
             s = enemy->robotName + QString("再次反击\n");
             battle_text->setPlainText(s);
@@ -255,11 +262,17 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
             while (!move_finished)
                 QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 
-            int damage = getPlayerDamage();
-            robot->hp  = qMax(robot->hp - damage, 0);
-            showHpAndRate();
+            if (prob(enemy_rate))
+            {
+                int damage = getPlayerDamage();
+                robot->hp  = qMax(robot->hp - damage, 0);
+                showHpAndRate();
 
-            s += robot->robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->name + QString(": 被打中了!");
+                s += robot->robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->name + QString(": 被打中了!");
+            }
+            else {
+                s += QString("攻击失败!");
+            }
             battle_text->setPlainText(s);
 
             ++stage;
@@ -348,7 +361,7 @@ double BattleGround::calcRadio(Robot *robot2, Weapon *weapon2, Robot *enemy2)
 
 bool BattleGround::prob(double p)
 {
-    return true;
+    //return true;
 
 
     qsrand(QTime::currentTime().msec());

@@ -45,7 +45,12 @@ Game::Game(QWidget *parent)
 
 
 }
+void Game::showConversition()
+{
+    story = new Story();
 
+    story->showConversition(1);
+}
 void Game::start()
 {
     board = new Board(200, 800);
@@ -69,6 +74,7 @@ void Game::start()
     music_effect = new Music();
 
     connect(music_battle, SIGNAL(stateChanged(QMediaPlayer::State)), music_background, SLOT(state_change_slot(QMediaPlayer::State)));
+
 
 
 }
@@ -214,8 +220,10 @@ void Game::AI()
         return;
     }
 
-
-    map->AI_move(selectedRobot);
+    if (turn > selectedRobot->attackType)
+    {
+        map->AI_move(selectedRobot);
+    }
 
 
     if (selectedRobot->weapon1 && selectedRobot->weapon1->range == 1 && (enemy = selectedRobot->canAttack1()))
@@ -237,6 +245,8 @@ void Game::AI()
 
 void Game::next_turn()
 {
+    map->placeEnemyRobot_add(workDir + "input/stage/1/enemy_add.csv", turn);
+
     music_background->setMusicLoop(workDir + "/res/music/88.wav");
 
     QList<Robot *> & robots = map->player_robots;
@@ -270,6 +280,8 @@ void Game::next_turn()
 
 
     music_background->setMusicLoop(workDir + "/res/music/87.wav");
+
+    story->showConversition(turn);
 }
 
 
@@ -328,6 +340,12 @@ void Game::attackDone()
         delete battle;
         battle = 0;
     }
+
+}
+
+
+void Game::showDiagDone()
+{
 
 }
 

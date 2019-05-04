@@ -29,6 +29,7 @@ public:
 
     void placePlayerRobot_init(QString filename, int stage);
     void placeEnemyRobot_init(QString filename, int stage);
+    void placeEnemyRobot_add(QString filename, int stage);
 
     //获取(x,y)格消耗的移动力，考虑敌方机体的影响
     int getMoveConsume(Robot *robot, int x, int y);

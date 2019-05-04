@@ -40,7 +40,9 @@ SOURCES += main.cpp \
     people.cpp \
     board.cpp \
     battle.cpp \
-    music.cpp
+    music.cpp \
+    story.cpp \
+    storydiag.cpp
 
 HEADERS  += \
     game.h \
@@ -56,4 +58,7 @@ HEADERS  += \
     board.h \
     stable.h \
     battle.h \
-    music.h
+    music.h \
+    story.h \
+    storydiag.h \
+    conversation.h

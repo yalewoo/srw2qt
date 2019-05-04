@@ -15,7 +15,7 @@ class People;
 class Robot : public QGraphicsPixmapItem
 {
 public:
-    Robot(int id, People * pilot, int level2, QGraphicsItem * parent = 0);
+    Robot(int id, People * pilot, int level2, QString type, QGraphicsItem * parent = 0);
 
     //event
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
@@ -26,6 +26,7 @@ public:
 
 
     int player; //表示属于玩家(0)还是电脑(1)
+    int attackType; //攻击属性 第几回合开始行动 敌人专属
 
     bool active = true;
     void setNotActive();

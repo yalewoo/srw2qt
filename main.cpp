@@ -12,5 +12,7 @@ int main(int argc, char *argv[])
     game->start();
     game->show();
 
+    game->showConversition();
+
     return a.exec();
 }

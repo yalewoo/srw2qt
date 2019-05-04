@@ -11,11 +11,12 @@ extern Game * game;
 #include <qmath.h>
 
 #include <QGraphicsColorizeEffect>
+#include <QCoreApplication>
 
 int Robot::exp_update_table[128] = {99999};
 
 
-Robot::Robot(int id, People *pilot2, int level2, QGraphicsItem *parent):id(id), pilot(pilot2),level(level2), QGraphicsPixmapItem(parent)
+Robot::Robot(int id, People *pilot2, int level2, QString type, QGraphicsItem *parent):id(id), pilot(pilot2),level(level2), QGraphicsPixmapItem(parent)
 {
     get_exp_update_table(game->workDir + "input/value/exp_table.txt");
 
@@ -31,6 +32,8 @@ Robot::Robot(int id, People *pilot2, int level2, QGraphicsItem *parent):id(id), 
     if (player == 1)
     {
         exp = exp_dievalue;
+
+        attackType = type.toInt();
     }
     else
     {

@@ -10,7 +10,7 @@
 #include "point.h"
 
 #include "battle.h"
-
+#include "story.h"
 
 #include "board.h"
 
@@ -72,6 +72,9 @@ public:
     //战斗画面
     Battle * battle = 0;
 
+    //剧情显示
+    Story * story = 0;
+
     //处于可移动状态
     bool canMoveStatus = false;
 
@@ -82,6 +85,10 @@ public:
 
     //攻击结束
     void attackDone();
+
+    //剧情结束
+    void showDiagDone();
+    void showConversition();
 
 public slots:
     void move();    //移动

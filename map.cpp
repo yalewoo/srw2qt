@@ -222,7 +222,7 @@ void Map::placePlayerRobot_init(QString filename, int stage1)
         int x = QString(t[1]).toInt() + 1;
         int y = QString(t[2]).toInt() + 1;
         People * people = new People(QString(t[4]).toInt(), 0);
-        Robot * robot = new Robot(QString(t[6]).toInt(), people, 1);
+        Robot * robot = new Robot(QString(t[6]).toInt(), people, 1, "");
 
         addRobot(robot, x, y);
     }
@@ -256,9 +256,44 @@ void Map::placeEnemyRobot_init(QString filename, int stage1)
         int x = QString(t[1]).toInt() + 1;
         int y = QString(t[2]).toInt() + 1;
         People * people = new People(QString(t[3]).toInt(), 1);
-        Robot * robot = new Robot(QString(t[4]).toInt(), people, QString(t[5]).toInt()+1);
+        Robot * robot = new Robot(QString(t[4]).toInt(), people, QString(t[5]).toInt()+1, /*智商*/QString(t[9]));
 
         addRobot(robot, x, y);
+    }
+}
+void Map::placeEnemyRobot_add(QString filename, int stage1)
+{
+
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << filename << "open failed";
+        exit(-1);
+
+    }
+    QTextStream in(&file);
+
+    QString line = in.readLine();
+
+    while(!in.atEnd())
+    {
+        QString line = in.readLine();
+
+        QStringList t = line.split(",");
+
+        if (t.size() == 0)
+            continue;
+        int stage = QString(t[0]).toInt();
+        if (stage != stage1)
+            continue;
+
+        int x = QString(t[1]).toInt() + 1;
+        int y = QString(t[2]).toInt() + 1;
+        People * people = new People(QString(t[3]).toInt(), 1);
+        Robot * robot = new Robot(QString(t[5]).toInt(), people, QString(t[7]).toInt()+1, /*智商*/QString(t[9]));
+
+        addRobot(robot, x, y);
+
     }
 }
 
@@ -784,6 +819,8 @@ void Map::addRobot(Robot * robot, int xPos, int yPos)
         player_robots.append(robot);
     else
         enemy_robots.append(robot);
+
+
 }
 
 void Map::removeRobot(Robot *robot)
