@@ -16,6 +16,8 @@ extern Game * game;
 
 #include <QtMath>
 
+
+
 void StoryDiag::setSize(int width, int height)
 {
     int x = 0;
@@ -52,7 +54,7 @@ void StoryDiag::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void StoryDiag::showTalk(int index)
 {
-    QString path = game->workDir + QString("res/images/people/") + QString::number(conversitions[index].people) + QString(".png");
+    QString path = config->people_image_path + QString::number(conversitions[index].people) + QString(".png");
 
 
     if (!peopleImage)

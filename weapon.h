@@ -3,10 +3,8 @@
 
 #include <QString>
 
-class Weapon
+struct Weapon
 {
-public:
-
     int id;
 
     QString name;
@@ -16,8 +14,7 @@ public:
 
     int hitRadio;   //命中率
 
-    Weapon(int id);
-    void getAttribute();
+    Weapon(int id = 0):id(id){ }
 };
 
 #endif // WEAPON_H

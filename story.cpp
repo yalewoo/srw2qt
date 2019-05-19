@@ -7,10 +7,12 @@ extern Game * game;
 
 #include <QTextCodec>
 
+#include "config.h"
+extern Config * config;
 
 Story::Story()
 {
-    QString filename = game->workDir + "input/stage/conversitions.csv";
+    QString filename = config->conversion_path;
 
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -60,13 +62,13 @@ void Story::showConversition(int turn)
     {
         StoryDiag * storyDiag = new StoryDiag(conversitions[turn]);
 
-        storyDiag->setSize(game->map->width*32, game->map->height*32);
+        storyDiag->setSize(game->scene->map->width*32, game->scene->map->height*32);
         game->scene->addItem(storyDiag);
 
         waitVariableToBeTrueAllEvents(storyDiag->finished);
 
 
-        game->showDiagDone();
+        game->scene->showDiagDone();
         game->scene->removeItem(storyDiag);
         delete storyDiag;
     }
