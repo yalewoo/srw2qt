@@ -38,7 +38,7 @@ struct Config
     int rectWidth = 32;
 
     Config() {
-        workDir  = QString("C:/code/srw2/");
+        workDir  = QString("C:/code/srw2qt/");
         robot_value_path = workDir + "input/value/robot.csv";
         weapon_value_path = workDir + "input/value/weapon.csv";
         people_value_path = workDir + "input/value/people.csv";

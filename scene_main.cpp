@@ -78,8 +78,12 @@ void SceneMain::displayMenu(Robot *robot)
 
     if (inDebugMode)
     {
-        Button * button_set_active = menu->addButton(QString("设置激活状态"));
-        connect(button_set_active, SIGNAL(leftButtonClicked()), this, SLOT(setActive()));
+        if (selectedRobot && selectedRobot->active == false)
+        {
+            Button * button_set_active = menu->addButton(QString("设置激活状态"));
+            connect(button_set_active, SIGNAL(leftButtonClicked()), this, SLOT(setActive()));
+
+        }
     }
 
     Button * button_ok = menu->addButton(QString("待命"));
@@ -126,13 +130,9 @@ void SceneMain::robotActionFinished()
     inMoveStatus  = false;
 
 
-    if (inDebugMode)
-    {
 
-    }
-    else {
-        selectedRobot->setNotActive();
-    }
+    selectedRobot->setNotActive();
+
     selectedRobot = nullptr;
     selectedWeapon = nullptr;
 
@@ -287,8 +287,13 @@ void SceneMain::attack2()
 
 void SceneMain::setActive()
 {
+    deleteMenu();
+
+    map->UnshowMoveRange();
+
     selectedRobot->setActive();
-    robotActionFinished();
+
+    selectedRobot = 0;
 }
 void SceneMain::attack(Robot *enemy2)
 {

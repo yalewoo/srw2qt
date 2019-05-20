@@ -148,6 +148,7 @@ void Map::showMoveRange(Robot *robot)
                 if (canAttack(robot, robot->weapon1, enemy) || canAttack(robot, robot->weapon2, enemy))
                 {
                     enemy->setGraphicsEffect(0);
+                    enemy->shouldPaintUsingActive = false;
                 }
                 else if (robot->player != enemy->player)
                 {
@@ -175,6 +176,7 @@ void Map::UnshowMoveRange()
             if (robots[i][j])
             {
                 robots[i][j]->setGraphicsEffect(0);
+                robots[i][j]->shouldPaintUsingActive = true;
             }
         }
     }

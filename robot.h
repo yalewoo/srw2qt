@@ -50,7 +50,7 @@ public:
     int hp; //现有Hp
 
 
-
+    bool shouldPaintUsingActive = true;
 
 
 

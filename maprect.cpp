@@ -61,7 +61,7 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
         {
             game->scene->deleteMenu();
 
-            if (game->scene->map->moveMap[x][y] >= 0)
+            if (game->scene->map->moveMap[x][y] >= 0 || game->scene->inDebugMode)
             {
                 game->scene->map->move(game->scene->selectedRobot, x, y);
                 game->scene->inMoveStatus  = false;

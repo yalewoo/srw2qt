@@ -161,7 +161,7 @@ Robot * Robot::canAttack(Weapon *weapon)
 
 void Robot::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if (!active)
+    if (shouldPaintUsingActive && (!active))
     {
         QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
         e1->setColor(QColor(66,66,66));
