@@ -68,6 +68,11 @@ public:
     int dest_arrow_y;
     QGraphicsPixmapItem * arrow = 0;
 
+    // 当前所在格子
+    int selected_x;
+    int selected_y;
+    QGraphicsPixmapItem * select_effect = 0;
+
 
     //AI
     void AI_move(Robot * selectedRobot);

@@ -9,8 +9,9 @@ extern Game * game;
 #include "config.h"
 extern Config * config;
 
-Button::Button(QString name, QGraphicsItem *parent, int width, int height) : QGraphicsRectItem(parent)
+Button::Button(QString name, QGraphicsItem *parent) : QGraphicsRectItem(parent)
 {
+    width = name.length() * 25;
     //draw the rect
     setRect(0, 0, width, height);
     QBrush brush;

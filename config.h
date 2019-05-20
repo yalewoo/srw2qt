@@ -29,6 +29,7 @@ struct Config
     QString button_press_music;
 
     QString attack_arrow;
+    QString selected_arrow;
     QString attack_fire_music;
     QString attack_fire_img;
 
@@ -62,6 +63,7 @@ struct Config
 
 
         attack_arrow = workDir + "res/images/arrow/arrow.png";
+        selected_arrow = workDir + "res/images/arrow/select.png";
 
         attack_fire_music = workDir + "res/wav/huoqiu.mp3";
         attack_fire_img = workDir + "/res/images/weapon/fire.png";

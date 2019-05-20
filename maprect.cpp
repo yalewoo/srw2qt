@@ -49,6 +49,8 @@ void MapRect::UnshowString()
     }
 }
 
+
+
 void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 

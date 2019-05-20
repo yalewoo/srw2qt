@@ -10,6 +10,10 @@ public:
     int y;
     Rect(QGraphicsPixmapItem * parent = 0);
     void setxy(int x, int y);
+
+    //event
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 };
 
 #endif // RECT_H

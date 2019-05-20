@@ -8,12 +8,12 @@ SceneMain::SceneMain()
 
 void SceneMain::init()
 {
-    next_turn_button = new Button(QString("结束第1回合"), 0, 150, 50);
+    next_turn_button = new Button(QString("结束第1回合"));
     next_turn_button->setPos(600, 650);
     add(next_turn_button);
     connect(next_turn_button, SIGNAL(leftButtonClicked()), this, SLOT(next_turn()));
 
-    debug_button = new Button(QString("进入Debug模式"), 0, 150, 50);
+    debug_button = new Button(QString("进入Debug模式"));
     debug_button->setPos(800, 650);
     add(debug_button);
     connect(debug_button, SIGNAL(leftButtonClicked()), this, SLOT(enable_debug_mode()));
@@ -60,7 +60,7 @@ void SceneMain::displayMenu(Robot *robot)
 {
     int x = robot->pos().x();
     int y = robot->pos().y();
-    menu = drawMenu(x+20, y, 50, 120, Qt::darkCyan, 0.5);
+    menu = drawMenu(Menu_x, Menu_y, 0, 0, Qt::darkCyan, 0.5);
 
     Button * button_ai = menu->addButton(QString("AI行动"));
     connect(button_ai, SIGNAL(leftButtonClicked()), this, SLOT(AI()));
@@ -76,6 +76,12 @@ void SceneMain::displayMenu(Robot *robot)
         connect(button_attack2, SIGNAL(leftButtonClicked()), this, SLOT(attack2()));
     }
 
+    if (inDebugMode)
+    {
+        Button * button_set_active = menu->addButton(QString("设置激活状态"));
+        connect(button_set_active, SIGNAL(leftButtonClicked()), this, SLOT(setActive()));
+    }
+
     Button * button_ok = menu->addButton(QString("待命"));
     connect(button_ok, SIGNAL(leftButtonClicked()), this, SLOT(robotActionFinished()));
 }
@@ -84,7 +90,7 @@ void SceneMain::displayMenu2(Robot *robot)
 {
     int x = robot->pos().x();
     int y = robot->pos().y();
-    menu = drawMenu(x+20, y, 50, 120, Qt::darkCyan, 0.5);
+    menu = drawMenu(Menu_x, Menu_y, 0, 0, Qt::darkCyan, 0.5);
 
     if (robot->weapon1->range == 1 && robot->canAttack1())
     {
@@ -184,6 +190,18 @@ void SceneMain::next_turn()
         }
     }
 
+    for (int i = 1; i < map->width - 1; ++i)
+    {
+        for (int j = 1; j < map->height - 1; ++j)
+        {
+            if (map->robots[i][j])
+            {
+                map->robots[i][j]->setActive();
+
+            }
+        }
+    }
+
     QString s;
     s.sprintf("结束第%d回合", round);
     next_turn_button->setText(s);
@@ -266,9 +284,17 @@ void SceneMain::attack2()
     selectedWeapon = selectedRobot->weapon2;
     showAttackRange();
 }
+
+void SceneMain::setActive()
+{
+    selectedRobot->setActive();
+    robotActionFinished();
+}
 void SceneMain::attack(Robot *enemy2)
 {
     enemy = enemy2;
+
+    deleteMenu();
 
     map->UnshowMoveRange();
 

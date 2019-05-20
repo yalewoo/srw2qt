@@ -115,6 +115,7 @@ void Map::showMoveRange(Robot *robot)
     {
         for (int j = 0; j < height; ++j)
         {
+
             if (moveMap[i][j] >= 0)
             {
                 map[i][j]->showString(QString::number(moveMap[i][j]));
@@ -129,6 +130,33 @@ void Map::showMoveRange(Robot *robot)
                 if (robots[i][j])
                 {
                     robots[i][j]->setGraphicsEffect(e1);
+                }
+            }
+
+
+        }
+    }
+
+    // 判断地方机器人能否被攻击
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            Robot * enemy = robots[i][j];
+            if (enemy)
+            {
+                if (canAttack(robot, robot->weapon1, enemy) || canAttack(robot, robot->weapon2, enemy))
+                {
+                    enemy->setGraphicsEffect(0);
+                }
+                else if (robot->player != enemy->player)
+                {
+                    //不能移动的格子添加灰色效果
+                    QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
+                    e1->setColor(QColor(111,111,111));
+
+                    enemy->setGraphicsEffect(e1);
+
                 }
             }
         }

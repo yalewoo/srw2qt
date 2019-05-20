@@ -20,7 +20,6 @@ Robot::Robot(int id, int player):id(id),player(player)
     weapon1 = DataHelper::getWeapon(property.weapon1id);
     weapon2 = DataHelper::getWeapon(property.weapon2id);
 
-    setAcceptHoverEvents(true);
 }
 
 void Robot::setImage()
@@ -58,6 +57,8 @@ void Robot::setPilot(int peopleId)
 }
 void Robot::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
+    Rect::hoverEnterEvent(event);
+
     game->scene->robotStatus->showRobot(this);
     update();
 }
@@ -70,6 +71,18 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
         {
             if (game->scene->selectedWeapon && game->scene->map->AttackMap[x][y] >= 0)
             {
+                game->scene->music_effect->setMusicOnce(config->button_press_music);
+                game->scene->attack(this);
+            }
+            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon1, this))
+            {
+                game->scene->selectedWeapon = game->scene->selectedRobot->weapon1;
+                game->scene->music_effect->setMusicOnce(config->button_press_music);
+                game->scene->attack(this);
+            }
+            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon2, this))
+            {
+                game->scene->selectedWeapon = game->scene->selectedRobot->weapon2;
                 game->scene->music_effect->setMusicOnce(config->button_press_music);
                 game->scene->attack(this);
             }

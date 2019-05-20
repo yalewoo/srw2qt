@@ -28,6 +28,8 @@ public:
     Menu * drawMenu(int x, int y, int width, int height, QColor color, double opacity = 1);
     void displayMenu(Robot * robot);    //第一次点击菜单
     void displayMenu2(Robot * robot);   //移动后出现的菜单
+    int Menu_x = 10;
+    int Menu_y = 710;
 
     Menu * menu = 0;
     void deleteMenu();
@@ -77,6 +79,8 @@ public slots:
 
     void attack1(); //使用武器1
     void attack2(); //使用武器2
+
+    void setActive();   //设置机器人激活状态
 };
 
 #endif // SCENE_H
