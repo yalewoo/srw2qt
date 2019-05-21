@@ -6,8 +6,12 @@
 
 extern Game * game;
 
-Button::Button(QString name, QGraphicsItem *parent, int width, int height) : QGraphicsRectItem(parent)
+#include "config.h"
+extern Config * config;
+
+Button::Button(QString name, QGraphicsItem *parent) : QGraphicsRectItem(parent)
 {
+    width = name.length() * 25;
     //draw the rect
     setRect(0, 0, width, height);
     QBrush brush;
@@ -25,14 +29,14 @@ Button::Button(QString name, QGraphicsItem *parent, int width, int height) : QGr
     setAcceptHoverEvents(true);
 
 
-    game->connect(this, SIGNAL(rightButtonClicked()), game, SLOT(cancel()));
+    game->connect(this, SIGNAL(rightButtonClicked()), game->scene, SLOT(cancel()));
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        game->music_effect->setMusicOnce(game->workDir + "res/wav/pushbutton.mp3");
+        game->scene->music_effect->setMusicOnce(config->button_press_music);
         emit leftButtonClicked();
     }
     else if (event->button() == Qt::RightButton)

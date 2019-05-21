@@ -1,99 +1,82 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include <QGraphicsPixmapItem>
-
-#include <QGraphicsSceneMouseEvent>
-
-#include "point.h"
+#include "datahelper.h"
+#include "people.h"
+#include "rect.h"
+#include "robotproperty.h"
 #include "weapon.h"
 
-#include <QHoverEvent>
 
-class People;
 
-class Robot : public QGraphicsPixmapItem
+class Robot : public Rect
 {
 public:
-    Robot(int id, People * pilot, int level2, QString type, QGraphicsItem * parent = 0);
+    // 全局变量
+    static QVector<int> exp_update_table;    // 经验
+    static QVector<RobotData> robots_init;    // 每一关的我方机器人
+    static QVector<EnemyData> enemys_init;    // 每一关的敌方机器人
 
-    //event
-    void mousePressEvent(QGraphicsSceneMouseEvent * event);
+    // ==========基础属性，这些属性不会变化=======
+    int id; // 唯一标识一个机体
+    RobotProperty property;
 
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-
-    int player; //表示属于玩家(0)还是电脑(1)
-    int attackType; //攻击属性 第几回合开始行动 敌人专属
-
-    bool active = true;
-    void setNotActive();
-    void setActive();
-
-
-    People * pilot = 0;
-
-    static int exp_update_table[128];
-
-    void get_exp_update_table(QString filename);
-    int exp;    //当前经验
-    int exp_dievalue;  //本机死亡带来的固定经验
-    int money;  //金钱
-    int level = 1;
-
-    //基本属性
-    int id;
-    QString robotName;  //机体名
-    int type_original;//原始类型
-    int type;   //类型 0=空，1=陆，2=海
-    int robot_move;   //机动
-
-    //等级1时数据
-    int robot_hp0; //Hp
-    int robot_strength0;   //强度
-    int robot_defense0;    //防卫
-    int robot_speed0;  //速度
-    //成长方式
-    int robot_hp_plus; //Hp
-    int robot_strength_plus;   //强度
-    int robot_defense_plus;    //防卫
-    int robot_speed_plus;  //速度
-
-    //当前level数据
-    int robot_hp; //Hp
-    int robot_strength;   //强度
-    int robot_defense;    //防卫
-    int robot_speed;  //速度
-    void calcLevelValue();
-
-    //驾驶员加成最终数据
+    // 机体五维，包含驾驶员加成之后的最终数据
     int hp_total;   //总hp
-    int hp; //现有Hp
     int move;   //机动
     int strength;   //强度
     int defense;    //防卫
     int speed;  //速度
 
+    // =========可能会变化的机器人属性==========
+    // 拥有的武器
+    Weapon * weapon1 = nullptr;
+    Weapon * weapon2 = nullptr;
 
-    //武器
-    Weapon * weapon1;
-    Weapon * weapon2;
+    // 属于我方机器人还是敌方
+    int player = 0; //0 玩家 1敌人
+
+    // 机器人驾驶员
+    People * pilot = nullptr;
+
+    // 等级和经验
+    int exp;    //当前经验
+    int level = 1;  //当前等级
+
+    int robotBehavior;  // 第几回合开始进攻
+
+    //==============游戏中用到的变量===================
+    bool active = true; //机体是否行动过
+    int hp; //现有Hp
+
+
+    bool shouldPaintUsingActive = true;
+
+
+
+
+
+    Robot(int id, int player=0);
+    ~Robot();
+
+
+    void setImage();
+    void setPilot(int peopleId);
+
+
+    void setNotActive();
+    void setActive();
+
     Robot *  canAttack1(){return canAttack(weapon1);}
     Robot *  canAttack2(){return canAttack(weapon2);}
     Robot *  canAttack(Weapon * weapon);
 
-    //位置
-    int x;
-    int y;
-    void setxy(int xPos, int yPos);
-    void setxy(Point pos);
+    //event
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent * event);
 
-    //methods
-    void getAttributes();
-
-
+    // 绘制时考虑是否移动过
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 };
 

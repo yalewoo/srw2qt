@@ -1,28 +1,22 @@
 #ifndef MAPRECT_H
 #define MAPRECT_H
 
-#include <QGraphicsPixmapItem>
-#include <QGraphicsSceneMouseEvent>
+#include "rect.h"
 
 
-
-class MapRect : public QGraphicsPixmapItem
+class MapRect : public Rect
 {
-public:
-    MapRect(int kind, QGraphicsItem * parent = 0);
 
-    QString style;  //风格ABCD
+public:
     int kind;   //16种地形
+    QString style;
 
     int moveConsume[3]; //移动需要的行动力 [0 1 2] -> [空 陆 海]
     void setMoveConsume();
 
-    int x;
-    int y;
-    void setxy(int x, int y);
+    MapRect(int kind);
+    ~MapRect();
 
-    //event
-    void mousePressEvent(QGraphicsSceneMouseEvent * event);
 
     //显示一些文字
     void showString(QString text);
@@ -30,6 +24,8 @@ public:
     void UnshowString();
 
 
+    //event
+    void mousePressEvent(QGraphicsSceneMouseEvent * event);
 };
 
 #endif // MAPRECT_H

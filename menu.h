@@ -20,6 +20,8 @@ public:
     int x;
     int y;
 
+    int x_index = 0;
+
 signals:
     void leftButtonClicked();
     void rightButtonClicked();

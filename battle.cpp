@@ -6,6 +6,9 @@ extern Game * game;
 #include "battleground.h"
 #include "qmath.h"
 
+#include <QCoreApplication>
+
+
 
 Battle::Battle(Robot *robot, Weapon *weapon, Robot *enemy)
 {
@@ -14,20 +17,20 @@ Battle::Battle(Robot *robot, Weapon *weapon, Robot *enemy)
         int hpp = qMin(robot->hp_total / 2, enemy->hp_total - enemy->hp);
         enemy->hp += hpp;
 
-        game->attackDone();
+        game->scene->attackDone();
 
     }
     else
     {
         BattleGround * battleGround = new BattleGround(robot, weapon, enemy);
 
-        battleGround->setSize(game->map->width*32, game->map->height*32);
+        battleGround->setSize(game->scene->map->width*32, game->scene->map->height*32);
         game->scene->addItem(battleGround);
 
         waitVariableToBeTrueAllEvents(battleGround->battlefinished);
 
 
-        game->attackDone();
+        game->scene->attackDone();
         game->scene->removeItem(battleGround);
         delete battleGround;
     }

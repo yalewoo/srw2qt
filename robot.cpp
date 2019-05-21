@@ -1,94 +1,110 @@
+#include "datahelper.h"
 #include "robot.h"
 
 #include "game.h"
-extern Game * game;
-#include <QDebug>
+#include "imageresourcemanager.h"
+#include "scene_main.h"
 
-#include <QFile>
-
-#include "people.h"
-
-#include <qmath.h>
-
-#include <QGraphicsColorizeEffect>
 #include <QCoreApplication>
+#include <QGraphicsColorizeEffect>
+extern Game * game;
 
-int Robot::exp_update_table[128] = {99999};
+QVector<int> Robot::exp_update_table;
+QVector<RobotData> Robot::robots_init;
+QVector<EnemyData> Robot::enemys_init;
 
-
-Robot::Robot(int id, People *pilot2, int level2, QString type, QGraphicsItem *parent):id(id), pilot(pilot2),level(level2), QGraphicsPixmapItem(parent)
+Robot::Robot(int id, int player):id(id),player(player)
 {
-    get_exp_update_table(game->workDir + "input/value/exp_table.txt");
+    property = DataHelper::getRobotProperty(id);
 
-    setAcceptHoverEvents(true);
+    setImage();
+    weapon1 = DataHelper::getWeapon(property.weapon1id);
+    weapon2 = DataHelper::getWeapon(property.weapon2id);
 
-    player = pilot->player;
+}
 
-    getAttributes();
+Robot::~Robot()
+{
+    delete weapon1;
+    delete weapon2;
+    delete pilot;
+}
 
+void Robot::setImage()
+{
+    setPixmap(ImageResourceManager::getRobotIcon(property.img_id, player));
+}
+
+void Robot::setPilot(int peopleId)
+{
+    pilot = new People(peopleId);
+
+    pilot->spirit_total = pilot->property.spirit_total0;
     pilot->spirit = pilot->spirit_total;
+
+    hp_total = property.robot_hp0 + pilot->property.hp;
+    this->move = property.robot_move0 + pilot->property.move;
+    speed = property.robot_speed0 + pilot->property.speed;
+    strength = property.robot_strength0 + pilot->property.strength;
+    defense = property.robot_defense0 + pilot->property.defense;
+
     hp = hp_total;
 
-    if (player == 1)
-    {
-        exp = exp_dievalue;
+}
+void Robot::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    Rect::hoverEnterEvent(event);
 
-        attackType = type.toInt();
-    }
-    else
-    {
-
-    }
+    game->scene->robotStatus->showRobot(this);
+    update();
 }
 
 void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if (active && game->menu == 0 && !game->canMoveStatus && !game->selectedWeapon)
+        if (game->scene->selectedRobot != this)
         {
-            game->music_effect->setMusicOnce(game->workDir + "res/wav/pushbutton.mp3");
-
-            game->selectedRobot = this;
-            game->originalPosition = Point(x, y);
-
-            game->displayMenu(this);
+            if (game->scene->selectedWeapon && game->scene->map->AttackMap[x][y] >= 0)
+            {
+                game->scene->music_effect->setMusicOnce(config->button_press_music);
+                game->scene->attack(this);
+            }
+            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon1, this))
+            {
+                game->scene->selectedWeapon = game->scene->selectedRobot->weapon1;
+                game->scene->music_effect->setMusicOnce(config->button_press_music);
+                game->scene->attack(this);
+            }
+            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon2, this))
+            {
+                game->scene->selectedWeapon = game->scene->selectedRobot->weapon2;
+                game->scene->music_effect->setMusicOnce(config->button_press_music);
+                game->scene->attack(this);
+            }
+            else if (game->scene->selectedRobot)
+            {
+                game->scene->robotActionFinished();
+            }
+            else if (game->scene->inDebugMode || active)
+            {
+                game->scene->map->UnshowMoveRange();
+                game->scene->selectedRobot = this;
+                game->scene->originalPosition = Point(x, y);
+                game->scene->map->showMoveRange(this);
+                game->scene->inMoveStatus = true;
+                game->scene->displayMenu(this);
+            }
         }
-        else if (game->selectedWeapon && game->map->AttackMap[x][y] >= 0)
+        else
         {
-            game->music_effect->setMusicOnce(game->workDir + "res/wav/pushbutton.mp3");
-            game->attack(this);
+            game->scene->robotActionFinished();
         }
-
     }
     else if (event->button() == Qt::RightButton)
     {
-        game->cancel();
+        game->scene->cancel();
     }
-
-
-}
-
-void Robot::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
-{
-    game->board->showRobot(this);
-
-    update();
-}
-
-void Robot::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    if (!active)
-    {
-        QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
-        e1->setColor(QColor(66,66,66));
-        setGraphicsEffect(e1);
-    }
-    else
-    {
-
-    }
-    QGraphicsPixmapItem::paint(painter, option, widget);
 }
 
 void Robot::setNotActive()
@@ -109,98 +125,21 @@ void Robot::setActive()
     QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
-void Robot::get_exp_update_table(QString filename)
-{
-    QFile file(filename);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        qDebug() << filename << "open failed";
-        exit(-1);
-
-    }
-    QTextStream in(&file);
-
-    while(!in.atEnd())
-    {
-        QString line = in.readLine();
-
-        QStringList t = line.split(":");
-
-        int le = QString(t[0]).toInt();
-        int value = QString(t[1]).toInt();
-
-        exp_update_table[le] = value;
-    }
-
-    file.close();
-}
-
-void Robot::calcLevelValue()
-{
-    int * v[5];
-    v[0] = &robot_hp;
-    v[1] = &robot_strength;
-    v[2] = &robot_defense;
-    v[3] = &robot_speed;
-    v[4] = &(pilot->spirit_total);
-
-    int v0[5] = {robot_hp0, robot_strength0, robot_defense0, robot_speed0, pilot->spirit_total0};
-
-    int ps[5] = {robot_hp_plus,robot_strength_plus,robot_defense_plus,robot_speed_plus,pilot->spirit_increase};
-
-    for (int i = 0; i < 5; ++i)
-    {
-        switch(ps[i])
-        {
-        case 0:
-            *(v[i]) = v0[i] + qCeil(1.5*(level-1));
-            break;
-        case 1:
-            *(v[i]) = v0[i] + 2*(level-1);
-            break;
-        case 2:
-            *(v[i]) = v0[i] + 5*(level-1);
-            break;
-        case 3:
-            *(v[i]) = v0[i] + 10*(level-1);
-            break;
-        case 4:
-            *(v[i]) = v0[i] + 4*(level-1);
-            break;
-        case 5:
-            *(v[i]) = v0[i] + 0*(level-1);
-            break;
-        case 6:
-            *(v[i]) = v0[i] + 0*(level-1);
-            break;
-        case 7:
-            *(v[i]) = v0[i] + qFloor(2.5*(level-1));
-            break;
-        case 8:
-            *(v[i]) = v0[i] + 3*(level-1);
-            break;
-
-        }
-    }
-
-
-}
-
 //攻击范围内有没有可以攻击的机体
 Robot * Robot::canAttack(Weapon *weapon)
 {
     if (weapon == 0)
         return 0;
 
-    QVector<QVector<int> > m = game->map->calculateAttackRange(this, weapon);
-    for (int i = 0; i < game->map->width; ++i)
+    QVector<QVector<int> > m = game->scene->map->calculateAttackRange(this, weapon);
+    for (int i = 0; i < game->scene->map->width; ++i)
     {
-        for (int j = 0; j < game->map->height; ++j)
+        for (int j = 0; j < game->scene->map->height; ++j)
         {
             if (m[i][j] >= 0)
             {
-                Robot * enemy = game->map->robots[i][j];
-                if (enemy && enemy != this && enemy->player != this->player && weapon->firepower[enemy->type])
+                Robot * enemy = game->scene->map->robots[i][j];
+                if (enemy && enemy != this && enemy->player != this->player && weapon->firepower[enemy->property.type])
                 {
                     return enemy;
                 }
@@ -216,97 +155,17 @@ Robot * Robot::canAttack(Weapon *weapon)
     return 0;
 }
 
-void Robot::setxy(int xPos, int yPos)
+void Robot::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    x = xPos;
-    y = yPos;
-
-    setPos(32*x, 32*y);
-}
-
-void Robot::setxy(Point pos)
-{
-    setxy(pos.x, pos.y);
-}
-
-void Robot::getAttributes()
-{
-    QFile file(game->robot_value_path);
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (shouldPaintUsingActive && (!active))
     {
-        qDebug() << game->robot_value_path << "open failed";
-        exit(-1);
+        QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
+        e1->setColor(QColor(66,66,66));
+        setGraphicsEffect(e1);
+    }
+    else
+    {
 
     }
-    QTextStream in(&file);
-
-    while(!in.atEnd())
-    {
-        QString line = in.readLine();
-
-        QStringList t = line.split(",");
-
-        QString thisid = t.at(0);
-        int int_id = thisid.toInt();
-        if (id == int_id)
-        {
-            robotName = QString(t.at(1));
-            //driverName = QString("大卫");
-            type_original = QString(t[3]).toInt();
-            type = type_original & 0x3;
-
-            robot_hp0 = QString(t[19]).toInt();
-            robot_move = QString(t[6]).toInt();
-            robot_speed0 = QString(t[7]).toInt();
-            robot_strength0 = QString(t[8]).toInt();
-            robot_defense0 = QString(t[9]).toInt();
-
-            robot_hp_plus = QString(t[18]).toInt();
-            robot_strength_plus = QString(t[16]).toInt();
-            robot_defense_plus = QString(t[17]).toInt();
-            robot_speed_plus = QString(t[15]).toInt();
-
-            exp_dievalue = QString(t[13]).toInt();
-            money = QString(t[10]).toInt();
-
-
-            weapon1 = new Weapon(QString(t[24]).toInt());
-            weapon2 = new Weapon(QString(t[25]).toInt());
-
-
-            //机体图标
-            int img_id;
-            QString filename;
-            if (player == 0)
-            {
-                img_id = QString(t[20]).toInt();
-                filename.sprintf("1/%d.png", img_id);
-            }
-            else
-            {
-                img_id = QString(t[20]).toInt() - 32;
-                filename.sprintf("1enemy/%d.png", img_id);
-            }
-
-
-
-
-            //qDebug() << filename;
-            setPixmap(QPixmap(game->workDir + "res/images/robot32/" + filename));
-
-            break;
-        }
-    }
-
-    calcLevelValue();
-
-    hp_total = robot_hp + pilot->hp;
-    move = robot_move + pilot->move;
-    speed = robot_speed + pilot->speed;
-    strength = robot_strength + pilot->strength;
-    defense = robot_defense + pilot->defense;
-
-
-
-    file.close();
+    QGraphicsPixmapItem::paint(painter, option, widget);
 }
