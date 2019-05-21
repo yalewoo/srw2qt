@@ -17,7 +17,7 @@ Story::Story()
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        qDebug() << filename << "open failed";
+        //qDebug() << filename << "open failed";
         exit(-1);
 
     }

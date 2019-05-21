@@ -6,13 +6,14 @@
 
 #include <QObject>
 
-
+#include "datahelper.h"
 
 class Map : public QObject
 {
     Q_OBJECT
 public:
     Map(QObject * parent = 0);
+    ~Map();
 
     int width;
     int height;
@@ -20,7 +21,7 @@ public:
     QVector<QVector<MapRect *> > map;
     QVector<QVector<Robot *> > robots;
 
-    void loadLevel(int level);
+    void loadStage(int level);
 
     void addRobot(Robot * robot, int xPos, int yPos);
     void removeRobot(Robot *robot);
@@ -28,6 +29,8 @@ public:
 
     void placeRobot(int stage, int round);
     void placeEnemy(int stage, int round);
+
+    void placeRobotRunTime(RunTimeRobotData data);
 
     //显示可移动范围 不能移动的格子加灰色
     void showMoveRange(Robot * robot);

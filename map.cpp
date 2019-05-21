@@ -20,12 +20,29 @@ Map::Map(QObject *parent) : QObject(parent)
 
 }
 
-void Map::loadLevel(int level)
+Map::~Map()
 {
-    DataHelper::Map mapdata(config->getMapPathOfLevel(level));
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            if (robots[i][j]){
+                delete robots[i][j];
+            }
+            if (map[i][j])
+            {
+                delete map[i][j];
+            }
+        }
+    }
+}
+
+void Map::loadStage(int stage)
+{
+    DataHelper::Map mapdata(config->getMapPathOfLevel(stage));
     width = mapdata.width + 2;
     height = mapdata.height + 2;
-    qDebug() << width << height;
+    //qDebug() << width << height;
     // width = 16, height = 20
 
     map = QVector<QVector<MapRect *> >(width, QVector<MapRect *>(height, 0));
@@ -35,7 +52,7 @@ void Map::loadLevel(int level)
     {
         for (int j = 0; j < height; ++j)
         {
-            qDebug() << i << j;
+            //qDebug() << i << j;
 
             MapRect * rect;
             if (i == 0 || j == 0 || i == width-1 || j == height-1)
@@ -62,7 +79,7 @@ void Map::addRobot(Robot * robot, int xPos, int yPos)
     robots[xPos][yPos]->setxy(xPos,yPos);
     game->scene->add(robots[xPos][yPos]);
 
-    qDebug() << robots[xPos][yPos]->property.robotName << xPos << yPos;
+    //qDebug() << robots[xPos][yPos]->property.robotName << xPos << yPos;
 }
 
 
@@ -81,9 +98,9 @@ void Map::placeRobot(int stage, int round)
 
         robot->robotBehavior = 1;
 
-        qDebug() << robotData.robotId;
+        //qDebug() << robotData.robotId;
         robot->setPilot(robotData.peopleId);
-        qDebug() << robot->property.robotName << robot->move;
+        //qDebug() << robot->property.robotName << robot->move;
         addRobot(robot, x, y);
     }
 
@@ -105,6 +122,30 @@ void Map::placeEnemy(int stage, int round)
 
         addRobot(robot, x, y);
     }
+}
+
+void Map::placeRobotRunTime(RunTimeRobotData robotData)
+{
+    int x = robotData.x;
+    int y = robotData.y;
+    Robot * robot = new Robot(robotData.robotId, robotData.player);
+
+    robot->robotBehavior = robotData.robotBehavior;
+
+    //qDebug() << robotData.robotId;
+    robot->setPilot(robotData.peopleId);
+    //qDebug() << robot->property.robotName << robot->move;
+    addRobot(robot, x, y);
+
+    if (robotData.active != 1)
+    {
+        robot->setNotActive();
+    }
+
+    robot->level = robotData.level;
+    robot->pilot->exp = robotData.exp;
+    robot->hp = robotData.hp;
+    robot->pilot->spirit = robotData.sprit;
 }
 
 
@@ -191,7 +232,7 @@ int Map::getMoveConsume(Robot *robot, int x, int y)
 
 QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_start, int move_value)
 {
-    qDebug() << robot->property.robotName << "start searching";
+    //qDebug() << robot->property.robotName << "start searching";
 
     int xPos = robot->x;
     int yPos = robot->y;
@@ -205,7 +246,7 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
 
     if (move_value == -1)
     {
-        qDebug() << robot->move;
+        //qDebug() << robot->move;
         m[xPos][yPos] = robot->move;    //行动力
     }
     else
@@ -269,7 +310,7 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
         }
 
     }
-    qDebug() << "search " << debug_i << " times";
+    //qDebug() << "search " << debug_i << " times";
     return m;
 }
 

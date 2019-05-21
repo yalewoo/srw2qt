@@ -57,7 +57,7 @@ public:
 
 
     Robot(int id, int player=0);
-
+    ~Robot();
 
 
     void setImage();

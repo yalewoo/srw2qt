@@ -11,6 +11,8 @@ public:
     People(int id);
     int id;
 
+    int exp = 0;    //当前经验
+
     PeopleProperty property;
 
     int spirit; //剩余精神

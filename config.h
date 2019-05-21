@@ -14,6 +14,8 @@ struct Config
     QString map_path;
     QString maprect_path;
     QString robot_icon_path;
+    QString robot_icon_path_player;
+    QString robot_icon_path_enemy;
     QString robot_image_path;
     QString people_image_path;
 
@@ -35,10 +37,14 @@ struct Config
 
     QString conversion_path;
 
+    QString saveFilePath;
+
     int rectWidth = 32;
 
     Config() {
         workDir  = QString("C:/code/srw2qt/");
+        saveFilePath = workDir + "tmpfiles/save.txt";
+
         robot_value_path = workDir + "input/value/robot.csv";
         weapon_value_path = workDir + "input/value/weapon.csv";
         people_value_path = workDir + "input/value/people.csv";
@@ -46,8 +52,9 @@ struct Config
 
         maprect_path = workDir + "res/images/map32/";
         robot_icon_path = workDir + "res/images/robot32/";
+        robot_icon_path_player = workDir + "resource/images/robot_icon/player/";
+        robot_icon_path_enemy = workDir + "resource/images/robot_icon/enemy/";
         people_image_path = workDir + "res/images/people/";
-
         robot_image_path = workDir + "res/images/robotImg/";
 
         map_path = workDir + "input/map/map1.csv";

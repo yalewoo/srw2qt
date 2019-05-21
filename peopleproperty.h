@@ -15,7 +15,6 @@ struct PeopleProperty
     int spirit_increase;    //成长方式
 
     int level;  //水平
-    int exp = 0;    //经验值
 
 
     //人物对机体的增益

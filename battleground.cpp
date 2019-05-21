@@ -365,7 +365,7 @@ bool BattleGround::prob(double p)
     qsrand(QTime::currentTime().msec());
     int r = qrand() % 100;
     double newp = r;
-    qDebug() << newp << p;
+    //qDebug() << newp << p;
     if (newp < p)
         return true;
     else

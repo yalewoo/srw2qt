@@ -45,7 +45,8 @@ SOURCES += \
     battleground.cpp \
     ai.cpp \
     story.cpp \
-    storydiag.cpp
+    storydiag.cpp \
+    imageresourcemanager.cpp
 
 HEADERS += \
     game.h \
@@ -72,7 +73,8 @@ HEADERS += \
     ai.h \
     story.h \
     storydiag.h \
-    conversation.h
+    conversation.h \
+    imageresourcemanager.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

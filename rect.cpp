@@ -22,7 +22,7 @@ void Rect::setxy(int xPos, int yPos)
 
 void Rect::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    qDebug() << "rect hovered" << x << y;
+    //qDebug() << "rect hovered" << x << y;
 //    if (!game->scene->map->select_effect)
 //    {
 //        game->scene->map->select_effect = new QGraphicsPixmapItem();
@@ -38,5 +38,5 @@ void Rect::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void Rect::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    qDebug() << "rect hovered leave" << x << y;
+    //qDebug() << "rect hovered leave" << x << y;
 }

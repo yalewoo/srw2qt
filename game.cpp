@@ -5,6 +5,8 @@
 
 #include <QCoreApplication>
 
+
+
 void waitVariableToBeTrueAllEvents(bool & b)
 {
     while (!b)
@@ -44,14 +46,20 @@ void Game::start()
 
     this->show();
 
-    scene->showConversition();
+
+
+    //scene->showConversition();
+
 }
 
 void Game::init()
 {
     //设置不显示滚动条
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //设置视图固定大小
-    setFixedSize(1024, 768);
+    //setFixedSize(1024, 768);
+
+    setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    this->resize(1024, 768);
 }

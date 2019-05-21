@@ -12,6 +12,7 @@ extern Game * game;
 #include "robot.h"
 
 #include "config.h"
+#include "imageresourcemanager.h"
 extern Config * config;
 
 #include <QDebug>
@@ -31,21 +32,17 @@ RobotStatusView::RobotStatusView(int width, int height)
     setOpacity(0);
 
     setRect(0, 0, width, height);
-    setPos(580, 0);
 
     QString s = QString("初始");
 
     text = new QGraphicsTextItem(s, this);
     text->setScale(1.5);
-    text->setPos(this->x(), this->y() + 150);
 
     game->scene->add(text);
 
     pilotImage = new QGraphicsPixmapItem(this);
-    pilotImage->setPos(this->x() + 220, this->y() + 370);
 
     robotImage = new QGraphicsPixmapItem(this);
-    robotImage->setPos(this->x() + 200, this->y() + 10);
 
     game->scene->add(pilotImage);
     game->scene->add(robotImage);
@@ -58,16 +55,12 @@ void RobotStatusView::setString(QString s)
 
 void RobotStatusView::showPilotImage(Robot *robot)
 {
-    QString path = config->people_image_path + QString::number(robot->pilot->id) + QString(".png");
-    pilotImage->setPixmap(QPixmap(path));
-    //qDebug() << path;
+    pilotImage->setPixmap(ImageResourceManager::getPeopleImage(robot->pilot->id));
 }
 
 void RobotStatusView::showRobotImage(Robot *robot)
 {
-    QString path = config->robot_image_path + QString::number(robot->id) + QString(".png");
-    robotImage->setPixmap(QPixmap(path));
-    qDebug() << path;
+    robotImage->setPixmap(ImageResourceManager::getRobotImage(robot->id));
 }
 
 void RobotStatusView::showRobot(Robot *robot)
@@ -94,11 +87,11 @@ void RobotStatusView::showRobot(Robot *robot)
     s += "\n";
     s += QString("防卫\t") + QString::number(robot->defense);
     s += "  ";
-    s += QString("EXP\t") + QString::number(pilot->property.exp);
+    s += QString("EXP\t") + QString::number(pilot->exp);
     s += "\n";
     s += QString("速度\t") + QString::number(robot->speed);
     s += "  ";
-    s += QString("升级还需  ") + QString::number(Robot::exp_update_table[robot->level] - pilot->property.exp);
+    s += QString("升级还需  ") + QString::number(Robot::exp_update_table[robot->level] - pilot->exp);
     s += "\n\n";
 
     s+= QString("驾驶员\t") + pilot->property.name + "\n\n";
@@ -132,5 +125,14 @@ void RobotStatusView::showRobot(Robot *robot)
 
     showPilotImage(robot);
     showRobotImage(robot);
+
+}
+
+void RobotStatusView::updateXY(int x, int y)
+{
+    setPos(x, y);
+    text->setPos(this->x(), this->y() + 150);
+    pilotImage->setPos(this->x() + 220, this->y() + 370);
+    robotImage->setPos(this->x() + 200, this->y() + 10);
 
 }

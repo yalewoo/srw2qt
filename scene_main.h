@@ -15,14 +15,16 @@ class SceneMain : public Scene
 {
     Q_OBJECT
 public:
-    Map * map;
-    RobotStatusView * robotStatus;
+    Map * map = 0;
+    RobotStatusView * robotStatus = 0;
 
     SceneMain();
 
     void init();
 
-    int stage = 1;
+    int stage = 0;  //关数
+
+    void loadStage(int stage, bool useDefaultRobot = true);
 
     //显示菜单
     Menu * drawMenu(int x, int y, int width, int height, QColor color, double opacity = 1);
@@ -42,7 +44,7 @@ public:
     Weapon * selectedWeapon = 0;    //选中的机器
 
     // 结束回合按钮
-    Button * next_turn_button;
+    Button * next_turn_button = 0;
     int round = 1;
 
     //显示攻击范围
@@ -52,13 +54,18 @@ public:
     Robot * enemy = 0;  //敌人
 
     // 调试按钮
-    Button * debug_button;
+    Button * debug_button = 0;
     bool inDebugMode = false;
+    Button * changeStageButton = 0;
+
+    // Save and load
+    Button * saveButton = 0;
+    Button * loadButton = 0;
 
     //music
-    Music * music_background;
-    Music * music_effect;
-    Music * music_battle;
+    Music * music_background = 0;
+    Music * music_effect = 0;
+    Music * music_battle = 0;
 
     //战斗画面
     Battle * battle = 0;
@@ -74,13 +81,19 @@ public slots:
     void robotActionFinished();
     void cancel();  //按下右键后，取消行动
     void next_turn();   //回合结束
+
     void enable_debug_mode();   //debug模式
+    void change_stage();   //debug模式
+
     void AI();  //AI自动行动
 
     void attack1(); //使用武器1
     void attack2(); //使用武器2
 
     void setActive();   //设置机器人激活状态
+
+    void saveToFile();
+    void loadFromFile();
 };
 
 #endif // SCENE_H

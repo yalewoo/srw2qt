@@ -2,6 +2,7 @@
 #include "robot.h"
 
 #include "game.h"
+#include "imageresourcemanager.h"
 #include "scene_main.h"
 
 #include <QCoreApplication>
@@ -22,21 +23,16 @@ Robot::Robot(int id, int player):id(id),player(player)
 
 }
 
+Robot::~Robot()
+{
+    delete weapon1;
+    delete weapon2;
+    delete pilot;
+}
+
 void Robot::setImage()
 {
-    //机体图标
-    QString filename;
-    if (player == 0)
-    {
-        filename.sprintf("1/%d.png", property.img_id);
-    }
-    else
-    {
-        filename.sprintf("1enemy/%d.png", property.img_id  - 32);
-    }
-qDebug() << filename;
-
-    setPixmap(QPixmap(config->robot_icon_path + filename));
+    setPixmap(ImageResourceManager::getRobotIcon(property.img_id, player));
 }
 
 void Robot::setPilot(int peopleId)

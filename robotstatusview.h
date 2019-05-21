@@ -24,6 +24,8 @@ public:
     void showRobotImage(Robot * robot);
 
     void showRobot(Robot * robot);
+
+    void updateXY(int x, int y);
 };
 
 #endif // ROBOTSTATUSVIEW_H

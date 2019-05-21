@@ -8,6 +8,7 @@ extern Game * game;
 
 #include "point.h"
 
+#include "imageresourcemanager.h"
 #include "people.h"
 
 #include <QTime>
@@ -54,12 +55,11 @@ void StoryDiag::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void StoryDiag::showTalk(int index)
 {
-    QString path = config->people_image_path + QString::number(conversitions[index].people) + QString(".png");
-
-
     if (!peopleImage)
         peopleImage = new QGraphicsPixmapItem(this);
-    peopleImage->setPixmap(QPixmap(path));
+
+    qDebug() << conversitions[index].people;
+    peopleImage->setPixmap(ImageResourceManager::getPeopleImage(conversitions[index].people));
 
     peopleImage->setPos(this->x() + 10, this->y() + 600);
 

@@ -31,6 +31,24 @@ struct EnemyData
 
     int robotBehavior;  //第几回合开始进攻
 };
+struct RunTimeRobotData
+{
+    int x = 0;
+    int y = 0;
+
+    int robotId = 0;
+    int peopleId = 0;
+
+    int player = 0;
+    int level = 0;
+    int exp = 0;
+    int hp = 0;
+    int sprit = 0;
+
+    int robotBehavior = 1;
+
+    int active = 1;
+};
 
 struct RobotData
 {
@@ -77,7 +95,7 @@ struct DataHelper
             width = QString(t[1]).toInt();
 
             data = QVector<QVector<int>>(width+1, QVector<int>(height+1, 0));
-            qDebug() << width << height;
+            //qDebug() << width << height;
 
             for (int j = 1; j <= height; ++j)
             {
@@ -190,32 +208,6 @@ struct DataHelper
         return enemys;
     }
 
-
-
-
-
-    static QString pathOfMapRectKind(int kind, QString style)
-    {
-        static QString gAImgPaths[16] = {
-            "_00.png",
-            "_01.png",
-            "_02.png",
-            "_03.png",
-            "_04.png",
-            "_05.png",
-            "_06.png",
-            "_07.png",
-            "_08.png",
-            "_09.png",
-            "_0A.png",
-            "_0B.png",
-            "_0C.png",
-            "_0D.png",
-            "_0E.png",
-            "_0F.png"
-        };
-        return config->maprect_path + style + gAImgPaths[kind];
-    }
 
     static RobotProperty getRobotProperty(int id)
     {

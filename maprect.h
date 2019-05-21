@@ -15,6 +15,7 @@ public:
     void setMoveConsume();
 
     MapRect(int kind);
+    ~MapRect();
 
 
     //显示一些文字

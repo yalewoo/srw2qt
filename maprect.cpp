@@ -3,6 +3,8 @@
 #include "datahelper.h"
 #include "game.h"
 
+#include "imageresourcemanager.h"
+
 #include <QGraphicsSceneMouseEvent>
 extern Game * game;
 MapRect::MapRect(int kind):Rect()
@@ -10,9 +12,14 @@ MapRect::MapRect(int kind):Rect()
     this->kind = kind;
     QString style = "A";
 
-    setPixmap(QPixmap(DataHelper::pathOfMapRectKind(kind, style)));
+    setPixmap(ImageResourceManager::getMapRect(style, kind));
 
     setMoveConsume();
+}
+
+MapRect::~MapRect()
+{
+
 }
 
 
