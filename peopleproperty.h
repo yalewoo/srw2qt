@@ -29,6 +29,7 @@ struct PeopleProperty
     bool spirit_table[19];
     static QVector<QString> spirit_name;
     static int spirit_consume_table[19];
+    static int spirit_type_table[19];   //精神可以当做机体属性
 };
 
 #endif // PEOPLEPROPERTY_H

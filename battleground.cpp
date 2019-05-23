@@ -97,18 +97,18 @@ BattleGround::BattleGround(Robot *robot2, Weapon *weapon2, Robot *enemy2):
 
     s = robot->property.robotName + QString("攻击!");
     battle_text = new QGraphicsTextItem(s, this);
-    battle_text->setScale(2);
+    battle_text->setScale(2.5);
     battle_text->setPos(this->x() + 10, this->y() + 400);
 
     enemy_weapon = getEnemyBackWeapon();
 
     s = QString("");
     player_text = new QGraphicsTextItem(s, this);
-    player_text->setScale(1.7);
+    player_text->setScale(2.5);
     player_text->setPos(this->x() + 10, this->y() + 300);
     enemy_text = new QGraphicsTextItem(s, this);
-    enemy_text->setScale(1.7);
-    enemy_text->setPos(this->x() + 10 + 200, this->y() + 300);
+    enemy_text->setScale(2.5);
+    enemy_text->setPos(this->x() + 10 + 300, this->y() + 300);
 
 
     enemy_rate = calcRadio(enemy, enemy_weapon, robot);
@@ -165,7 +165,7 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
             enemy->hp = qMax(enemy->hp - damage, 0);
             showHpAndRate();
 
-            s += enemy->property.robotName + QString("损坏") + QString::number(damage) + "\n" + enemy->pilot->property.name + QString(": 被打中了!");
+            s += enemy->property.robotName + QString("损坏 ") + QString::number(damage) + "\n" + enemy->pilot->property.name + QString(": 被打中了!");
         }
         else
         {
@@ -203,7 +203,7 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 robot->hp  = qMax(robot->hp - damage, 0);
                 showHpAndRate();
 
-                s += robot->property.robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->property.name + QString(": 被打中了!");
+                s += robot->property.robotName + QString("损坏 ") + QString::number(damage) + "\n" + robot->pilot->property.name + QString(": 被打中了!");
             }
             else {
                 s += QString("攻击失败!");
@@ -239,7 +239,7 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 enemy->hp = qMax(enemy->hp - damage, 0);
                 showHpAndRate();
 
-                s += enemy->property.robotName + QString("损坏") + QString::number(damage) + "\n" + enemy->pilot->property.name + QString(": 被打中了!");
+                s += enemy->property.robotName + QString("损坏 ") + QString::number(damage) + "\n" + enemy->pilot->property.name + QString(": 被打中了!");
             }
             else
             {
@@ -266,7 +266,7 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 robot->hp  = qMax(robot->hp - damage, 0);
                 showHpAndRate();
 
-                s += robot->property.robotName + QString("损坏") + QString::number(damage) + "\n" + robot->pilot->property.name + QString(": 被打中了!");
+                s += robot->property.robotName + QString("损坏 ") + QString::number(damage) + "\n" + robot->pilot->property.name + QString(": 被打中了!");
             }
             else {
                 s += QString("攻击失败!");
@@ -310,12 +310,22 @@ Weapon *BattleGround::getEnemyBackWeapon()
 
 int BattleGround::getEnemyDamage()
 {
-    return robot->strength + weapon->firepower[enemy->property.type] - enemy->defense;
+    int damage = robot->strength + weapon->firepower[enemy->property.type] - enemy->defense;
+    if (robot->spirit[4])
+    {
+        damage *= 2;
+    }
+    return damage;
 }
 
 int BattleGround::getPlayerDamage()
 {
-    return enemy->strength + enemy_weapon->firepower[robot->property.type] - robot->defense;
+    int damage = enemy->strength + enemy_weapon->firepower[robot->property.type] - robot->defense;
+    if (enemy->spirit[4])
+    {
+        damage *= 2;
+    }
+    return damage;
 }
 
 

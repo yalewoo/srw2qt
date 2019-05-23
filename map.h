@@ -82,12 +82,18 @@ public:
     //AI
     void AI_move(Robot * selectedRobot);
 
-
+    // 大地图动画
+    QTimer * showTextTimer;
+    QGraphicsTextItem * animation_text;
+    int showText_x;
+    int showText_y;
+    void showText(int x, int y, QString s);
 
 
 public slots:
     void moveAnimation();
     void arrowAnimation();
+    void showTextAnimation();
 };
 
 #endif // MAP_H

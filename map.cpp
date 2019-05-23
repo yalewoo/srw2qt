@@ -159,7 +159,11 @@ void Map::showMoveRange(Robot *robot)
 
             if (moveMap[i][j] >= 0)
             {
-                map[i][j]->showString(QString::number(moveMap[i][j]));
+                if (game->scene->inDebugMode)
+                {
+                    map[i][j]->showString(QString::number(moveMap[i][j]));
+
+                }
             }
             else
             {
@@ -506,7 +510,11 @@ void Map::showAttackRange(Robot *robot, Weapon *weapon)
             {
                 if (AttackMap[i][j] >= 0)
                 {
-                    map[i][j]->showString(QString::number(AttackMap[i][j]));
+                    if (game->scene->inDebugMode)
+                    {
+                        map[i][j]->showString(QString::number(AttackMap[i][j]));
+
+                    }
                     if (robots[i][j] && weapon->firepower[robots[i][j]->property.type] == 0)
                     {
                         QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
@@ -609,6 +617,26 @@ void Map::AI_move(Robot *selectedRobot)
 
 }
 
+void Map::showText(int x, int y, QString s)
+{
+    showText_x = x*32;
+    showText_y = y*32;
+    animation_text = new QGraphicsTextItem();
+    animation_text->setPlainText(s);
+    animation_text->setPos(x*32, y*32);
+
+    animation_text->setScale(2);
+    animation_text->setDefaultTextColor(Qt::white);
+
+    game->scene->add(animation_text);
+
+    showTextTimer = new QTimer();
+    connect(showTextTimer, SIGNAL(timeout()), this, SLOT(showTextAnimation()));
+
+    showTextTimer->start(1000/70);
+
+}
+
 void Map::removeRobot(Robot *robot)
 {
     robots[robot->x][robot->y] = 0;
@@ -680,5 +708,20 @@ void Map::arrowAnimation()
         delete move_timer;
 
         move_finished = true;
+    }
+}
+
+void Map::showTextAnimation()
+{
+    animation_text->setPos(animation_text->x(), animation_text->y() - 1);
+    if (showText_y - animation_text->y() > 20)
+    {
+        qDebug() << "show text disappear";
+        disconnect(showTextTimer, SIGNAL(timeout()), this, SLOT(showTextAnimation()));
+        showTextTimer->stop();
+        game->scene->remove(animation_text);
+        delete animation_text;
+        animation_text = 0;
+        delete showTextTimer;
     }
 }

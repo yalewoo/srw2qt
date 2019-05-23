@@ -39,10 +39,12 @@ struct Config
 
     QString saveFilePath;
 
+    QString html_path;
+
     int rectWidth = 32;
 
     Config() {
-        workDir  = QString("C:/code/srw2qt/");
+        workDir  = QString("C:/code/Github/srw2qt/");
         saveFilePath = workDir + "tmpfiles/save.txt";
 
         robot_value_path = workDir + "input/value/robot.csv";
@@ -76,6 +78,8 @@ struct Config
         attack_fire_img = workDir + "/res/images/weapon/fire.png";
 
         conversion_path = workDir + "input/stage/conversitions.csv";
+
+        html_path = workDir + "html/robotStatus.html";
     }
 
     QString getMapPathOfLevel(int level)

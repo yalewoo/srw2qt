@@ -29,7 +29,7 @@ RobotStatusView::RobotStatusView(int width, int height)
     QString s = QString("初始");
 
     text = new QGraphicsTextItem(s, this);
-    text->setScale(1.5);
+    text->setScale(1);
     text->setDefaultTextColor(Qt::black);
 
     game->scene->add(text);
@@ -119,13 +119,89 @@ void RobotStatusView::showRobot(Robot *robot)
     }
 
 
-
-
-
-
-
-
     setString(s);
+
+    QFile file(config->html_path);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString html = file.readAll();
+    file.close();
+
+    html = html.replace("\n", "");
+    html = html.replace("\t", "");
+    html = html.replace("##robotName##", robot->property.robotName);
+    html = html.replace("##hp##", QString::number(robot->hp));
+    html = html.replace("##hp_total##", QString::number(robot->hp_total));
+    html = html.replace("##level##", QString::number( robot->level ));
+    html = html.replace("##type##", QString( table[robot->property.type] ));
+    html = html.replace("##move##", QString::number( robot->move ));
+
+    html = html.replace("##strength#", QString::number( robot->strength  ) );
+    html = html.replace("##spirit#", QString::number( robot->pilot->spirit  ) );
+    html = html.replace("##spirit_total#", QString::number( robot->pilot->spirit_total  ) );
+    html = html.replace("##defense#", QString::number( robot->defense  ) );
+    html = html.replace("##exp#", QString::number( robot->exp  ) );
+    html = html.replace("##speed#", QString::number( robot->speed  ) );
+    html = html.replace("##level_up_exp#", QString::number(Robot::exp_update_table[robot->level] - pilot->exp) );
+
+
+    html = html.replace("##pilot#", QString( robot->pilot->property.name  ) );
+
+    int sky1 = 0;
+    int land1 = 0;
+    int sea1 = 0;
+    int sky2 = 0;
+    int land2 = 0;
+    int sea2 = 0;
+    if (weapon1)
+    {
+        sky1 = weapon1->firepower[0] == 0 ? 0 :  weapon1->firepower[2] + robot->strength;
+        land1 = weapon1->firepower[1] == 0 ? 0 :  weapon1->firepower[1] + robot->strength;
+        sea1 = weapon1->firepower[2] == 0 ? 0 :  weapon1->firepower[0] + robot->strength;
+    }
+    if (weapon2)
+    {
+        sky2 = weapon2->firepower[0] == 0 ? 0 :  weapon2->firepower[2] + robot->strength;
+        land2 = weapon2->firepower[1] == 0 ? 0 :  weapon2->firepower[1] + robot->strength;
+        sea2 = weapon2->firepower[2] == 0 ? 0 :  weapon2->firepower[0] + robot->strength;
+    }
+
+    html = html.replace("##weapon_1_name#", QString( robot->weapon1->name  ) );
+    html = html.replace("##weapon_1_hitRadio#", QString::number( robot->weapon1->hitRadio  ) );
+    html = html.replace("##weapon_1_range#", QString::number( robot->weapon1->range  ) );
+    html = html.replace("##sky1#", QString::number( sky1  ) );
+    html = html.replace("##land1#", QString::number( land1  ) );
+    html = html.replace("##sea1#", QString::number( sea1 ) );
+    html = html.replace("##weapon_2_name#", QString( robot->weapon2->name  ) );
+    html = html.replace("##weapon_2_hitRadio#", QString::number( robot->weapon2->hitRadio  ) );
+    html = html.replace("##weapon_2_range#", QString::number( robot->weapon2->range  ) );
+    html = html.replace("##sky2#", QString::number( sky2  ) );
+    html = html.replace("##land2#", QString::number( land2  ) );
+    html = html.replace("##sea2#", QString::number( sea2  ) );
+
+    QString usedSpirit = "";
+    for (int i = 0; i < 19; ++i)
+    {
+        if (PeopleProperty::spirit_type_table[i] == 0)
+        {
+            continue;
+        }
+        if (robot->spirit[i])
+        {
+            usedSpirit += QString(robot->pilot->property.spirit_name[i]) + " ";
+        }
+    }
+    if (usedSpirit.length() == 0)
+    {
+        html = html.replace("##used_spirit#", "&nbsp;");
+
+    }
+    else {
+        html = html.replace("##used_spirit#", "Buff: " + usedSpirit);
+
+    }
+
+    text->setHtml(html);
+    //qDebug() << html << "\n";
 
     showPilotImage(robot);
     showRobotImage(robot);
@@ -135,8 +211,8 @@ void RobotStatusView::showRobot(Robot *robot)
 void RobotStatusView::updateXY(int x, int y)
 {
     setPos(x, y);
-    text->setPos(this->x(), this->y() + 150);
+    text->setPos(this->x(), this->y());
     pilotImage->setPos(this->x() + 220, this->y() + 370);
-    robotImage->setPos(this->x() + 200, this->y() + 10);
+    robotImage->setPos(this->x() + 10, this->y() + 10);
 
 }

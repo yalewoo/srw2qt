@@ -53,7 +53,13 @@ public:
     bool shouldPaintUsingActive = true;
 
 
-
+    bool spirit[19] = {false};
+    void clearSpirit(){
+        for (int i = 0; i < 19; ++i)
+        {
+            spirit[i] = false;
+        }
+    }
 
 
     Robot(int id, int player=0);

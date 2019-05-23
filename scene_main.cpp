@@ -118,7 +118,7 @@ void SceneMain::displayMenu(Robot *robot)
     {
         for (int i = 0; i < 19; ++i)
         {
-            if (robot->pilot->property.spirit_table[i] && robot->pilot->spirit >= PeopleProperty::spirit_consume_table[i])
+            if (robot->pilot->property.spirit_table[i] && robot->pilot->spirit >= PeopleProperty::spirit_consume_table[i] && canUseSpirit(i))
             {
                 Button * button = menu->addButton(robot->pilot->property.spirit_name[i] + " (" + QString::number(PeopleProperty::spirit_consume_table[i]) +")" );
                 switch(i)
@@ -203,10 +203,13 @@ void SceneMain::robotActionFinished()
     inMoveStatus  = false;
 
 
+    if (selectedRobot)
+    {
+        selectedRobot->setNotActive();
 
-    selectedRobot->setNotActive();
+        selectedRobot = nullptr;
+    }
 
-    selectedRobot = nullptr;
     selectedWeapon = nullptr;
 
 }
@@ -270,10 +273,11 @@ void SceneMain::next_turn()
             if (map->robots[i][j])
             {
                 map->robots[i][j]->setActive();
-
+                map->robots[i][j]->clearSpirit();
             }
         }
     }
+
 
     QString s;
     s.sprintf("结束第%d回合", round);
@@ -417,6 +421,8 @@ void SceneMain::saveToFile()
 
 void SceneMain::loadFromFile()
 {
+    robotActionFinished();
+
     QString filename = config->saveFilePath;
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -472,6 +478,35 @@ void SceneMain::loadFromFile()
 
     file.close();
 }
+
+bool SceneMain::canUseSpirit(int id)
+{
+    switch(id)
+    {
+    case 0: return selectedRobot->hp < selectedRobot->hp_total;
+    case 1: return true;
+    case 2: return true;
+    case 3: return true;
+    case 4: return true;
+    case 5: return true;
+    case 6: return true;
+    case 7: return true;
+    case 8: return true;
+    case 9: return true;
+    case 10: return true;
+    case 11: return true;
+    case 12: return true;
+    case 13: return true;
+    case 14: return true;
+    case 15: return true;
+    case 16: return true;
+    case 17: return true;
+    case 18: return true;
+    default:break;
+    }
+}
+
+
 
 
 void SceneMain::attack(Robot *enemy2)
@@ -545,80 +580,201 @@ void SceneMain::showConversition()
 }
 
 
+void SceneMain::use_sprit_begin(int id)
+{
+    selectedRobot->pilot->spirit -= PeopleProperty::spirit_consume_table[id];
+
+    selectedRobot->spirit[id] = true;
+
+    deleteMenu();
+}
+void SceneMain::use_sprit_end(int id)
+{
+    robotStatus->showRobot(selectedRobot);
+    displayMenu(selectedRobot);
+}
 
 void SceneMain::use_sprit_0()	//毅力
 {
+    use_sprit_begin(0);
+    
     qDebug() << "use_sprit_0";
+    selectedRobot->hp += 50;
+
+    if (selectedRobot->hp > selectedRobot->hp_total)
+    {
+        selectedRobot->hp = selectedRobot->hp_total;
+    }
+    map->showText(selectedRobot->x, selectedRobot->y, QString("+50"));
+    robotStatus->showRobot(selectedRobot);
+
+
+    use_sprit_end(0);
 }
 void SceneMain::use_sprit_1()	//加速
 {
+    use_sprit_begin(1);
+    
     qDebug() << "use_sprit_1";
+    selectedRobot->spirit[1] = true;
+
+
+    use_sprit_end(1);
 }
 void SceneMain::use_sprit_2()	//瞄准
 {
+    use_sprit_begin(2);
+    
     qDebug() << "use_sprit_2";
+    selectedRobot->spirit[2] = true;
+
+
+    use_sprit_end(2);
 }
 void SceneMain::use_sprit_3()	//防守
 {
+    use_sprit_begin(3);
+    
     qDebug() << "use_sprit_3";
+    selectedRobot->spirit[3] = true;
+
+
+    use_sprit_end(3);
 }
 void SceneMain::use_sprit_4()	//强攻
 {
+    use_sprit_begin(4);
+    
     qDebug() << "use_sprit_4";
+    selectedRobot->spirit[4] = true;
+
+
+    use_sprit_end(4);
 }
 void SceneMain::use_sprit_5()	//友情
 {
+    use_sprit_begin(5);
+    
     qDebug() << "use_sprit_5";
+
+
+    use_sprit_end(5);
 }
 void SceneMain::use_sprit_6()	//必杀
 {
+    use_sprit_begin(6);
+    
     qDebug() << "use_sprit_6";
+    selectedRobot->spirit[6] = true;
+
+
+    use_sprit_end(6);
 }
 void SceneMain::use_sprit_7()	//疾风
 {
+    use_sprit_begin(7);
+    
     qDebug() << "use_sprit_7";
+    selectedRobot->spirit[7] = true;
+
+
+    use_sprit_end(7);
 }
 void SceneMain::use_sprit_8()	//回避
 {
+    use_sprit_begin(8);
+    
     qDebug() << "use_sprit_8";
+    selectedRobot->spirit[8] = true;
+
+
+    use_sprit_end(8);
 }
 void SceneMain::use_sprit_9()	//潜力
 {
+    use_sprit_begin(9);
+    
     qDebug() << "use_sprit_9";
+
+
+    use_sprit_end(9);
 }
 void SceneMain::use_sprit_10()	//热血
 {
+    use_sprit_begin(10);
+    
     qDebug() << "use_sprit_10";
+    selectedRobot->spirit[10] = true;
+
+
+    use_sprit_end(10);
 }
 void SceneMain::use_sprit_11()	//情义
 {
+    use_sprit_begin(11);
+    
     qDebug() << "use_sprit_11";
+
+
+    use_sprit_end(11);
 }
 void SceneMain::use_sprit_12()	//传真
 {
+    use_sprit_begin(12);
+    
     qDebug() << "use_sprit_12";
+
+
+    use_sprit_end(12);
 }
 void SceneMain::use_sprit_13()	//援助
 {
+    use_sprit_begin(13);
+    
     qDebug() << "use_sprit_13";
+
+
+    use_sprit_end(13);
 }
 void SceneMain::use_sprit_14()	//怒
 {
+    use_sprit_begin(14);
+    
     qDebug() << "use_sprit_14";
+
+
+    use_sprit_end(14);
 }
 void SceneMain::use_sprit_15()	//祈祷
 {
+    use_sprit_begin(15);
+    
     qDebug() << "use_sprit_15";
+
+
+    use_sprit_end(15);
 }
 void SceneMain::use_sprit_16()	//干扰
 {
+    use_sprit_begin(16);
+    
     qDebug() << "use_sprit_16";
+
+
+    use_sprit_end(16);
 }
 void SceneMain::use_sprit_17()	//狂怒
 {
+    use_sprit_begin(17);
+    
     qDebug() << "use_sprit_17";
+
+
+    use_sprit_end(17);
 }
 void SceneMain::use_sprit_18()	//爱心
 {
+    use_sprit_begin(18);
+    
     qDebug() << "use_sprit_18";
 }
