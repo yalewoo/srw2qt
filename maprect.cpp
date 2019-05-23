@@ -6,6 +6,9 @@
 #include "imageresourcemanager.h"
 
 #include <QGraphicsSceneMouseEvent>
+
+#include <QTimer>
+
 extern Game * game;
 MapRect::MapRect(int kind):Rect()
 {
@@ -60,9 +63,21 @@ void MapRect::UnshowString()
 
 void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    Rect::mousePressEvent(event);
+
+    if (game->scene->isMovingRobot || game->scene->map->isShowingAttackGif)
+    {
+        game->scene->map->moveAnimationSpeed = 10;
+        //game->scene->map->move_timer->setInterval(1000/60);
+        qDebug() << "isMovingRobot return";
+        return;
+    }
+
 
     if (event->button() == Qt::LeftButton)
     {
+
+
         //如果有选中的机器 并且 点击的地图格子可以到达
         if (game->scene->inMoveStatus && game->scene->selectedRobot)
         {

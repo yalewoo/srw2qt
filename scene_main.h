@@ -70,6 +70,9 @@ public:
     //战斗画面
     Battle * battle = 0;
 
+    // 动画控制
+    bool isMovingRobot = false;
+
     void attackDone();
 
     // 剧情画面
@@ -94,6 +97,26 @@ public slots:
 
     void saveToFile();
     void loadFromFile();
+
+    void use_sprit_0();	//毅力
+    void use_sprit_1();	//加速
+    void use_sprit_2();	//瞄准
+    void use_sprit_3();	//防守
+    void use_sprit_4();	//强攻
+    void use_sprit_5();	//友情
+    void use_sprit_6();	//必杀
+    void use_sprit_7();	//疾风
+    void use_sprit_8();	//回避
+    void use_sprit_9();	//潜力
+    void use_sprit_10();	//热血
+    void use_sprit_11();	//情义
+    void use_sprit_12();	//传真
+    void use_sprit_13();	//援助
+    void use_sprit_14();	//怒
+    void use_sprit_15();	//祈祷
+    void use_sprit_16();	//干扰
+    void use_sprit_17();	//狂怒
+    void use_sprit_18();	//爱心
 };
 
 #endif // SCENE_H

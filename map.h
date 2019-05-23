@@ -51,6 +51,7 @@ public:
     //移动机器人
     void move(Robot * selectedRobot, int xTo, int yTo);
     void showMoveAnimation(int fps);    //显示动画
+    int moveAnimationSpeed = 2;
     bool move_finished = false; //动画是否显示完毕
     QTimer * move_timer;
     Robot *robot_to_move;
@@ -70,6 +71,7 @@ public:
     int dest_arrow_x;
     int dest_arrow_y;
     QGraphicsPixmapItem * arrow = 0;
+    bool isShowingAttackGif = false;
 
     // 当前所在格子
     int selected_x;

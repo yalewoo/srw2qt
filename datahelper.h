@@ -345,9 +345,9 @@ struct DataHelper
 
                 weapon->range = QString(t[3]).toInt();
 
-                weapon->firepower[0] = QString(t[8]).toInt();
+                weapon->firepower[0] = QString(t[6]).toInt();
                 weapon->firepower[1] = QString(t[7]).toInt();
-                weapon->firepower[2] = QString(t[6]).toInt();
+                weapon->firepower[2] = QString(t[8]).toInt();
 
                 weapon->hitRadio = QString(t[4]).toInt();   //命中率
 

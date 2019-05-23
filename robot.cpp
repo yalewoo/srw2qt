@@ -61,6 +61,16 @@ void Robot::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    Rect::mousePressEvent(event);
+
+    if (game->scene->isMovingRobot || game->scene->map->isShowingAttackGif)
+    {
+        game->scene->map->moveAnimationSpeed = 10;
+        //game->scene->map->move_timer->setInterval(1000/60);
+        qDebug() << "isMovingRobot return";
+        return;
+    }
+
     if (event->button() == Qt::LeftButton)
     {
         if (game->scene->selectedRobot != this)

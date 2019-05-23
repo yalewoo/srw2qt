@@ -14,6 +14,8 @@ public:
     //event
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+
+    void mousePressEvent(QGraphicsSceneMouseEvent * event);
 };
 
 #endif // RECT_H

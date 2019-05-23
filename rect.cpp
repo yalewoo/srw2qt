@@ -40,3 +40,8 @@ void Rect::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     //qDebug() << "rect hovered leave" << x << y;
 }
+
+void Rect::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    qDebug() << "base rect mouse press";
+}

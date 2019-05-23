@@ -11,7 +11,7 @@ extern Config * config;
 
 Button::Button(QString name, QGraphicsItem *parent) : QGraphicsRectItem(parent)
 {
-    width = name.length() * 25;
+    width = name.toLocal8Bit().length() * 10;
     //draw the rect
     setRect(0, 0, width, height);
     QBrush brush;

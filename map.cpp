@@ -339,30 +339,39 @@ void Map::move(Robot *selectedRobot, int xTo, int yTo)
 
 void Map::showMoveAnimation(int fps)
 {
+    game->scene->isMovingRobot = true;
     move_timer = new QTimer(this);
     connect(move_timer, SIGNAL(timeout()), this, SLOT(moveAnimation()));
     move_timer->start(1000/fps);
 }
 void Map::moveAnimation()
 {
+    //qDebug() << "move speed = " << moveAnimationSpeed;
     if (robot_to_move->pos().x() < dest_x*32)
     {
-        robot_to_move->setPos(robot_to_move->pos().x() + 1, robot_to_move->pos().y());
+        int x = robot_to_move->pos().x() + moveAnimationSpeed < dest_x*32 ? robot_to_move->pos().x() + moveAnimationSpeed : dest_x*32;
+        robot_to_move->setPos(x, robot_to_move->pos().y());
     }
     else if (robot_to_move->pos().x() > dest_x*32)
     {
-        robot_to_move->setPos(robot_to_move->pos().x() - 1, robot_to_move->pos().y());
+        int x = robot_to_move->pos().x() - moveAnimationSpeed > dest_x*32 ? robot_to_move->pos().x() - moveAnimationSpeed : dest_x*32;
+        robot_to_move->setPos(x, robot_to_move->pos().y());
     }
     else if (robot_to_move->pos().y() < dest_y*32)
     {
-        robot_to_move->setPos(robot_to_move->pos().x(), robot_to_move->pos().y() + 1);
+        int y = robot_to_move->pos().y() + moveAnimationSpeed < dest_y*32 ? robot_to_move->pos().y() + moveAnimationSpeed : dest_y*32;
+        robot_to_move->setPos(robot_to_move->pos().x(), y);
     }
     else if (robot_to_move->pos().y() > dest_y*32)
     {
-        robot_to_move->setPos(robot_to_move->pos().x(), robot_to_move->pos().y() - 1);
+        int y = robot_to_move->pos().y() - moveAnimationSpeed > dest_y*32 ? robot_to_move->pos().y() - moveAnimationSpeed : dest_y*32;
+        robot_to_move->setPos(robot_to_move->pos().x(), y);
     }
     else
     {
+        qDebug() << "move finished";
+        game->scene->isMovingRobot = false;
+        moveAnimationSpeed = 2;
         disconnect(move_timer, SIGNAL(timeout()), this, SLOT(moveAnimation()));
         move_timer->stop();
         delete move_timer;
@@ -535,6 +544,7 @@ void Map::showAttackGif(int x1, int y1, int x2, int y2)
 
     move_finished = false;
 
+    isShowingAttackGif = true;
     move_timer = new QTimer(this);
     connect(move_timer, SIGNAL(timeout()), this, SLOT(arrowAnimation()));
     move_timer->start(1000/200);
@@ -639,24 +649,32 @@ bool Map::canAttack(Robot *robot, Weapon *weapon, Robot *enemy)
 
 void Map::arrowAnimation()
 {
+
     if (arrow->pos().x() < dest_arrow_x*32)
     {
-        arrow->setPos(arrow->pos().x() + 1, arrow->pos().y());
+        int x = arrow->pos().x() + moveAnimationSpeed < dest_arrow_x*32 ? arrow->pos().x() + moveAnimationSpeed : dest_arrow_x*32;
+        arrow->setPos(x, arrow->pos().y());
     }
     else if (arrow->pos().x() > dest_arrow_x*32)
     {
-        arrow->setPos(arrow->pos().x() - 1, arrow->pos().y());
+        int x = arrow->pos().x() - moveAnimationSpeed > dest_arrow_x*32 ? arrow->pos().x() - moveAnimationSpeed : dest_arrow_x*32;
+        arrow->setPos(x, arrow->pos().y());
     }
     else if (arrow->pos().y() < dest_arrow_y*32)
     {
-        arrow->setPos(arrow->pos().x(), arrow->pos().y() + 1);
+        int y = arrow->pos().y() + moveAnimationSpeed < dest_arrow_y*32 ? arrow->pos().y() + moveAnimationSpeed : dest_arrow_y*32;
+        arrow->setPos(arrow->pos().x(), y);
     }
     else if (arrow->pos().y() > dest_arrow_y*32)
     {
-        arrow->setPos(arrow->pos().x(), arrow->pos().y() - 1);
+        int y = arrow->pos().y() - moveAnimationSpeed > dest_arrow_y*32 ? arrow->pos().y() - moveAnimationSpeed : dest_arrow_y*32;
+        arrow->setPos(arrow->pos().x(), y);
     }
     else
     {
+        isShowingAttackGif = false;
+        moveAnimationSpeed = 2;
+
         disconnect(move_timer, SIGNAL(timeout()), this, SLOT(arrowAnimation()));
         move_timer->stop();
         delete move_timer;

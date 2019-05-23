@@ -113,6 +113,42 @@ void SceneMain::displayMenu(Robot *robot)
         connect(button_attack2, SIGNAL(leftButtonClicked()), this, SLOT(attack2()));
     }
 
+
+    if (robot->pilot)
+    {
+        for (int i = 0; i < 19; ++i)
+        {
+            if (robot->pilot->property.spirit_table[i] && robot->pilot->spirit >= PeopleProperty::spirit_consume_table[i])
+            {
+                Button * button = menu->addButton(robot->pilot->property.spirit_name[i] + " (" + QString::number(PeopleProperty::spirit_consume_table[i]) +")" );
+                switch(i)
+                {
+                case 0: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_0())); break;
+                case 1: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_1())); break;
+                case 2: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_2())); break;
+                case 3: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_3())); break;
+                case 4: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_4())); break;
+                case 5: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_5())); break;
+                case 6: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_6())); break;
+                case 7: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_7())); break;
+                case 8: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_8())); break;
+                case 9: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_9())); break;
+                case 10: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_10())); break;
+                case 11: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_11())); break;
+                case 12: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_12())); break;
+                case 13: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_13())); break;
+                case 14: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_14())); break;
+                case 15: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_15())); break;
+                case 16: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_16())); break;
+                case 17: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_17())); break;
+                case 18: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_18())); break;
+                default:break;
+                }
+
+            }
+        }
+    }
+
     if (inDebugMode)
     {
         if (selectedRobot && selectedRobot->active == false)
@@ -436,6 +472,8 @@ void SceneMain::loadFromFile()
 
     file.close();
 }
+
+
 void SceneMain::attack(Robot *enemy2)
 {
     enemy = enemy2;
@@ -504,4 +542,83 @@ void SceneMain::showConversition()
 
 
     story->showConversition(1);
+}
+
+
+
+void SceneMain::use_sprit_0()	//毅力
+{
+    qDebug() << "use_sprit_0";
+}
+void SceneMain::use_sprit_1()	//加速
+{
+    qDebug() << "use_sprit_1";
+}
+void SceneMain::use_sprit_2()	//瞄准
+{
+    qDebug() << "use_sprit_2";
+}
+void SceneMain::use_sprit_3()	//防守
+{
+    qDebug() << "use_sprit_3";
+}
+void SceneMain::use_sprit_4()	//强攻
+{
+    qDebug() << "use_sprit_4";
+}
+void SceneMain::use_sprit_5()	//友情
+{
+    qDebug() << "use_sprit_5";
+}
+void SceneMain::use_sprit_6()	//必杀
+{
+    qDebug() << "use_sprit_6";
+}
+void SceneMain::use_sprit_7()	//疾风
+{
+    qDebug() << "use_sprit_7";
+}
+void SceneMain::use_sprit_8()	//回避
+{
+    qDebug() << "use_sprit_8";
+}
+void SceneMain::use_sprit_9()	//潜力
+{
+    qDebug() << "use_sprit_9";
+}
+void SceneMain::use_sprit_10()	//热血
+{
+    qDebug() << "use_sprit_10";
+}
+void SceneMain::use_sprit_11()	//情义
+{
+    qDebug() << "use_sprit_11";
+}
+void SceneMain::use_sprit_12()	//传真
+{
+    qDebug() << "use_sprit_12";
+}
+void SceneMain::use_sprit_13()	//援助
+{
+    qDebug() << "use_sprit_13";
+}
+void SceneMain::use_sprit_14()	//怒
+{
+    qDebug() << "use_sprit_14";
+}
+void SceneMain::use_sprit_15()	//祈祷
+{
+    qDebug() << "use_sprit_15";
+}
+void SceneMain::use_sprit_16()	//干扰
+{
+    qDebug() << "use_sprit_16";
+}
+void SceneMain::use_sprit_17()	//狂怒
+{
+    qDebug() << "use_sprit_17";
+}
+void SceneMain::use_sprit_18()	//爱心
+{
+    qDebug() << "use_sprit_18";
 }

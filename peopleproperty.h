@@ -27,7 +27,8 @@ struct PeopleProperty
     int music_id;
 
     bool spirit_table[19];
-
+    static QVector<QString> spirit_name;
+    static int spirit_consume_table[19];
 };
 
 #endif // PEOPLEPROPERTY_H

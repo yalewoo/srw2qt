@@ -19,15 +19,8 @@ extern Config * config;
 
 RobotStatusView::RobotStatusView(int width, int height)
 {
-    QPen pen;
-    pen.setWidth(2);
-    pen.setColor(Qt::black);
-    setPen(pen);
 
-    QBrush brush;
-    brush.setStyle(Qt::SolidPattern);
-    brush.setColor(Qt::lightGray);
-    setBrush(brush);
+
 
     setOpacity(0);
 
@@ -37,6 +30,7 @@ RobotStatusView::RobotStatusView(int width, int height)
 
     text = new QGraphicsTextItem(s, this);
     text->setScale(1.5);
+    text->setDefaultTextColor(Qt::black);
 
     game->scene->add(text);
 
@@ -102,7 +96,12 @@ void RobotStatusView::showRobot(Robot *robot)
     {
         s += weapon1->name + QString("\n命中 ") + QString::number(weapon1->hitRadio) + "\t";
         s += QString("射程\t") + QString::number(weapon1->range) + " ";
-        tmp.sprintf("\n  火力：空 %d\t陆 %d\t海 %d", weapon1->firepower[2] + robot->strength, weapon1->firepower[1] + robot->strength, weapon1->firepower[0] + robot->strength);
+
+        int sky = weapon2->firepower[0] == 0 ? 0 :  weapon2->firepower[2] + robot->strength;
+        int land = weapon2->firepower[1] == 0 ? 0 :  weapon2->firepower[1] + robot->strength;
+        int sea = weapon2->firepower[2] == 0 ? 0 :  weapon2->firepower[0] + robot->strength;
+
+        tmp.sprintf("\n  火力：空 %d\t陆 %d\t海 %d", sky, land, sea);
         s += tmp;
     }
     if (weapon2)
@@ -110,7 +109,12 @@ void RobotStatusView::showRobot(Robot *robot)
         s += "\n\n";
         s += weapon2->name + QString("\n命中 ") + QString::number(weapon2->hitRadio) + "\t";
         s += QString("射程\t") + QString::number(weapon2->range) + " ";
-        tmp.sprintf("\n  火力：空 %d\t陆 %d\t海 %d", weapon2->firepower[2] + robot->strength, weapon2->firepower[1] + robot->strength, weapon2->firepower[0] + robot->strength);
+
+        int sky = weapon2->firepower[0] == 0 ? 0 :  weapon2->firepower[2] + robot->strength;
+        int land = weapon2->firepower[1] == 0 ? 0 :  weapon2->firepower[1] + robot->strength;
+        int sea = weapon2->firepower[2] == 0 ? 0 :  weapon2->firepower[0] + robot->strength;
+
+        tmp.sprintf("\n  火力：空 %d\t陆 %d\t海 %d", sky, land, sea);
         s += tmp;
     }
 

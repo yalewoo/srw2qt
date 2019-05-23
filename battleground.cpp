@@ -377,7 +377,7 @@ void BattleGround::moveAnimation()
     if (move_left)
     {
         if (weapon_image->x() > 100)
-            weapon_image->setPos(weapon_image->x() - 1, weapon_image->y());
+            weapon_image->setPos(weapon_image->x() - 2, weapon_image->y());
         else
         {
             move_finished = true;
