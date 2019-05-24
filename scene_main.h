@@ -27,9 +27,10 @@ public:
     void loadStage(int stage, bool useDefaultRobot = true);
 
     //显示菜单
-    Menu * drawMenu(int x, int y, int width, int height, QColor color, double opacity = 1);
+    Menu * drawMenu(Menu::Layout layout, int x, int y);
     void displayMenu(Robot * robot);    //第一次点击菜单
     void displayMenu2(Robot * robot);   //移动后出现的菜单
+    void displayMenu3(Robot * robot, Robot * enemy);   //攻击时出现的菜单
     int Menu_x = 10;
     int Menu_y = 710;
 
@@ -49,6 +50,7 @@ public:
 
     //显示攻击范围
     void showAttackRange();
+    void showAttackRangeAfterMove();
     void attack(Robot * enemy);
 
     Robot * enemy = 0;  //敌人
@@ -92,6 +94,9 @@ public slots:
 
     void attack1(); //使用武器1
     void attack2(); //使用武器2
+
+    void do_attack1(); //使用武器1
+    void do_attack2(); //使用武器2
 
     void setActive();   //设置机器人激活状态
 

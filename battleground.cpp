@@ -310,20 +310,28 @@ Weapon *BattleGround::getEnemyBackWeapon()
 
 int BattleGround::getEnemyDamage()
 {
-    int damage = robot->strength + weapon->firepower[enemy->property.type] - enemy->defense;
-    if (robot->spirit[4])
-    {
-        damage *= 2;
-    }
-    return damage;
+    return getDamage(robot, enemy, weapon);
 }
 
 int BattleGround::getPlayerDamage()
 {
-    int damage = enemy->strength + enemy_weapon->firepower[robot->property.type] - robot->defense;
-    if (enemy->spirit[4])
+    return getDamage(enemy, robot, enemy_weapon);
+}
+int BattleGround::getDamage(Robot * robot2, Robot * enemy2, Weapon *weapon2)
+{
+    int damage = robot2->strength + weapon2->firepower[enemy->property.type] - enemy2->defense;
+    if (robot2->spirit[10])
     {
         damage *= 2;
+    }
+    if (robot2->spirit[4])
+    {
+        damage *= 2;
+    }
+
+    if (enemy2->spirit[3])
+    {
+        damage /= 2;
     }
     return damage;
 }
@@ -332,6 +340,9 @@ int BattleGround::getPlayerDamage()
 double BattleGround::calcRadio(Robot *robot2, Weapon *weapon2, Robot *enemy2)
 {
     if (weapon2 == 0)
+        return 0;
+
+    if (enemy2->spirit[8])  //使用回避精神
         return 0;
 
     int base = robot2->speed + weapon2->hitRadio - enemy2->speed;
@@ -362,8 +373,13 @@ double BattleGround::calcRadio(Robot *robot2, Weapon *weapon2, Robot *enemy2)
     }
 
     double res = base * typeRadio * distanceRadio;
+
+    if (robot2->spirit[2])
+        res += 10;
+
     if (res > 100)
         res = 100;
+
     return res;
 }
 
@@ -402,7 +418,7 @@ void BattleGround::moveAnimation()
     else
     {
         if (weapon_image->x() < 250)
-            weapon_image->setPos(weapon_image->x() + 1, weapon_image->y());
+            weapon_image->setPos(weapon_image->x() + 2, weapon_image->y());
         else
         {
             move_finished = true;

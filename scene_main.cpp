@@ -77,15 +77,12 @@ void SceneMain::loadStage(int stage, bool useDefaultRobot)
     Menu_y = map->height * 32 + 10;
 }
 
-Menu * SceneMain::drawMenu(int x, int y, int width, int height, QColor color, double opacity)
+Menu * SceneMain::drawMenu(Menu::Layout layout, int x, int y)
 {
     //draws a panel at x,y
-    Menu * panel = new Menu(x, y, width, height, color, opacity);
-    QBrush brush;
-    brush.setStyle(Qt::SolidPattern);
-    brush.setColor(color);
-    panel->setBrush(brush);
-    panel->setOpacity(opacity);
+    Menu * panel = new Menu(layout, x, y);
+
+
     this->add(panel);
 
     connect(panel, SIGNAL(rightButtonClicked()), this, SLOT(cancel()));
@@ -97,7 +94,7 @@ void SceneMain::displayMenu(Robot *robot)
 {
     int x = robot->pos().x();
     int y = robot->pos().y();
-    menu = drawMenu(Menu_x, Menu_y, 0, 0, Qt::darkCyan, 0.5);
+    menu = drawMenu(Menu::Layout::horizontal, Menu_x, Menu_y);
 
     Button * button_ai = menu->addButton(QString("AI行动"));
     connect(button_ai, SIGNAL(leftButtonClicked()), this, SLOT(AI()));
@@ -167,7 +164,7 @@ void SceneMain::displayMenu2(Robot *robot)
 {
     int x = robot->pos().x();
     int y = robot->pos().y();
-    menu = drawMenu(Menu_x, Menu_y, 0, 0, Qt::darkCyan, 0.5);
+    menu = drawMenu(Menu::Layout::horizontal, Menu_x, Menu_y);
 
     if (robot->weapon1->range == 1 && robot->canAttack1())
     {
@@ -183,6 +180,22 @@ void SceneMain::displayMenu2(Robot *robot)
 
     Button * Button_move = menu->addButton(QString("待命"));
     connect(Button_move, SIGNAL(leftButtonClicked()), this, SLOT(robotActionFinished()));
+}
+
+void SceneMain::displayMenu3(Robot *robot, Robot *enemy)
+{
+    menu = drawMenu(Menu::Layout::vertical, enemy->pos().x() + 10, enemy->pos().y());
+
+    if (robot->weapon1->range == 1 && robot->canAttack1())
+    {
+        Button * button_attack1 = menu->addButton(robot->weapon1->name);
+        connect(button_attack1, SIGNAL(leftButtonClicked()), this, SLOT(do_attack1()));
+    }
+    if (robot->weapon2->range == 1 && robot->canAttack2())
+    {
+        Button * button_attack2 = menu->addButton(robot->weapon2->name);
+        connect(button_attack2, SIGNAL(leftButtonClicked()), this, SLOT(do_attack2()));
+    }
 }
 
 void SceneMain::deleteMenu()
@@ -371,6 +384,20 @@ void SceneMain::attack2()
     showAttackRange();
 }
 
+void SceneMain::do_attack1()
+{
+    selectedWeapon = selectedRobot->weapon1;
+    music_effect->setMusicOnce(config->button_press_music);
+    attack(enemy);
+}
+
+void SceneMain::do_attack2()
+{
+    selectedWeapon = selectedRobot->weapon2;
+    music_effect->setMusicOnce(config->button_press_music);
+    attack(enemy);
+}
+
 void SceneMain::setActive()
 {
     deleteMenu();
@@ -532,7 +559,22 @@ void SceneMain::showAttackRange()
 
     map->showAttackRange(selectedRobot, selectedWeapon);
 }
+void SceneMain::showAttackRangeAfterMove()
+{
+    map->UnshowMoveRange();
 
+    if (selectedRobot->weapon1->range == 1)
+    {
+        map->showAttackRange(selectedRobot, selectedRobot->weapon1);
+    }
+    else if (selectedRobot->weapon2->range == 1)
+    {
+        map->showAttackRange(selectedRobot, selectedRobot->weapon2);
+    }
+    else {
+        map->showCannotAttackRange(selectedRobot);
+    }
+}
 void SceneMain::attackDone()
 {
     deleteMenu();
@@ -618,6 +660,8 @@ void SceneMain::use_sprit_1()	//加速
     qDebug() << "use_sprit_1";
     selectedRobot->spirit[1] = true;
 
+    map->UnshowMoveRange();
+    map->showMoveRange(selectedRobot);
 
     use_sprit_end(1);
 }
@@ -677,6 +721,8 @@ void SceneMain::use_sprit_7()	//疾风
     qDebug() << "use_sprit_7";
     selectedRobot->spirit[7] = true;
 
+    map->UnshowMoveRange();
+    map->showMoveRange(selectedRobot);
 
     use_sprit_end(7);
 }
@@ -696,6 +742,15 @@ void SceneMain::use_sprit_9()	//潜力
     
     qDebug() << "use_sprit_9";
 
+    int hp_plus = selectedRobot->hp_total - selectedRobot->hp;
+    selectedRobot->hp += hp_plus;
+
+    if (selectedRobot->hp > selectedRobot->hp_total)
+    {
+        selectedRobot->hp = selectedRobot->hp_total;
+    }
+    map->showText(selectedRobot->x, selectedRobot->y, QString("+" + QString::number(hp_plus)));
+    robotStatus->showRobot(selectedRobot);
 
     use_sprit_end(9);
 }

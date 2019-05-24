@@ -90,6 +90,8 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
                 game->scene->displayMenu2(game->scene->selectedRobot);
 
+                game->scene->showAttackRangeAfterMove();
+
             }
         }
         else if (game->scene->selectedRobot)

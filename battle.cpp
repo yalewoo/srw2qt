@@ -16,6 +16,10 @@ Battle::Battle(Robot *robot, Weapon *weapon, Robot *enemy)
     {
         int hpp = qMin(robot->hp_total / 2, enemy->hp_total - enemy->hp);
         enemy->hp += hpp;
+        QString text = "+" + QString::number(hpp);
+        game->scene->map->showText(enemy->x, enemy->y, text);
+
+        game->scene->robotStatus->showRobot(enemy);
 
         game->scene->attackDone();
 

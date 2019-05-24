@@ -251,7 +251,7 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
     if (move_value == -1)
     {
         //qDebug() << robot->move;
-        m[xPos][yPos] = robot->move;    //行动力
+        m[xPos][yPos] = robot->t_move();    //行动力
     }
     else
         m[xPos][yPos] = move_value;
@@ -467,7 +467,27 @@ QVector<QVector<int> > Map::calculateAttackRange(Robot *robot, Weapon *weapon)
 
     return m;
 }
+void Map::showCannotAttackRange(Robot *robot)
+{
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            if (i != robot->x || j != robot->y)
+            {
+                //不能移动的格子添加灰色效果
+                QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
+                e1->setColor(QColor(111,111,111));
+                map[i][j]->setGraphicsEffect(e1);
 
+                if (robots[i][j])
+                {
+                    robots[i][j]->setGraphicsEffect(e1);
+                }
+            }
+        }
+    }
+}
 void Map::showAttackRange(Robot *robot, Weapon *weapon)
 {
     AttackMap = calculateAttackRange(robot, weapon);

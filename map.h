@@ -63,6 +63,7 @@ public:
     QVector<QVector<int> > AttackMap; //保存攻击范围
     QVector<QVector<int> > calculateAttackRange(Robot * robot, Weapon * weapon);
     void showAttackRange(Robot * robot, Weapon * weapon);
+    void showCannotAttackRange(Robot *robot);
     //robot 是否可以攻击enemy
     bool canAttack(Robot * robot, Weapon * weapon, Robot * enemy);
 

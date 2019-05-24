@@ -77,8 +77,16 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
         {
             if (game->scene->selectedWeapon && game->scene->map->AttackMap[x][y] >= 0)
             {
+
                 game->scene->music_effect->setMusicOnce(config->button_press_music);
                 game->scene->attack(this);
+            }
+            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon1, this)
+                     && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon2, this))
+            {
+                game->scene->enemy = this;
+                game->scene->deleteMenu();
+                game->scene->displayMenu3(game->scene->selectedRobot, this);
             }
             else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon1, this))
             {

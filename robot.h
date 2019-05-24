@@ -28,6 +28,17 @@ public:
     int defense;    //防卫
     int speed;  //速度
 
+    // 实际五维，精神加成之后
+    int t_hp_total();   //总hp
+    int t_move(){   //机动
+        if (spirit[7]) return move + 5;
+        if (spirit[1]) return move + 3;
+        return move;
+    }
+    int t_strength();   //强度
+    int t_defense();    //防卫
+    int t_speed();  //速度
+
     // =========可能会变化的机器人属性==========
     // 拥有的武器
     Weapon * weapon1 = nullptr;

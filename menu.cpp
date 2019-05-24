@@ -6,18 +6,14 @@
 
 extern Game * game;
 
-Menu::Menu(qreal xPos, qreal yPos, qreal width, qreal height, QColor color, double opacity) : QGraphicsRectItem(xPos, yPos, width, height)
+
+Menu::Menu(Menu::Layout layout, int x, int y)
 {
-    x = xPos;
-    y = yPos;
-//    QBrush brush;
-//    brush.setStyle(Qt::SolidPattern);
-//    brush.setColor(color);
-//    setBrush(brush);
-//    setOpacity(opacity);
-
-
+    this->layout = layout;
+    this->x = x;
+    this->y = y;
 }
+
 
 void Menu::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -34,8 +30,19 @@ void Menu::mousePressEvent(QGraphicsSceneMouseEvent *event)
 Button * Menu::addButton(QString name)
 {
     Button * button = new Button(name, this);
-    button->setPos(x + x_index + 10, y);
+
+    if (layout == Menu::Layout::horizontal)
+    {
+            button->setPos(x + x_index + 10, y);
+            x_index += button->width + 10;
+    }
+    else
+    {
+            button->setPos(x, y + y_index + 10);
+            y_index += button->height + 10;
+
+    }
+
     ++buttonNum;
-    x_index += button->width + 10;
     return button;
 }
