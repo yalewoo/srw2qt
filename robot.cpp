@@ -223,7 +223,7 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     if (event->button() == Qt::LeftButton)
     {
-        if (game->scene->selectedRobot == this && game->scene->selectedWeapon->id == 164)
+        if (game->scene->selectedRobot == this && game->scene->selectedWeapon && game->scene->selectedWeapon->id == 164)
         {
             game->scene->music_effect->setMusicOnce(config->button_press_music);
             game->scene->attack(this);
