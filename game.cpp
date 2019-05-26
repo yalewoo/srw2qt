@@ -48,7 +48,7 @@ void Game::start()
 
 
 
-    //scene->showConversition();
+    scene->story->showConversition(1);
 
 }
 

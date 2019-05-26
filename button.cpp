@@ -37,7 +37,13 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
         game->scene->music_effect->setMusicOnce(config->button_press_music);
-        emit leftButtonClicked();
+        if (id == -1)
+        {
+            emit leftButtonClicked();
+        }
+        else {
+            emit leftButtonClickedWithParameter(id);
+        }
     }
     else if (event->button() == Qt::RightButton)
     {

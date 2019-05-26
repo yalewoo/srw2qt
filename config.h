@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <QDir>
 #include <QString>
 
 
@@ -38,6 +39,7 @@ struct Config
     QString conversion_path;
 
     QString saveFilePath;
+    QString saveFilePath_exp;
 
     QString html_path;
 
@@ -45,7 +47,14 @@ struct Config
 
     Config() {
         workDir  = QString("C:/code/Github/srw2qt/");
+        QDir dir(workDir);
+        if(!dir.exists())
+        {
+          workDir = "./";
+        }
+
         saveFilePath = workDir + "tmpfiles/save.txt";
+        saveFilePath_exp = workDir + "tmpfiles/save_exp.txt";
 
         robot_value_path = workDir + "input/value/robot.csv";
         weapon_value_path = workDir + "input/value/weapon.csv";
@@ -80,6 +89,12 @@ struct Config
         conversion_path = workDir + "input/stage/conversitions.csv";
 
         html_path = workDir + "html/robotStatus.html";
+    }
+
+    QString getConversitionPathOfStage(int stage)
+    {
+        QString s = workDir + "input/stage/" + QString::number(stage) + "/conversitions.csv";
+        return s;
     }
 
     QString getMapPathOfLevel(int level)

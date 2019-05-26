@@ -40,6 +40,11 @@ public:
     int t_speed();  //速度
 
     // =========可能会变化的机器人属性==========
+
+    // 变形
+    QVector<int> canTransform();
+    void ChangeId(int targetId);
+
     // 拥有的武器
     Weapon * weapon1 = nullptr;
     Weapon * weapon2 = nullptr;
@@ -51,14 +56,23 @@ public:
     People * pilot = nullptr;
 
     // 等级和经验
-    int exp;    //当前经验
     int level = 1;  //当前等级
+    static int getLevelPropertyPlus(int plusType, int level);
+    void gotExp(int exp);
+    void updateLevel(); // 升级 更新属性数据
 
     int robotBehavior;  // 第几回合开始进攻
 
     //==============游戏中用到的变量===================
     bool active = true; //机体是否行动过
     int hp; //现有Hp
+
+    QVector<Robot *> passengers;
+    bool inMainShip = false;    // 处于搭载状态
+
+    // AI计算临时变量
+    bool tmp_ai_weapon1;
+    bool tmp_ai_weapon2;
 
 
     bool shouldPaintUsingActive = true;
@@ -75,6 +89,8 @@ public:
 
     Robot(int id, int player=0);
     ~Robot();
+
+
 
 
     void setImage();

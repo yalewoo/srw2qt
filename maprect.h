@@ -20,7 +20,8 @@ public:
 
     //显示一些文字
     void showString(QString text);
-    QGraphicsTextItem * text = 0;
+    void showString2(QString text);
+    QGraphicsSimpleTextItem  * text = 0;
     void UnshowString();
 
 

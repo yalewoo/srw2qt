@@ -43,7 +43,10 @@ public:
     Weapon * enemy_weapon;
     Weapon * getEnemyBackWeapon();  //得到反击武器
 
-    int getDamage(Robot * robot2, Robot * enemy2, Weapon *weapon2);
+    static int getDamage(Robot * robot2, Robot * enemy2, Weapon *weapon2);
+    static int getMaxDamage(Robot * robot2, Robot * enemy2);
+
+
     int getEnemyDamage();
     int getPlayerDamage();
 

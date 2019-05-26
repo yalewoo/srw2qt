@@ -11,7 +11,7 @@
 class Story
 {
 public:
-    Story();
+    Story(int stage);
 
     void showConversition(int turn);
 

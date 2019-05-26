@@ -319,7 +319,7 @@ int BattleGround::getPlayerDamage()
 }
 int BattleGround::getDamage(Robot * robot2, Robot * enemy2, Weapon *weapon2)
 {
-    int damage = robot2->strength + weapon2->firepower[enemy->property.type] - enemy2->defense;
+    int damage = robot2->strength + weapon2->firepower[enemy2->property.type] - enemy2->defense;
     if (robot2->spirit[10])
     {
         damage *= 2;
@@ -334,6 +334,13 @@ int BattleGround::getDamage(Robot * robot2, Robot * enemy2, Weapon *weapon2)
         damage /= 2;
     }
     return damage;
+}
+
+int BattleGround::getMaxDamage(Robot *robot2, Robot *enemy2)
+{
+    int damage1 = getDamage(robot2, enemy2, robot2->weapon1);
+    int damage2 = getDamage(robot2, enemy2, robot2->weapon2);
+    return qMax(damage1, damage2);
 }
 
 

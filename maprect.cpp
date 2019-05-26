@@ -43,18 +43,36 @@ void MapRect::setMoveConsume()
         moveConsume[2] = 1;
 }
 
+void MapRect::showString2(QString textToShow)
+{
+    text = new QGraphicsSimpleTextItem (textToShow, this);
+    //game->scene->addItem(text);
+
+    QFont font = text->font();
+    font.setPixelSize(26);  // 像素大小
+    font.setBold(true);
+    text->setFont(font);
+    text->setBrush(QBrush(QColor(255, 255, 255)));
+//    text->setBrush(QBrush(QColor(0, 0,0)));
+
+    text->setPen(QPen(QColor(0, 255, 255)));
+//    text->setPen(QPen(QColor(0, 0,0)));
+}
 
 void MapRect::showString(QString textToShow)
 {
-    text = new QGraphicsTextItem(textToShow, this);
+    text = new QGraphicsSimpleTextItem (textToShow, this);
     //game->scene->addItem(text);
+
 }
 
 void MapRect::UnshowString()
 {
     if (text)
     {
+
         game->scene->remove(text);
+        delete text;
         text = 0;
     }
 }
@@ -93,9 +111,12 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
                 game->scene->showAttackRangeAfterMove();
 
             }
+
+
         }
         else if (game->scene->selectedRobot)
         {
+
             game->scene->robotActionFinished();
         }
         else {
@@ -103,11 +124,12 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
             //qDebug() << "mouse Hover mapRect";
 
             QString s;
-            s += "(" + QString::number(this->x) + ", " + QString::number(this->y) + ")\n";
-            s += t[kind] + "\n";
-            s += QString("\n") + QString("空 ") + QString::number(moveConsume[0]) + "\n";
-            s += QString("陆 ") + QString::number(moveConsume[1]) + "\n";
-            s += QString("海 ") + QString::number(moveConsume[2]) + "\n";
+            QString spacing = "                         ";
+            s += spacing + "(" + QString::number(this->x) + ", " + QString::number(this->y) + ")\n";
+            s += spacing + t[kind] + "\n";
+            s += spacing + QString("空 ") + QString::number(moveConsume[0]) + "\n";
+            s += spacing + QString("陆 ") + QString::number(moveConsume[1]) + "\n";
+            s += spacing + QString("海 ") + QString::number(moveConsume[2]) + "\n";
 
 
             game->scene->robotStatus->setString(s);

@@ -139,7 +139,7 @@ void RobotStatusView::showRobot(Robot *robot)
     html = html.replace("##spirit#", QString::number( robot->pilot->spirit  ) );
     html = html.replace("##spirit_total#", QString::number( robot->pilot->spirit_total  ) );
     html = html.replace("##defense#", QString::number( robot->defense  ) );
-    html = html.replace("##exp#", QString::number( robot->exp  ) );
+    html = html.replace("##exp#", QString::number( pilot->exp  ) );
     html = html.replace("##speed#", QString::number( robot->speed  ) );
     html = html.replace("##level_up_exp#", QString::number(Robot::exp_update_table[robot->level] - pilot->exp) );
 
@@ -201,7 +201,7 @@ void RobotStatusView::showRobot(Robot *robot)
     }
 
     text->setHtml(html);
-    //qDebug() << html << "\n";
+    qDebug() << html << "\n";
 
     showPilotImage(robot);
     showRobotImage(robot);

@@ -4,6 +4,7 @@
 #include "scene.h"
 #include "robotstatusview.h"
 
+#include "ai.h"
 #include "battle.h"
 #include "map.h"
 #include "menu.h"
@@ -31,6 +32,7 @@ public:
     void displayMenu(Robot * robot);    //第一次点击菜单
     void displayMenu2(Robot * robot);   //移动后出现的菜单
     void displayMenu3(Robot * robot, Robot * enemy);   //攻击时出现的菜单
+    void displayMenu4();   //舰长起飞专属菜单
     int Menu_x = 10;
     int Menu_y = 710;
 
@@ -43,6 +45,9 @@ public:
     Robot * selectedRobot = nullptr;
     Point originalPosition;     //选中机器人的原始位置，用于右键取消
     Weapon * selectedWeapon = 0;    //选中的机器
+
+    // 起飞可以取消
+    Robot * captain = 0;
 
     // 结束回合按钮
     Button * next_turn_button = 0;
@@ -80,7 +85,17 @@ public:
     // 剧情画面
     Story * story = 0;
     void showDiagDone();
-    void showConversition();
+
+    // AI
+    void AI();  //
+    void AICore();
+
+    void win();// 是否胜利
+
+    // 保存进度
+    void saveToFile_expTable();
+    void LoadFromFile_expTable();
+    QVector<int> exp_table;
 
 public slots:
     void robotActionFinished();
@@ -90,7 +105,7 @@ public slots:
     void enable_debug_mode();   //debug模式
     void change_stage();   //debug模式
 
-    void AI();  //AI自动行动
+    void AI_robot();  //AI自动行动
 
     void attack1(); //使用武器1
     void attack2(); //使用武器2
@@ -98,10 +113,18 @@ public slots:
     void do_attack1(); //使用武器1
     void do_attack2(); //使用武器2
 
+    //debug
     void setActive();   //设置机器人激活状态
+    void addExp();
+
+    void transform(int id);
+
+    // 起飞 舰长专属
+    void launch(int id);
 
     void saveToFile();
     void loadFromFile();
+
 
     bool canUseSpirit(int id);
     void use_sprit_begin(int id); //所有精神都执行的代码

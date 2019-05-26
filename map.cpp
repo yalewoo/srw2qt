@@ -37,6 +37,26 @@ Map::~Map()
     }
 }
 
+Robot *Map::getCaptain()
+{
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            if (robots[i][j] && robots[i][j]->pilot->id == 54){
+                return robots[i][j];
+            }
+        }
+    }
+    return 0;
+
+}
+
+void Map::moveToCaptain(Robot *robot, Robot *captain)
+{
+
+}
+
 void Map::loadStage(int stage)
 {
     DataHelper::Map mapdata(config->getMapPathOfLevel(stage));
@@ -71,6 +91,24 @@ void Map::loadStage(int stage)
             map[i][j] = rect;
         }
     }
+
+    if (game->scene->inDebugMode)
+        displayXYLabel();
+}
+
+void Map::displayXYLabel()
+{
+    // 显示坐标
+    for (int i = 0; i < width; ++i)
+    {
+        map[i][0]->showString2(QString::number(i));
+        map[i][height-1]->showString2(QString::number(i));
+    }
+    for (int i = 1; i < height-1; ++i)
+    {
+        map[0][i]->showString2(QString::number(i));
+        map[width-1][i]->showString2(QString::number(i));
+    }
 }
 
 void Map::addRobot(Robot * robot, int xPos, int yPos)
@@ -82,8 +120,42 @@ void Map::addRobot(Robot * robot, int xPos, int yPos)
     //qDebug() << robots[xPos][yPos]->property.robotName << xPos << yPos;
 }
 
+bool Map::hasAddRobot(int stage, int round, int player)
+{
+    bool has = false;
+    if (player == 0)
+    {
+        for (int i = 0; i < Robot::robots_init.length(); ++i)
+        {
+            RobotData robotData = Robot::robots_init[i];
 
-void Map::placeRobot(int stage, int round)
+            if (stage != robotData.stage || round != robotData.round)
+                continue;
+            else {
+                has = true;
+                break;
+            }
+
+        }
+    }
+    else {
+        for (int i = 0; i < Robot::enemys_init.length(); ++i)
+        {
+            EnemyData robotData = Robot::enemys_init[i];
+
+            if (stage != robotData.stage || round != robotData.round)
+                continue;
+            else {
+                has = true;
+                break;
+            }
+
+        }
+    }
+
+    return has;
+}
+void Map::placeRobot(int stage, int round, bool wait)
 {
     for (int i = 0; i < Robot::robots_init.length(); ++i)
     {
@@ -100,13 +172,15 @@ void Map::placeRobot(int stage, int round)
 
         //qDebug() << robotData.robotId;
         robot->setPilot(robotData.peopleId);
+        robot->hp = robot->hp_total;
         //qDebug() << robot->property.robotName << robot->move;
         addRobot(robot, x, y);
     }
 
 }
-void Map::placeEnemy(int stage, int round)
+bool Map::placeEnemy(int stage, int round, bool wait)
 {
+    bool has = false;
     for (int i = 0; i < Robot::enemys_init.length(); ++i)
     {
         EnemyData robotData = Robot::enemys_init[i];
@@ -118,16 +192,28 @@ void Map::placeEnemy(int stage, int round)
         int y = robotData.y;
         Robot * robot = new Robot(robotData.robotId, 1);
         robot->setPilot(robotData.peopleId);
+        robot->hp = robot->hp_total;
+
+        robot->level = robotData.robotLevel+1;
+        robot->updateLevel();
+
         robot->robotBehavior = robotData.robotBehavior;
 
         addRobot(robot, x, y);
+        has = true;
     }
+
+    return has;
 }
 
 void Map::placeRobotRunTime(RunTimeRobotData robotData)
 {
+    Robot * c = getCaptain();
+
+
     int x = robotData.x;
     int y = robotData.y;
+    Robot * backupRobot = robots[x][y];
     Robot * robot = new Robot(robotData.robotId, robotData.player);
 
     robot->robotBehavior = robotData.robotBehavior;
@@ -137,15 +223,29 @@ void Map::placeRobotRunTime(RunTimeRobotData robotData)
     //qDebug() << robot->property.robotName << robot->move;
     addRobot(robot, x, y);
 
-    if (robotData.active != 1)
-    {
-        robot->setNotActive();
-    }
+
 
     robot->level = robotData.level;
     robot->pilot->exp = robotData.exp;
     robot->hp = robotData.hp;
     robot->pilot->spirit = robotData.sprit;
+
+    robot->inMainShip = robotData.inMainShip;
+
+    if (robotData.active != 1)
+    {
+        robot->setNotActive();
+    }
+    if (robot->inMainShip)
+    {
+        if (c)
+        {
+            c->passengers.push_back(robot);
+            game->scene->map->robots[x][y] = backupRobot;
+            game->scene->remove(robot);
+        }
+
+    }
 }
 
 
@@ -216,7 +316,11 @@ void Map::UnshowMoveRange()
         {
             map[i][j]->setGraphicsEffect(0);
 
-            map[i][j]->UnshowString();
+            if (i != 0 && i != width - 1 && j != 0 && j != height - 1)
+            {
+                map[i][j]->UnshowString();
+
+            }
 
             if (robots[i][j])
             {
@@ -226,15 +330,15 @@ void Map::UnshowMoveRange()
         }
     }
 }
-int Map::getMoveConsume(Robot *robot, int x, int y)
+int Map::getMoveConsume(Robot *robot, int x, int y, bool ignore_robot)
 {
-    if (robots[x][y] && robots[x][y]->player != robot->player)
+    if ((!ignore_robot) && robots[x][y] && robots[x][y]->player != robot->player)
         return 9999;
     else
         return map[x][y]->moveConsume[robot->property.type];
 }
 
-QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_start, int move_value)
+QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_start, int move_value, bool ignore_robots)
 {
     //qDebug() << robot->property.robotName << "start searching";
 
@@ -274,9 +378,9 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
         int x = now.x;
         int y = now.y;
         //up
-        if (m[x][y-1] < m[x][y] - getMoveConsume(robot, x, y-1))
+        if (m[x][y-1] < m[x][y] - getMoveConsume(robot, x, y-1, ignore_robots))
         {
-            m[x][y-1] = m[x][y] - getMoveConsume(robot, x, y-1);
+            m[x][y-1] = m[x][y] - getMoveConsume(robot, x, y-1, ignore_robots);
             if (m[x][y-1] >= 0)
             {
                 visited.append(Point(x, y-1));
@@ -284,9 +388,9 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
         }
 
         //down
-        if (m[x][y+1] < m[x][y] - getMoveConsume(robot, x, y+1))
+        if (m[x][y+1] < m[x][y] - getMoveConsume(robot, x, y+1, ignore_robots))
         {
-            m[x][y+1] = m[x][y] - getMoveConsume(robot, x, y+1);
+            m[x][y+1] = m[x][y] - getMoveConsume(robot, x, y+1, ignore_robots);
             if (m[x][y+1] >= 0)
             {
                 visited.append(Point(x, y+1));
@@ -294,9 +398,9 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
         }
 
         //left
-        if (m[x-1][y] < m[x][y] - getMoveConsume(robot, x-1, y))
+        if (m[x-1][y] < m[x][y] - getMoveConsume(robot, x-1, y,ignore_robots))
         {
-            m[x-1][y] = m[x][y] - getMoveConsume(robot, x-1, y);
+            m[x-1][y] = m[x][y] - getMoveConsume(robot, x-1, y,ignore_robots);
             if (m[x-1][y] >= 0)
             {
                 visited.append(Point(x-1, y));
@@ -304,9 +408,9 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
         }
 
         //right
-        if (m[x+1][y] < m[x][y] - getMoveConsume(robot, x+1, y))
+        if (m[x+1][y] < m[x][y] - getMoveConsume(robot, x+1, y,ignore_robots))
         {
-            m[x+1][y] = m[x][y] - getMoveConsume(robot, x+1, y);
+            m[x+1][y] = m[x][y] - getMoveConsume(robot, x+1, y,ignore_robots);
             if (m[x+1][y] >= 0)
             {
                 visited.append(Point(x+1, y));
@@ -321,14 +425,24 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
 
 void Map::move(Robot *selectedRobot, int xTo, int yTo)
 {
+    int x = selectedRobot->x;
+    int y = selectedRobot->y;
+    if (game->scene->captain)
+    {
+
+    }
+    else {
+        robots[x][y] = nullptr;
+    }
+    robots[xTo][yTo] = selectedRobot;
+
+    moveAnimation(selectedRobot, xTo, yTo);
+}
+void Map::moveAnimation(Robot *selectedRobot, int xTo, int yTo)
+{
     robot_to_move = selectedRobot;
     dest_x = xTo;
     dest_y = yTo;
-
-    int x = selectedRobot->x;
-    int y = selectedRobot->y;
-    robots[x][y] = nullptr;
-    robots[xTo][yTo] = selectedRobot;
 
     UnshowMoveRange();   //消除不能移动的格子的灰色效果
 
@@ -337,8 +451,6 @@ void Map::move(Robot *selectedRobot, int xTo, int yTo)
     move_finished = false;
     while (!move_finished)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-
-
 }
 
 void Map::showMoveAnimation(int fps)
@@ -380,7 +492,7 @@ void Map::moveAnimation()
         move_timer->stop();
         delete move_timer;
 
-        robots[dest_x][dest_y]->setxy(dest_x, dest_y);
+        robot_to_move->setxy(dest_x, dest_y);
 
         //game->canMoveStatus = false;
 
@@ -535,12 +647,21 @@ void Map::showAttackRange(Robot *robot, Weapon *weapon)
                         map[i][j]->showString(QString::number(AttackMap[i][j]));
 
                     }
-                    if (robots[i][j] && weapon->firepower[robots[i][j]->property.type] == 0)
+                    if (robots[i][j])
                     {
-                        QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
-                        e1->setColor(QColor(111,111,111));
-                        robots[i][j]->setGraphicsEffect(e1);
+                        if (weapon->firepower[robots[i][j]->property.type] <= 0)
+                        {
+                            QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
+                            e1->setColor(QColor(111,111,111));
+                            robots[i][j]->setGraphicsEffect(e1);
+                        }
+                        else {
+                            robots[i][j]->setGraphicsEffect(0);
+                            robots[i][j]->shouldPaintUsingActive = false;
+                        }
+
                     }
+
                 }
                 else
                 {
@@ -637,6 +758,52 @@ void Map::AI_move(Robot *selectedRobot)
 
 }
 
+bool Map::hasAnyRobot(int player)
+{
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j< height; ++j)
+        {
+            if (robots[i][j] && robots[i][j]->player == player)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void Map::UpdateExpTable(QVector<int> & table)
+{
+    qDebug() << "table length = " << table.length();
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            Robot * robot = robots[i][j];
+            if (robot && robot->player == 0)
+            {
+                table[robot->pilot->id] = robot->pilot->exp;
+            }
+        }
+    }
+}
+void Map::UpdateRobotLevelUsingExpTable(const QVector<int> & table)
+{
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            Robot * robot = robots[i][j];
+            if (robot && robot->player == 0)
+            {
+                robot->pilot->exp = table[robot->pilot->id];
+                robot->updateLevel();
+            }
+        }
+    }
+}
+
 void Map::showText(int x, int y, QString s)
 {
     showText_x = x*32;
@@ -655,6 +822,25 @@ void Map::showText(int x, int y, QString s)
 
     showTextTimer->start(1000/70);
 
+}
+
+void Map::UpdateRobotsAtSupply()
+{
+    for (int i = 0; i < width; ++i)
+    {
+        for (int j = 0; j < height; ++j)
+        {
+            if (map[i][j]->kind == 10)
+            {
+                Robot * robot = robots[i][j];
+                if (robot)
+                {
+                    int hp = robot->hp_total * 0.3;
+                    robot->hp = robot->hp + hp > robot->hp_total ? robot->hp_total : robot->hp + hp;
+                }
+            }
+        }
+    }
 }
 
 void Map::removeRobot(Robot *robot)

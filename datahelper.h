@@ -15,21 +15,21 @@ extern Config * config;
 
 struct EnemyData
 {
-    int stage;  //第几关
-    int round;  //第几回合
+    int stage = 0;  //第几关
+    int round = 0;  //第几回合
 
-    int x;
-    int y;
+    int x = 0;
+    int y = 0;
 
-    int order; //我方顺序
+    int order = 0; //我方顺序
 
-    int peopleId;
+    int peopleId = 0;
 
-    int robotId;
+    int robotId = 0;
 
-    int robotLevel;
+    int robotLevel = 0;
 
-    int robotBehavior;  //第几回合开始进攻
+    int robotBehavior = 0;  //第几回合开始进攻
 };
 struct RunTimeRobotData
 {
@@ -47,22 +47,24 @@ struct RunTimeRobotData
 
     int robotBehavior = 1;
 
+    int inMainShip = 0; //是否在母舰中
+
     int active = 1;
 };
 
 struct RobotData
 {
-    int stage;  //第几关
-    int round;  //第几回合
+    int stage = 0;  //第几关
+    int round = 0;  //第几回合
 
-    int x;
-    int y;
+    int x = 0;
+    int y = 0;
 
-    int order; //我方顺序
+    int order = 0; //我方顺序
 
-    int peopleId;
+    int peopleId = 0;
 
-    int robotId;
+    int robotId = 0;
 };
 
 struct DataHelper
@@ -232,6 +234,7 @@ struct DataHelper
             int int_id = thisid.toInt();
             if (id == int_id)
             {
+                property.id = id;
                 property.robotName = QString(t.at(1));
                 property.type_original = QString(t[3]).toInt();
                 property.type = property.type_original & 0x3;
@@ -396,6 +399,11 @@ struct DataHelper
         }
 
         file.close();
+
+        for (int i = 2; i < 51; ++i)
+        {
+            exp_update_table[i] = exp_update_table[i-1] + exp_update_table[i];
+        }
 
         return exp_update_table;
     }

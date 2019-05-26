@@ -22,8 +22,11 @@ public:
     int width = 30;
     int height = 30;
 
+    int id = -1; // Used to pass parameter when clicked
+
 signals:
     void leftButtonClicked();
+    void leftButtonClickedWithParameter(int id);
     void rightButtonClicked();
 
 private:

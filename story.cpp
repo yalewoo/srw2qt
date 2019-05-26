@@ -10,15 +10,15 @@ extern Game * game;
 #include "config.h"
 extern Config * config;
 
-Story::Story()
+Story::Story(int stage)
 {
-    QString filename = config->conversion_path;
+    QString filename = config->getConversitionPathOfStage(stage);
 
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         //qDebug() << filename << "open failed";
-        exit(-1);
+        return;
 
     }
 
