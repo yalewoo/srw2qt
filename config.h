@@ -46,7 +46,7 @@ struct Config
     int rectWidth = 32;
 
     Config() {
-        workDir  = QString("C:/code/Github/srw2qt/");
+        workDir  = QString("D:/code/Github/srw2qt/");
         QDir dir(workDir);
         if(!dir.exists())
         {
