@@ -6,8 +6,8 @@
 class Rect : public QGraphicsPixmapItem
 {
 public:
-    int x;
-    int y;
+    int m_x;
+    int m_y;
     Rect(QGraphicsPixmapItem * parent = 0);
     void setxy(int x, int y);
 

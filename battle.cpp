@@ -14,10 +14,10 @@ Battle::Battle(Robot *robot, Weapon *weapon, Robot *enemy)
 {
     if (weapon->id == 164)  //修理武器
     {
-        int hpp = qMin(robot->hp_total / 2, enemy->hp_total - enemy->hp);
-        enemy->hp += hpp;
+        int hpp = qMin(robot->m_hp_total / 2, enemy->m_hp_total - enemy->m_hp);
+        enemy->m_hp += hpp;
         QString text = "+" + QString::number(hpp);
-        game->scene->map->showText(enemy->x, enemy->y, text);
+        game->scene->map->showText(enemy->m_x, enemy->m_y, text);
 
         game->scene->robotStatus->showRobot(enemy);
 

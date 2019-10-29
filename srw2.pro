@@ -29,7 +29,6 @@ SOURCES += \
         main.cpp \
     game.cpp \
     scene_main.cpp \
-    utils.cpp \
     rect.cpp \
     maprect.cpp \
     map.cpp \
@@ -52,7 +51,6 @@ HEADERS += \
     game.h \
     scene_main.h \
     datahelper.h \
-    utils.h \
     rect.h \
     maprect.h \
     map.h \

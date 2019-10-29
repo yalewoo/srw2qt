@@ -15,8 +15,8 @@ QVector<EnemyData> Robot::enemys_init;
 
 void Robot::gotExp(int exp)
 {
-    pilot->exp += exp;
-    if (pilot->exp >= exp_update_table[level])
+    m_pilot->exp += exp;
+    if (m_pilot->exp >= exp_update_table[m_level])
     {
         updateLevel();
     }
@@ -24,42 +24,66 @@ void Robot::gotExp(int exp)
 
 void Robot::updateLevel()
 {
-    if (player == 0)
+    if (m_player == 0)
     {
         int i = 1;
-        while (pilot->exp >= exp_update_table[i])
+        while (m_pilot->exp >= exp_update_table[i])
         {
             ++i;
         }
-        level = i;
+        m_level = i;
     }
     else {
 
     }
 
 
-    hp_total = property.robot_hp0 + pilot->property.hp + getLevelPropertyPlus(property.robot_hp_plus, level);
-    this->move = property.robot_move0 + pilot->property.move;
-    speed = property.robot_speed0 + pilot->property.speed + getLevelPropertyPlus(property.robot_speed_plus, level);
-    strength = property.robot_strength0 + pilot->property.strength + getLevelPropertyPlus(property.robot_strength_plus, level);
-    defense = property.robot_defense0 + pilot->property.defense + getLevelPropertyPlus(property.robot_defense_plus, level);
+    m_hp_total = m_property.robot_hp0 + m_pilot->property.hp + getLevelPropertyPlus(m_property.robot_hp_plus, m_level);
+    this->m_move = m_property.robot_move0 + m_pilot->property.move;
+    m_speed = m_property.robot_speed0 + m_pilot->property.speed + getLevelPropertyPlus(m_property.robot_speed_plus, m_level);
+    m_strength = m_property.robot_strength0 + m_pilot->property.strength + getLevelPropertyPlus(m_property.robot_strength_plus, m_level);
+    m_defense = m_property.robot_defense0 + m_pilot->property.defense + getLevelPropertyPlus(m_property.robot_defense_plus, m_level);
+}
+
+
+
+void Robot::AddPassenger(Robot *passenger)
+{
+    m_passengers.push_back(passenger);
+    passenger->m_inMainShip = true;
+}
+void Robot::DeletePassenger(Robot *passenger)
+{
+    int i = 0;
+    for ( ; i < m_passengers.length(); ++i)
+    {
+        if (m_passengers[i] == passenger)
+        {
+            break;
+        }
+    }
+    if (i < m_passengers.length())
+    {
+        m_passengers.remove(i);
+    }
+    passenger->m_inMainShip = false;
 }
 
 QVector<int> Robot::canTransform()
 {
     QVector<int> lists;
-    int id2 = id;
+    int id2 = m_id;
 
 
-    if ((property.type_original & 0x0c) == 0)
+    if ((m_property.type_original & 0x0c) == 0)
     {
         return lists;
     }
-    int index = property.type_original & 0x30;
+    int index = m_property.type_original & 0x30;
     while (1)
     {
         RobotProperty prev = DataHelper::getRobotProperty(--id2);
-        if ((prev.type_original & 0x0c) == (property.type_original & 0x0c))
+        if ((prev.type_original & 0x0c) == (m_property.type_original & 0x0c))
         {
             int prev_index = prev.type_original & 0x30;
             if (prev.robot_move0 == 0 || prev_index >= index)
@@ -70,11 +94,11 @@ QVector<int> Robot::canTransform()
             break;
         }
     }
-    id2 = id;
+    id2 = m_id;
     while (1)
     {
         RobotProperty prev = DataHelper::getRobotProperty(++id2);
-        if ((prev.type_original & 0x0c) == (property.type_original & 0x0c))
+        if ((prev.type_original & 0x0c) == (m_property.type_original & 0x0c))
         {
             int prev_index = prev.type_original & 0x30;
             if (prev.robot_move0 == 0 || prev_index <= index)
@@ -90,37 +114,37 @@ QVector<int> Robot::canTransform()
 
 void Robot::ChangeId(int targetId)
 {
-    id = targetId;
-    property = DataHelper::getRobotProperty(targetId);
+    m_id = targetId;
+    m_property = DataHelper::getRobotProperty(targetId);
 
     setImage();
-    delete weapon1;
-    delete weapon2;
+    delete m_weapon1;
+    delete m_weapon2;
 
-    weapon1 = DataHelper::getWeapon(property.weapon1id);
-    weapon2 = DataHelper::getWeapon(property.weapon2id);
+    m_weapon1 = DataHelper::getWeapon(m_property.weapon1id);
+    m_weapon2 = DataHelper::getWeapon(m_property.weapon2id);
 
     updateLevel();
 
     // 盖塔变形同时换驾驶员
-    if ((property.type_original & 0x0c) == 0x08)
+    if ((m_property.type_original & 0x0c) == 0x08)
     {
-        int exp = pilot->exp;
-        if (property.type_original & 0x10)
+        int exp = m_pilot->exp;
+        if (m_property.type_original & 0x10)
         {
-            delete pilot;
+            delete m_pilot;
             this->setPilot(8);
         }
-        else if (property.type_original & 0x20) {
-            delete pilot;
+        else if (m_property.type_original & 0x20) {
+            delete m_pilot;
             this->setPilot(9);
         }
-        else if (property.type_original & 0x30)
+        else if (m_property.type_original & 0x30)
         {
-            delete pilot;
+            delete m_pilot;
             this->setPilot(10);
         }
-        this->pilot->exp = exp;
+        this->m_pilot->exp = exp;
     }
 
 
@@ -164,41 +188,41 @@ int Robot::getLevelPropertyPlus(int plusType, int level)
     }
 }
 
-Robot::Robot(int id, int player):id(id),player(player)
+Robot::Robot(int id, int player):m_id(id),m_player(player)
 {
-    property = DataHelper::getRobotProperty(id);
+    m_property = DataHelper::getRobotProperty(id);
 
     setImage();
-    weapon1 = DataHelper::getWeapon(property.weapon1id);
-    weapon2 = DataHelper::getWeapon(property.weapon2id);
+    m_weapon1 = DataHelper::getWeapon(m_property.weapon1id);
+    m_weapon2 = DataHelper::getWeapon(m_property.weapon2id);
 
 }
 
 
 Robot::~Robot()
 {
-    delete weapon1;
-    delete weapon2;
-    delete pilot;
+    delete m_weapon1;
+    delete m_weapon2;
+    delete m_pilot;
 }
 
 void Robot::setImage()
 {
-    setPixmap(ImageResourceManager::getRobotIcon(property.img_id, player));
+    setPixmap(ImageResourceManager::getRobotIcon(m_property.img_id, m_player));
 }
 
 void Robot::setPilot(int peopleId)
 {
-    pilot = new People(peopleId);
+    m_pilot = new People(peopleId);
 
-    pilot->spirit_total = pilot->property.spirit_total0;
-    pilot->spirit = pilot->spirit_total;
+    m_pilot->spirit_total = m_pilot->property.spirit_total0;
+    m_pilot->spirit = m_pilot->spirit_total;
 
-    hp_total = property.robot_hp0 + pilot->property.hp + getLevelPropertyPlus(property.robot_hp_plus, level);
-    this->move = property.robot_move0 + pilot->property.move;
-    speed = property.robot_speed0 + pilot->property.speed + getLevelPropertyPlus(property.robot_speed_plus, level);
-    strength = property.robot_strength0 + pilot->property.strength + getLevelPropertyPlus(property.robot_strength_plus, level);
-    defense = property.robot_defense0 + pilot->property.defense + getLevelPropertyPlus(property.robot_defense_plus, level);
+    m_hp_total = m_property.robot_hp0 + m_pilot->property.hp + getLevelPropertyPlus(m_property.robot_hp_plus, m_level);
+    this->m_move = m_property.robot_move0 + m_pilot->property.move;
+    m_speed = m_property.robot_speed0 + m_pilot->property.speed + getLevelPropertyPlus(m_property.robot_speed_plus, m_level);
+    m_strength = m_property.robot_strength0 + m_pilot->property.strength + getLevelPropertyPlus(m_property.robot_strength_plus, m_level);
+    m_defense = m_property.robot_defense0 + m_pilot->property.defense + getLevelPropertyPlus(m_property.robot_defense_plus, m_level);
 
 }
 void Robot::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
@@ -213,6 +237,7 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     Rect::mousePressEvent(event);
 
+    // 显示动画时按下鼠标动画加速
     if (game->scene->isMovingRobot || game->scene->map->isShowingAttackGif)
     {
         game->scene->map->moveAnimationSpeed = 10;
@@ -223,86 +248,101 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     if (event->button() == Qt::LeftButton)
     {
+
+
+        // 给自己修理加hp
         if (game->scene->selectedRobot == this && game->scene->selectedWeapon && game->scene->selectedWeapon->id == 164)
         {
             game->scene->music_effect->setMusicOnce(config->button_press_music);
             game->scene->attack(this);
         }
+        // 点击的不是自己时
         else if (game->scene->selectedRobot != this)
         {
-            if (game->scene->selectedWeapon && game->scene->map->AttackMap[x][y] >= 0)
+            //使用选择的武器攻击
+            if (game->scene->selectedWeapon && game->scene->map->AttackMap[m_x][m_y] >= 0)
             {
 
                 game->scene->music_effect->setMusicOnce(config->button_press_music);
                 game->scene->attack(this);
             }
-            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon1, this)
-                     && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon2, this))
+            //两个武器都能攻击时，显示菜单让玩家选择武器
+            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->m_weapon1, this)
+                     && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->m_weapon2, this))
             {
                 game->scene->enemy = this;
                 game->scene->deleteMenu();
                 game->scene->displayMenu3(game->scene->selectedRobot, this);
             }
-            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon1, this))
+            // 只有武器1能攻击到时自动使用武器1
+            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->m_weapon1, this))
             {
-                game->scene->selectedWeapon = game->scene->selectedRobot->weapon1;
+                game->scene->selectedWeapon = game->scene->selectedRobot->m_weapon1;
                 game->scene->music_effect->setMusicOnce(config->button_press_music);
                 game->scene->attack(this);
             }
-            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->weapon2, this))
+            // 只有武器2能攻击到时自动使用武器2
+            else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->m_weapon2, this))
             {
-                game->scene->selectedWeapon = game->scene->selectedRobot->weapon2;
+                game->scene->selectedWeapon = game->scene->selectedRobot->m_weapon2;
                 game->scene->music_effect->setMusicOnce(config->button_press_music);
                 game->scene->attack(this);
             }
             else if (game->scene->selectedRobot)
             {
-                if (this->pilot->id != 54)
+                // 点击我方非母舰其他机器人表示动作结束
+                if (this->m_pilot->id != 54)
                 {
                     game->scene->robotActionFinished();
                 }
-                else {
+                else { // this->pilot->id == 54
                     // 可以搭载到母舰里
-                    if (game->scene->map->moveMap[x][y] >= 0)
+                    if (game->scene->map->moveMap[m_x][m_y] >= 0)
                     {
-                        this->passengers.push_back(game->scene->selectedRobot);
-                        game->scene->selectedRobot->inMainShip = true;
+                        // this是母舰
+                        this->m_passengers.push_back(game->scene->selectedRobot);
+                        game->scene->selectedRobot->m_inMainShip = true;
 
-                        game->scene->map->moveAnimation(game->scene->selectedRobot, x, y);
+                        game->scene->map->moveAnimation(game->scene->selectedRobot, m_x, m_y);
                         game->scene->inMoveStatus  = false;
                         game->scene->remove(game->scene->selectedRobot);
                         game->scene->robotActionFinished();
 
                     }
+                    // 距离不够 无法搭载
                     else {
                         game->scene->robotActionFinished();
                     }
                 }
 
             }
-            else if (game->scene->inDebugMode || active)
+            // 点击机体显示移动范围和菜单
+            else if (game->scene->inDebugMode || m_active)
             {
                 game->scene->map->UnshowMoveRange();
                 game->scene->selectedRobot = this;
-                game->scene->originalPosition = Point(x, y);
+                game->scene->originalPosition = Point(m_x, m_y);
                 game->scene->map->showMoveRange(this);
                 game->scene->inMoveStatus = true;
                 game->scene->displayMenu(this);
             }
-            else if (!active && pilot->id == 54)
+            // 母舰即使移动过了也可以起飞
+            else if (!m_active && m_pilot->id == 54)
             {
                 game->scene->map->UnshowMoveRange();
                 game->scene->selectedRobot = this;
-                game->scene->originalPosition = Point(x, y);
+                game->scene->originalPosition = Point(m_x, m_y);
 
                 game->scene->displayMenu4();
             }
         }
+        //  点击自己表示行动结束（无动作）
         else
         {
             game->scene->robotActionFinished();
         }
     }
+    // 右键取消
     else if (event->button() == Qt::RightButton)
     {
         game->scene->cancel();
@@ -311,9 +351,9 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void Robot::setNotActive()
 {
-    if (active)
+    if (m_active)
     {
-        active = false;
+        m_active = false;
         QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
         e1->setColor(QColor(66,66,66));
         setGraphicsEffect(e1);
@@ -325,9 +365,9 @@ void Robot::setNotActive()
 
 void Robot::setActive()
 {
-    if (!active)
+    if (!m_active)
     {
-        active = true;
+        m_active = true;
         setGraphicsEffect(0);
         update();
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
@@ -349,13 +389,13 @@ Robot * Robot::canAttack(Weapon *weapon)
             if (m[i][j] >= 0)
             {
                 Robot * enemy = game->scene->map->robots[i][j];
-                if (enemy && enemy != this && enemy->player != this->player && weapon->firepower[enemy->property.type])
+                if (enemy && enemy != this && enemy->m_player != this->m_player && weapon->firepower[enemy->m_property.type])
                 {
                     return enemy;
                 }
 
                 //修理装置
-                if (weapon->id == 164 && enemy && enemy->player == this->player && enemy->hp < enemy->hp_total)
+                if (weapon->id == 164 && enemy && enemy->m_player == this->m_player && enemy->m_hp < enemy->m_hp_total)
                 {
                     return enemy;
                 }
@@ -367,7 +407,7 @@ Robot * Robot::canAttack(Weapon *weapon)
 
 void Robot::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if (shouldPaintUsingActive && (!active))
+    if (m_shouldPaintUsingActive && (!m_active))
     {
         QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
         e1->setColor(QColor(66,66,66));

@@ -8,10 +8,10 @@ class MapRect : public Rect
 {
 
 public:
-    int kind;   //16种地形
-    QString style;
+    int m_kind;   //16种地形
+    QString m_style;
 
-    int moveConsume[3]; //移动需要的行动力 [0 1 2] -> [空 陆 海]
+    int m_moveConsume[3]; //移动需要的行动力 [0 1 2] -> [空 陆 海]
     void setMoveConsume();
 
     MapRect(int kind);
@@ -19,9 +19,9 @@ public:
 
 
     //显示一些文字
-    void showString(QString text);
-    void showString2(QString text);
-    QGraphicsSimpleTextItem  * text = 0;
+    void showString(QString m_text);
+    void showString2(QString m_text);
+    QGraphicsSimpleTextItem  * m_text = nullptr;
     void UnshowString();
 
 

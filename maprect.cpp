@@ -12,7 +12,7 @@
 extern Game * game;
 MapRect::MapRect(int kind):Rect()
 {
-    this->kind = kind;
+    this->m_kind = kind;
     QString style = "A";
 
     setPixmap(ImageResourceManager::getMapRect(style, kind));
@@ -35,45 +35,45 @@ void MapRect::setMoveConsume()
             {9999,2,2,3,4,1,3,3,3,2,2,2,2,2,2,2}
     };
 
-    moveConsume[0] = moveConsumeTable[0][kind];
-    moveConsume[1] = moveConsumeTable[1][kind];
-    moveConsume[2] = moveConsumeTable[2][kind];
+    m_moveConsume[0] = moveConsumeTable[0][m_kind];
+    m_moveConsume[1] = moveConsumeTable[1][m_kind];
+    m_moveConsume[2] = moveConsumeTable[2][m_kind];
 
-    if (style == "C" && kind == 1)
-        moveConsume[2] = 1;
+    if (m_style == "C" && m_kind == 1)
+        m_moveConsume[2] = 1;
 }
 
 void MapRect::showString2(QString textToShow)
 {
-    text = new QGraphicsSimpleTextItem (textToShow, this);
+    m_text = new QGraphicsSimpleTextItem (textToShow, this);
     //game->scene->addItem(text);
 
-    QFont font = text->font();
+    QFont font = m_text->font();
     font.setPixelSize(26);  // 像素大小
     font.setBold(true);
-    text->setFont(font);
-    text->setBrush(QBrush(QColor(255, 255, 255)));
+    m_text->setFont(font);
+    m_text->setBrush(QBrush(QColor(255, 255, 255)));
 //    text->setBrush(QBrush(QColor(0, 0,0)));
 
-    text->setPen(QPen(QColor(0, 255, 255)));
+    m_text->setPen(QPen(QColor(0, 255, 255)));
 //    text->setPen(QPen(QColor(0, 0,0)));
 }
 
 void MapRect::showString(QString textToShow)
 {
-    text = new QGraphicsSimpleTextItem (textToShow, this);
+    m_text = new QGraphicsSimpleTextItem (textToShow, this);
     //game->scene->addItem(text);
 
 }
 
 void MapRect::UnshowString()
 {
-    if (text)
+    if (m_text)
     {
 
-        game->scene->remove(text);
-        delete text;
-        text = 0;
+        game->scene->remove(m_text);
+        delete m_text;
+        m_text = 0;
     }
 }
 
@@ -83,6 +83,7 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     Rect::mousePressEvent(event);
 
+    // 显示动画时按下鼠标动画加速
     if (game->scene->isMovingRobot || game->scene->map->isShowingAttackGif)
     {
         game->scene->map->moveAnimationSpeed = 10;
@@ -96,40 +97,44 @@ void MapRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
 
 
-        //如果有选中的机器 并且 点击的地图格子可以到达
+        //如果有选中的机器
         if (game->scene->inMoveStatus && game->scene->selectedRobot)
         {
-            game->scene->deleteMenu();
-
-            if (game->scene->map->moveMap[x][y] >= 0 || game->scene->inDebugMode)
+            //并且 点击的地图格子可以到达
+            if (game->scene->map->moveMap[m_x][m_y] >= 0 || game->scene->inDebugMode)
             {
-                game->scene->map->move(game->scene->selectedRobot, x, y);
+                game->scene->deleteMenu();
+
+                game->scene->map->move(game->scene->selectedRobot, m_x, m_y);
                 game->scene->inMoveStatus  = false;
 
                 game->scene->displayMenu2(game->scene->selectedRobot);
 
                 game->scene->showAttackRangeAfterMove();
 
+
             }
-
-
         }
+
+
         else if (game->scene->selectedRobot)
         {
 
             game->scene->robotActionFinished();
         }
+
+        // 点击地形显示地形信息
         else {
             static QString t[16] = {QString("墙壁"), QString("平地"), QString("平地"), QString("戈壁"), QString("山地"), QString("海"), QString("草地"), QString("森林"), QString("沙漠"), QString("建筑物"), QString("回复站"), QString("基地"), QString("基地"), QString("基地"), QString("基地"), QString("基地")};
             //qDebug() << "mouse Hover mapRect";
 
             QString s;
             QString spacing = "                         ";
-            s += spacing + "(" + QString::number(this->x) + ", " + QString::number(this->y) + ")\n";
-            s += spacing + t[kind] + "\n";
-            s += spacing + QString("空 ") + QString::number(moveConsume[0]) + "\n";
-            s += spacing + QString("陆 ") + QString::number(moveConsume[1]) + "\n";
-            s += spacing + QString("海 ") + QString::number(moveConsume[2]) + "\n";
+            s += spacing + "(" + QString::number(this->m_x) + ", " + QString::number(this->m_y) + ")\n";
+            s += spacing + t[m_kind] + "\n";
+            s += spacing + QString("空 ") + QString::number(m_moveConsume[0]) + "\n";
+            s += spacing + QString("陆 ") + QString::number(m_moveConsume[1]) + "\n";
+            s += spacing + QString("海 ") + QString::number(m_moveConsume[2]) + "\n";
 
 
             game->scene->robotStatus->setString(s);

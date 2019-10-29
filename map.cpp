@@ -43,7 +43,7 @@ Robot *Map::getCaptain()
     {
         for (int j = 0; j < height; ++j)
         {
-            if (robots[i][j] && robots[i][j]->pilot->id == 54){
+            if (robots[i][j] && robots[i][j]->m_pilot->id == 54){
                 return robots[i][j];
             }
         }
@@ -168,11 +168,11 @@ void Map::placeRobot(int stage, int round, bool wait)
         int y = robotData.y;
         Robot * robot = new Robot(robotData.robotId);
 
-        robot->robotBehavior = 1;
+        robot->m_robotBehavior = 1;
 
         //qDebug() << robotData.robotId;
         robot->setPilot(robotData.peopleId);
-        robot->hp = robot->hp_total;
+        robot->m_hp = robot->m_hp_total;
         //qDebug() << robot->property.robotName << robot->move;
         addRobot(robot, x, y);
     }
@@ -192,12 +192,12 @@ bool Map::placeEnemy(int stage, int round, bool wait)
         int y = robotData.y;
         Robot * robot = new Robot(robotData.robotId, 1);
         robot->setPilot(robotData.peopleId);
-        robot->hp = robot->hp_total;
+        robot->m_hp = robot->m_hp_total;
 
-        robot->level = robotData.robotLevel+1;
+        robot->m_level = robotData.robotLevel+1;
         robot->updateLevel();
 
-        robot->robotBehavior = robotData.robotBehavior;
+        robot->m_robotBehavior = robotData.robotBehavior;
 
         addRobot(robot, x, y);
         has = true;
@@ -216,7 +216,7 @@ void Map::placeRobotRunTime(RunTimeRobotData robotData)
     Robot * backupRobot = robots[x][y];
     Robot * robot = new Robot(robotData.robotId, robotData.player);
 
-    robot->robotBehavior = robotData.robotBehavior;
+    robot->m_robotBehavior = robotData.robotBehavior;
 
     //qDebug() << robotData.robotId;
     robot->setPilot(robotData.peopleId);
@@ -225,22 +225,22 @@ void Map::placeRobotRunTime(RunTimeRobotData robotData)
 
 
 
-    robot->level = robotData.level;
-    robot->pilot->exp = robotData.exp;
-    robot->hp = robotData.hp;
-    robot->pilot->spirit = robotData.sprit;
+    robot->m_level = robotData.level;
+    robot->m_pilot->exp = robotData.exp;
+    robot->m_hp = robotData.hp;
+    robot->m_pilot->spirit = robotData.sprit;
 
-    robot->inMainShip = robotData.inMainShip;
+    robot->m_inMainShip = robotData.inMainShip;
 
     if (robotData.active != 1)
     {
         robot->setNotActive();
     }
-    if (robot->inMainShip)
+    if (robot->m_inMainShip)
     {
         if (c)
         {
-            c->passengers.push_back(robot);
+            c->m_passengers.push_back(robot);
             game->scene->map->robots[x][y] = backupRobot;
             game->scene->remove(robot);
         }
@@ -290,12 +290,12 @@ void Map::showMoveRange(Robot *robot)
             Robot * enemy = robots[i][j];
             if (enemy)
             {
-                if (canAttack(robot, robot->weapon1, enemy) || canAttack(robot, robot->weapon2, enemy))
+                if (canAttack(robot, robot->m_weapon1, enemy) || canAttack(robot, robot->m_weapon2, enemy))
                 {
                     enemy->setGraphicsEffect(0);
-                    enemy->shouldPaintUsingActive = false;
+                    enemy->m_shouldPaintUsingActive = false;
                 }
-                else if (robot->player != enemy->player)
+                else if (robot->m_player != enemy->m_player)
                 {
                     //不能移动的格子添加灰色效果
                     QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
@@ -325,25 +325,25 @@ void Map::UnshowMoveRange()
             if (robots[i][j])
             {
                 robots[i][j]->setGraphicsEffect(0);
-                robots[i][j]->shouldPaintUsingActive = true;
+                robots[i][j]->m_shouldPaintUsingActive = true;
             }
         }
     }
 }
 int Map::getMoveConsume(Robot *robot, int x, int y, bool ignore_robot)
 {
-    if ((!ignore_robot) && robots[x][y] && robots[x][y]->player != robot->player)
+    if ((!ignore_robot) && robots[x][y] && robots[x][y]->m_player != robot->m_player)
         return 9999;
     else
-        return map[x][y]->moveConsume[robot->property.type];
+        return map[x][y]->m_moveConsume[robot->m_property.type];
 }
 
 QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_start, int move_value, bool ignore_robots)
 {
     //qDebug() << robot->property.robotName << "start searching";
 
-    int xPos = robot->x;
-    int yPos = robot->y;
+    int xPos = robot->m_x;
+    int yPos = robot->m_y;
 
     if (x_start != -1)
         xPos = x_start;
@@ -425,8 +425,8 @@ QVector<QVector<int> > Map::calculateMoveRange(Robot *robot, int x_start, int y_
 
 void Map::move(Robot *selectedRobot, int xTo, int yTo)
 {
-    int x = selectedRobot->x;
-    int y = selectedRobot->y;
+    int x = selectedRobot->m_x;
+    int y = selectedRobot->m_y;
     if (game->scene->captain)
     {
 
@@ -502,8 +502,8 @@ void Map::moveAnimation()
 
 QVector<QVector<int> > Map::calculateAttackRange(Robot *robot, Weapon *weapon)
 {
-    int xPos = robot->x;
-    int yPos = robot->y;
+    int xPos = robot->m_x;
+    int yPos = robot->m_y;
     QVector<QVector<int> > m = QVector<QVector<int> >(width, QVector<int>(height, -99));
     m[xPos][yPos] = weapon->range;    //行动力
 
@@ -585,7 +585,7 @@ void Map::showCannotAttackRange(Robot *robot)
     {
         for (int j = 0; j < height; ++j)
         {
-            if (i != robot->x || j != robot->y)
+            if (i != robot->m_x || j != robot->m_y)
             {
                 //不能移动的格子添加灰色效果
                 QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
@@ -649,7 +649,7 @@ void Map::showAttackRange(Robot *robot, Weapon *weapon)
                     }
                     if (robots[i][j])
                     {
-                        if (weapon->firepower[robots[i][j]->property.type] <= 0)
+                        if (weapon->firepower[robots[i][j]->m_property.type] <= 0)
                         {
                             QGraphicsColorizeEffect *e1 = new QGraphicsColorizeEffect();
                             e1->setColor(QColor(111,111,111));
@@ -657,7 +657,7 @@ void Map::showAttackRange(Robot *robot, Weapon *weapon)
                         }
                         else {
                             robots[i][j]->setGraphicsEffect(0);
-                            robots[i][j]->shouldPaintUsingActive = false;
+                            robots[i][j]->m_shouldPaintUsingActive = false;
                         }
 
                     }
@@ -719,7 +719,7 @@ void Map::AI_move(Robot *selectedRobot)
 
     m = calculateMoveRange(selectedRobot);
 
-    QVector<QVector<int> > m2 = calculateMoveRange(selectedRobot, closeEnemy->x, closeEnemy->y, 999);
+    QVector<QVector<int> > m2 = calculateMoveRange(selectedRobot, closeEnemy->m_x, closeEnemy->m_y, 999);
 
     int xTo, yTo;
     int value;
@@ -764,7 +764,7 @@ bool Map::hasAnyRobot(int player)
     {
         for (int j = 0; j< height; ++j)
         {
-            if (robots[i][j] && robots[i][j]->player == player)
+            if (robots[i][j] && robots[i][j]->m_player == player)
             {
                 return true;
             }
@@ -781,9 +781,9 @@ void Map::UpdateExpTable(QVector<int> & table)
         for (int j = 0; j < height; ++j)
         {
             Robot * robot = robots[i][j];
-            if (robot && robot->player == 0)
+            if (robot && robot->m_player == 0)
             {
-                table[robot->pilot->id] = robot->pilot->exp;
+                table[robot->m_pilot->id] = robot->m_pilot->exp;
             }
         }
     }
@@ -795,9 +795,9 @@ void Map::UpdateRobotLevelUsingExpTable(const QVector<int> & table)
         for (int j = 0; j < height; ++j)
         {
             Robot * robot = robots[i][j];
-            if (robot && robot->player == 0)
+            if (robot && robot->m_player == 0)
             {
-                robot->pilot->exp = table[robot->pilot->id];
+                robot->m_pilot->exp = table[robot->m_pilot->id];
                 robot->updateLevel();
             }
         }
@@ -830,13 +830,13 @@ void Map::UpdateRobotsAtSupply()
     {
         for (int j = 0; j < height; ++j)
         {
-            if (map[i][j]->kind == 10)
+            if (map[i][j]->m_kind == 10)
             {
                 Robot * robot = robots[i][j];
                 if (robot)
                 {
-                    int hp = robot->hp_total * 0.3;
-                    robot->hp = robot->hp + hp > robot->hp_total ? robot->hp_total : robot->hp + hp;
+                    int hp = robot->m_hp_total * 0.3;
+                    robot->m_hp = robot->m_hp + hp > robot->m_hp_total ? robot->m_hp_total : robot->m_hp + hp;
                 }
             }
         }
@@ -845,7 +845,7 @@ void Map::UpdateRobotsAtSupply()
 
 void Map::removeRobot(Robot *robot)
 {
-    robots[robot->x][robot->y] = 0;
+    robots[robot->m_x][robot->m_y] = 0;
 
     game->scene->removeItem(robot);
 
@@ -853,10 +853,10 @@ void Map::removeRobot(Robot *robot)
 }
 int Map::calcDistance(Robot *robot1, Robot *robot2)
 {
-    int x1 = robot1->x;
-    int y1 = robot1->y;
-    int x2 = robot2->x;
-    int y2 = robot2->y;
+    int x1 = robot1->m_x;
+    int y1 = robot1->m_y;
+    int x2 = robot2->m_x;
+    int y2 = robot2->m_y;
 
     int dx = abs(x1-x2);
     int dy = abs(y1-y2);
@@ -873,9 +873,9 @@ bool Map::canAttack(Robot *robot, Weapon *weapon, Robot *enemy)
     }
 
     QVector<QVector<int> > m = calculateAttackRange(robot, weapon);
-    if (robot->player == enemy->player)
+    if (robot->m_player == enemy->m_player)
         return false;
-    if (m[enemy->x][enemy->y] >= 0 && weapon->firepower[enemy->property.type] > 0)
+    if (m[enemy->m_x][enemy->m_y] >= 0 && weapon->firepower[enemy->m_property.type] > 0)
         return true;
     else
         return false;

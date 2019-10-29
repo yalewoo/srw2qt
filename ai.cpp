@@ -11,7 +11,7 @@ Robot * AI::GetEnemy(Map *map, Robot *robot)
     {
         for (int j = 1; j < map->height - 1; ++j)
         {
-            if (map->robots[i][j] && map->robots[i][j]->player != robot->player)
+            if (map->robots[i][j] && map->robots[i][j]->m_player != robot->m_player)
             {
                 return map->robots[i][j];
             }
@@ -24,10 +24,10 @@ QVector<Robot *> AI::GetAllAttackTargetRobots(Map *map, Robot *robot)
     {
         for (int j = 0; j < map->height; ++j)
         {
-            if (map->robots[i][j] && map->robots[i][j]->player != robot->player)
+            if (map->robots[i][j] && map->robots[i][j]->m_player != robot->m_player)
             {
-                map->robots[i][j]->tmp_ai_weapon1 = false;
-                map->robots[i][j]->tmp_ai_weapon2 = false;
+                map->robots[i][j]->m_tmp_ai_weapon1 = false;
+                map->robots[i][j]->m_tmp_ai_weapon2 = false;
 
             }
         }
@@ -36,45 +36,45 @@ QVector<Robot *> AI::GetAllAttackTargetRobots(Map *map, Robot *robot)
 
     QVector<Robot *> enemys;
     // 远程
-    if (robot->weapon1)
+    if (robot->m_weapon1)
     {
-        QVector<QVector<int> > w1 = map->calculateAttackRange(robot, robot->weapon1);
+        QVector<QVector<int> > w1 = map->calculateAttackRange(robot, robot->m_weapon1);
         for (int i = 0; i < map->width; ++i)
         {
             for (int j = 0; j < map->height; ++j)
             {
-                if (map->robots[i][j] && map->robots[i][j]->player != robot->player)
+                if (map->robots[i][j] && map->robots[i][j]->m_player != robot->m_player)
                 {
-                    if (w1[i][j] >= 0 && map->canAttack(robot, robot->weapon1, map->robots[i][j]))
+                    if (w1[i][j] >= 0 && map->canAttack(robot, robot->m_weapon1, map->robots[i][j]))
                     {
                         if (!m.contains(QPair<int,int>(i, j)))
                         {
                             m.insert(QPair<int,int>(i, j), true);
                             enemys.push_back(map->robots[i][j]);
                         }
-                        map->robots[i][j]->tmp_ai_weapon1 = true;
+                        map->robots[i][j]->m_tmp_ai_weapon1 = true;
                     }
                 }
             }
         }
     }
-    if (robot->weapon2)
+    if (robot->m_weapon2)
     {
-        QVector<QVector<int> > w1 = map->calculateAttackRange(robot, robot->weapon2);
+        QVector<QVector<int> > w1 = map->calculateAttackRange(robot, robot->m_weapon2);
         for (int i = 0; i < map->width; ++i)
         {
             for (int j = 0; j < map->height; ++j)
             {
-                if (map->robots[i][j] && map->robots[i][j]->player != robot->player)
+                if (map->robots[i][j] && map->robots[i][j]->m_player != robot->m_player)
                 {
-                    if (w1[i][j] > 0 && map->canAttack(robot, robot->weapon1, map->robots[i][j]))
+                    if (w1[i][j] > 0 && map->canAttack(robot, robot->m_weapon1, map->robots[i][j]))
                     {
                         if (!m.contains(QPair<int,int>(i, j)))
                         {
                             m.insert(QPair<int,int>(i, j), true);
                             enemys.push_back(map->robots[i][j]);
                         }
-                        map->robots[i][j]->tmp_ai_weapon2 = true;
+                        map->robots[i][j]->m_tmp_ai_weapon2 = true;
                     }
                 }
             }
@@ -87,7 +87,7 @@ QVector<Robot *> AI::GetAllAttackTargetRobots(Map *map, Robot *robot)
     {
         for (int j = 0; j < map->height; ++j)
         {
-            if (map->robots[i][j] && map->robots[i][j]->player != robot->player)
+            if (map->robots[i][j] && map->robots[i][j]->m_player != robot->m_player)
             {
                 if (i == 0 || j == 0)
                 {
@@ -98,23 +98,23 @@ QVector<Robot *> AI::GetAllAttackTargetRobots(Map *map, Robot *robot)
                          || (movemap[i][j-1] >= 0 &&  !map->robots[i][j-1])
                          || (movemap[i][j+1] >= 0 &&  !map->robots[i][j+1])  )
                 {
-                    if (robot->weapon1->range == 1 && robot->weapon1->firepower[map->robots[i][j]->property.type] > 0 )
+                    if (robot->m_weapon1->range == 1 && robot->m_weapon1->firepower[map->robots[i][j]->m_property.type] > 0 )
                     {
                         if (!m.contains(QPair<int,int>(i, j)))
                         {
                             m.insert(QPair<int,int>(i, j), true);
                             enemys.push_back(map->robots[i][j]);
                         }
-                        map->robots[i][j]->tmp_ai_weapon1 = true;
+                        map->robots[i][j]->m_tmp_ai_weapon1 = true;
                     }
-                    if ( robot->weapon2->range == 1 && robot->weapon2->firepower[map->robots[i][j]->property.type] > 0 )
+                    if ( robot->m_weapon2->range == 1 && robot->m_weapon2->firepower[map->robots[i][j]->m_property.type] > 0 )
                     {
                         if (!m.contains(QPair<int,int>(i, j)))
                         {
                             m.insert(QPair<int,int>(i, j), true);
                             enemys.push_back(map->robots[i][j]);
                         }
-                        map->robots[i][j]->tmp_ai_weapon2 = true;
+                        map->robots[i][j]->m_tmp_ai_weapon2 = true;
                     }
                 }
 
@@ -134,7 +134,7 @@ QVector<Robot *> AI::GetRobotList(Map *map)
         {
             if (map->robots[i][j])
             {
-                if (map->robots[i][j]->player == 0)
+                if (map->robots[i][j]->m_player == 0)
                 {
                     robots.push_back(map->robots[i][j]);
                 }
@@ -151,13 +151,13 @@ QVector<Robot *> AI::GetRobotList(Map *map)
         Robot * enemy = enemys[enemy_index];
         QVector<QVector<int> > m = map->calculateMoveRange(enemy, -1, -1, 999, true);
 
-        qDebug() << enemy->x << enemy->y << "===\n";
+        qDebug() << enemy->m_x << enemy->m_y << "===\n";
         int min = 999;
         for (int k = 0; k < robots.length(); ++k)
         {
             Robot * robot = robots[k];
-            int x = robot->x;
-            int y = robot->y;
+            int x = robot->m_x;
+            int y = robot->m_y;
             if (999 - m[x][y] < min)
             {
                 qDebug() << x << y << 999 - m[x][y];
@@ -187,7 +187,7 @@ QVector<Robot *> AI::GetRobotList(Map *map)
     for (int i = 0; i < enemys_rank.length(); ++i)
     {
 
-        qDebug() << enemys_rank[i] << enemys[i]->x << enemys[i]->y;
+        qDebug() << enemys_rank[i] << enemys[i]->m_x << enemys[i]->m_y;
     }
 
     return enemys;

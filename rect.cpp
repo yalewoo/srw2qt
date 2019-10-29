@@ -13,11 +13,11 @@ Rect::Rect(QGraphicsPixmapItem * parent) : QGraphicsPixmapItem(parent)
 
 void Rect::setxy(int xPos, int yPos)
 {
-    x = xPos;
-    y = yPos;
+    m_x = xPos;
+    m_y = yPos;
 
     int rectWidth = config->rectWidth;
-    setPos(rectWidth*x, rectWidth*y);
+    setPos(rectWidth*m_x, rectWidth*m_y);
 }
 
 void Rect::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
@@ -43,5 +43,6 @@ void Rect::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void Rect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug() << "base rect mouse press";
+    // qDebug() << "base rect mouse press";
+    game->scene->music_effect->setMusicOnce(config->button_press_music);
 }

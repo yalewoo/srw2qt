@@ -112,25 +112,25 @@ void SceneMain::displayMenu(Robot *robot)
 
     if (robot->canAttack1())
     {
-        Button * button_attack1 = menu->addButton(robot->weapon1->name);
+        Button * button_attack1 = menu->addButton(robot->m_weapon1->name);
         connect(button_attack1, SIGNAL(leftButtonClicked()), this, SLOT(attack1()));
     }
     if (robot->canAttack2())
     {
-        Button * button_attack2 = menu->addButton(robot->weapon2->name);
+        Button * button_attack2 = menu->addButton(robot->m_weapon2->name);
         connect(button_attack2, SIGNAL(leftButtonClicked()), this, SLOT(attack2()));
     }
 
 
 
 
-    if (robot->pilot)
+    if (robot->m_pilot)
     {
         for (int i = 0; i < 19; ++i)
         {
-            if (robot->pilot->property.spirit_table[i] && robot->pilot->spirit >= PeopleProperty::spirit_consume_table[i] && canUseSpirit(i))
+            if (robot->m_pilot->property.spirit_table[i] && robot->m_pilot->spirit >= PeopleProperty::spirit_consume_table[i] && canUseSpirit(i))
             {
-                Button * button = menu->addButton(robot->pilot->property.spirit_name[i] + " (" + QString::number(PeopleProperty::spirit_consume_table[i]) +")" );
+                Button * button = menu->addButton(robot->m_pilot->property.spirit_name[i] + " (" + QString::number(PeopleProperty::spirit_consume_table[i]) +")" );
                 switch(i)
                 {
                 case 0: connect(button, SIGNAL(leftButtonClicked()), this, SLOT(use_sprit_0())); break;
@@ -172,15 +172,15 @@ void SceneMain::displayMenu(Robot *robot)
     }
 
     // 起飞
-    if (selectedRobot->pilot->id == 54)
+    if (selectedRobot->m_pilot->id == 54)
     {
-        for (int i = 0; i < selectedRobot->passengers.length(); ++i)
+        for (int i = 0; i < selectedRobot->m_passengers.length(); ++i)
         {
-            Robot * robot = selectedRobot->passengers[i];
-            if (robot->active || inDebugMode)
+            Robot * robot = selectedRobot->m_passengers[i];
+            if (robot->m_active || inDebugMode)
             {
 
-                Button * button = menu->addButton(robot->property.robotName);
+                Button * button = menu->addButton(robot->m_property.robotName);
                 button->id = i;
                 connect(button, SIGNAL(leftButtonClickedWithParameter(int)), this, SLOT(launch(int)));
             }
@@ -189,7 +189,7 @@ void SceneMain::displayMenu(Robot *robot)
 
     if (inDebugMode)
     {
-        if (selectedRobot && selectedRobot->active == false)
+        if (selectedRobot && selectedRobot->m_active == false)
         {
             Button * button_set_active = menu->addButton(QString("设置激活状态"));
             connect(button_set_active, SIGNAL(leftButtonClicked()), this, SLOT(setActive()));
@@ -213,14 +213,14 @@ void SceneMain::displayMenu2(Robot *robot)
     int y = robot->pos().y();
     menu = drawMenu(Menu::Layout::horizontal, Menu_x, Menu_y);
 
-    if (robot->weapon1->range == 1 && robot->canAttack1())
+    if (robot->m_weapon1->range == 1 && robot->canAttack1())
     {
-        Button * button_attack1 = menu->addButton(robot->weapon1->name);
+        Button * button_attack1 = menu->addButton(robot->m_weapon1->name);
         connect(button_attack1, SIGNAL(leftButtonClicked()), this, SLOT(attack1()));
     }
-    if (robot->weapon2->range == 1 && robot->canAttack2())
+    if (robot->m_weapon2->range == 1 && robot->canAttack2())
     {
-        Button * button_attack2 = menu->addButton(robot->weapon2->name);
+        Button * button_attack2 = menu->addButton(robot->m_weapon2->name);
         connect(button_attack2, SIGNAL(leftButtonClicked()), this, SLOT(attack2()));
     }
 
@@ -233,14 +233,14 @@ void SceneMain::displayMenu3(Robot *robot, Robot *enemy)
 {
     menu = drawMenu(Menu::Layout::vertical, enemy->pos().x() + 10, enemy->pos().y());
 
-    if (robot->weapon1->range == 1 && robot->canAttack1())
+    if (robot->m_weapon1->range == 1 && robot->canAttack1())
     {
-        Button * button_attack1 = menu->addButton(robot->weapon1->name);
+        Button * button_attack1 = menu->addButton(robot->m_weapon1->name);
         connect(button_attack1, SIGNAL(leftButtonClicked()), this, SLOT(do_attack1()));
     }
-    if (robot->weapon2->range == 1 && robot->canAttack2())
+    if (robot->m_weapon2->range == 1 && robot->canAttack2())
     {
-        Button * button_attack2 = menu->addButton(robot->weapon2->name);
+        Button * button_attack2 = menu->addButton(robot->m_weapon2->name);
         connect(button_attack2, SIGNAL(leftButtonClicked()), this, SLOT(do_attack2()));
     }
 }
@@ -249,15 +249,15 @@ void SceneMain::displayMenu4()
 {
     menu = drawMenu(Menu::Layout::horizontal, Menu_x, Menu_y);
 
-    if (selectedRobot->pilot->id == 54)
+    if (selectedRobot->m_pilot->id == 54)
     {
-        for (int i = 0; i < selectedRobot->passengers.length(); ++i)
+        for (int i = 0; i < selectedRobot->m_passengers.length(); ++i)
         {
-            Robot * robot = selectedRobot->passengers[i];
-            if (robot->active)
+            Robot * robot = selectedRobot->m_passengers[i];
+            if (robot->m_active)
             {
 
-                Button * button = menu->addButton(robot->property.robotName);
+                Button * button = menu->addButton(robot->m_property.robotName);
                 button->id = i;
                 connect(button, SIGNAL(leftButtonClickedWithParameter(int)), this, SLOT(launch(int)));
             }
@@ -290,7 +290,7 @@ void SceneMain::robotActionFinished()
         if (captain)
         {
             captain = 0;
-            selectedRobot->inMainShip = false;
+            selectedRobot->m_inMainShip = false;
         }
 
         selectedRobot = nullptr;
@@ -309,15 +309,16 @@ void SceneMain::cancel()
         map->move(selectedRobot, originalPosition.x, originalPosition.y);
         if (captain)
         {
+            captain->AddPassenger(selectedRobot);
             remove(selectedRobot);
-            captain = 0;
+            captain = nullptr;
         }
     }
 
     map->UnshowMoveRange();
     inMoveStatus  = false;
-    selectedRobot = 0;
-    selectedWeapon = 0;
+    selectedRobot = nullptr;
+    selectedWeapon = nullptr;
 
 
 }
@@ -396,15 +397,15 @@ void SceneMain::next_turn()
     map->UpdateRobotsAtSupply();
     Robot * c = map->getCaptain();
 
-    if (c && c->passengers.length() > 0)
+    if (c && c->m_passengers.length() > 0)
     {
-        for (int i = 0; i < c->passengers.length(); ++i)
+        for (int i = 0; i < c->m_passengers.length(); ++i)
         {
-            Robot * robot = c->passengers[i];
+            Robot * robot = c->m_passengers[i];
             if (robot)
             {
-                int hp = robot->hp_total * 0.3;
-                robot->hp = robot->hp + hp > robot->hp_total ? robot->hp_total : robot->hp + hp;
+                int hp = robot->m_hp_total * 0.3;
+                robot->m_hp = robot->m_hp + hp > robot->m_hp_total ? robot->m_hp_total : robot->m_hp + hp;
 
                 robot->setActive();
                 robot->clearSpirit();
@@ -462,20 +463,20 @@ void SceneMain::AI_robot()
     map->UnshowMoveRange();
     inMoveStatus  = false;
 
-    qDebug() << "AI of robot in " << selectedRobot->x << selectedRobot->y;
+    qDebug() << "AI of robot in " << selectedRobot->m_x << selectedRobot->m_y;
 
-    if (round < selectedRobot->robotBehavior)
+    if (round < selectedRobot->m_robotBehavior)
     {
         Robot * enemy;
         if (enemy = selectedRobot->canAttack1())
         {
-            selectedWeapon = selectedRobot->weapon1;
+            selectedWeapon = selectedRobot->m_weapon1;
             attack(enemy);
             return;
         }
         else if (enemy = selectedRobot->canAttack2())
         {
-            selectedWeapon = selectedRobot->weapon2;
+            selectedWeapon = selectedRobot->m_weapon2;
             attack(enemy);
             return;
         }
@@ -499,27 +500,27 @@ void SceneMain::AI_robot()
     for (int i = 0; i < enemys.length(); ++i)
     {
         Robot * enemy = enemys[i];
-        qDebug() << "can attack" << enemy->x << enemy->y;
+        qDebug() << "can attack" << enemy->m_x << enemy->m_y;
 
         int damage1 = 0;
         int damage2 = 0;
-        if (enemy->tmp_ai_weapon1)
+        if (enemy->m_tmp_ai_weapon1)
         {
-            damage1 = BattleGround::getDamage(selectedRobot, enemy, selectedRobot->weapon1);
+            damage1 = BattleGround::getDamage(selectedRobot, enemy, selectedRobot->m_weapon1);
         }
-        if (enemy->tmp_ai_weapon2)
+        if (enemy->m_tmp_ai_weapon2)
         {
-            damage2 = BattleGround::getDamage(selectedRobot, enemy, selectedRobot->weapon2);
+            damage2 = BattleGround::getDamage(selectedRobot, enemy, selectedRobot->m_weapon2);
         }
 
-        if (damage1 > enemy->hp){
+        if (damage1 > enemy->m_hp){
             target = enemy;
-            selectedWeapon = selectedRobot->weapon1;
+            selectedWeapon = selectedRobot->m_weapon1;
             break;
         }
-        if (damage2 > enemy->hp){
+        if (damage2 > enemy->m_hp){
             target = enemy;
-            selectedWeapon = selectedRobot->weapon2;
+            selectedWeapon = selectedRobot->m_weapon2;
             break;
         }
 
@@ -527,7 +528,7 @@ void SceneMain::AI_robot()
         if (damage > maxDamage)
         {
             maxDamage = damage;
-            selectedWeapon = damage1 > damage2 ? selectedRobot->weapon1 : selectedRobot->weapon2;
+            selectedWeapon = damage1 > damage2 ? selectedRobot->m_weapon1 : selectedRobot->m_weapon2;
             target = enemy;
         }
     }
@@ -544,8 +545,8 @@ void SceneMain::AI_robot()
         else {
             // 先移动在攻击
             QVector<QVector<int> > m = map->calculateMoveRange(selectedRobot);
-            int x = target->x;
-            int y = target->y;
+            int x = target->m_x;
+            int y = target->m_y;
             int target_x = x;
             int target_y = y;
             bool canAttack = true;
@@ -589,26 +590,26 @@ void SceneMain::AI_robot()
 }
 void SceneMain::attack1()
 {
-    selectedWeapon = selectedRobot->weapon1;
+    selectedWeapon = selectedRobot->m_weapon1;
     showAttackRange();
 }
 
 void SceneMain::attack2()
 {
-    selectedWeapon = selectedRobot->weapon2;
+    selectedWeapon = selectedRobot->m_weapon2;
     showAttackRange();
 }
 
 void SceneMain::do_attack1()
 {
-    selectedWeapon = selectedRobot->weapon1;
+    selectedWeapon = selectedRobot->m_weapon1;
     music_effect->setMusicOnce(config->button_press_music);
     attack(enemy);
 }
 
 void SceneMain::do_attack2()
 {
-    selectedWeapon = selectedRobot->weapon2;
+    selectedWeapon = selectedRobot->m_weapon2;
     music_effect->setMusicOnce(config->button_press_music);
     attack(enemy);
 }
@@ -649,8 +650,10 @@ void SceneMain::launch(int id)
 {
     qDebug() << "launch id=" << id;
     captain = selectedRobot;
-    selectedRobot = selectedRobot->passengers[id];
+    selectedRobot = selectedRobot->m_passengers[id];
     selectedRobot->setxy(originalPosition.x, originalPosition.y);
+
+    captain->DeletePassenger(selectedRobot);
 
     inMoveStatus = true;
 
@@ -677,21 +680,21 @@ void SceneMain::saveToFile()
         {
             for (int j = 0; j < map->height; ++j)
             {
-                if (map->robots[i][j] && map->robots[i][j]->pilot->id == 54)
+                if (map->robots[i][j] && map->robots[i][j]->m_pilot->id == 54)
                 {
                     Robot * robot = map->robots[i][j];
-                    out << robot->x << ",";
-                    out << robot->y << ",";
-                    out << robot->id << ",";
-                    out << robot->robotBehavior << ",";
-                    out << robot->pilot->id << ",";
-                    out << robot->player << ",";
-                    out << robot->active << ",";
-                    out << robot->level << ",";
-                    out << robot->pilot->exp << ",";
-                    out << robot->hp << ",";
-                    out << robot->inMainShip << ",";
-                    out << robot->pilot->spirit << "\n";
+                    out << robot->m_x << ",";
+                    out << robot->m_y << ",";
+                    out << robot->m_id << ",";
+                    out << robot->m_robotBehavior << ",";
+                    out << robot->m_pilot->id << ",";
+                    out << robot->m_player << ",";
+                    out << robot->m_active << ",";
+                    out << robot->m_level << ",";
+                    out << robot->m_pilot->exp << ",";
+                    out << robot->m_hp << ",";
+                    out << robot->m_inMainShip << ",";
+                    out << robot->m_pilot->spirit << "\n";
                 }
             }
         }
@@ -701,21 +704,21 @@ void SceneMain::saveToFile()
         {
             for (int j = 0; j < map->height; ++j)
             {
-                if (map->robots[i][j] && map->robots[i][j]->pilot->id != 54)
+                if (map->robots[i][j] && map->robots[i][j]->m_pilot->id != 54)
                 {
                     Robot * robot = map->robots[i][j];
-                    out << robot->x << ",";
-                    out << robot->y << ",";
-                    out << robot->id << ",";
-                    out << robot->robotBehavior << ",";
-                    out << robot->pilot->id << ",";
-                    out << robot->player << ",";
-                    out << robot->active << ",";
-                    out << robot->level << ",";
-                    out << robot->pilot->exp << ",";
-                    out << robot->hp << ",";
-                    out << robot->inMainShip << ",";
-                    out << robot->pilot->spirit << "\n";
+                    out << robot->m_x << ",";
+                    out << robot->m_y << ",";
+                    out << robot->m_id << ",";
+                    out << robot->m_robotBehavior << ",";
+                    out << robot->m_pilot->id << ",";
+                    out << robot->m_player << ",";
+                    out << robot->m_active << ",";
+                    out << robot->m_level << ",";
+                    out << robot->m_pilot->exp << ",";
+                    out << robot->m_hp << ",";
+                    out << robot->m_inMainShip << ",";
+                    out << robot->m_pilot->spirit << "\n";
                 }
             }
         }
@@ -839,12 +842,12 @@ void SceneMain::LoadFromFile_expTable()
 
 bool SceneMain::canUseSpirit(int id)
 {
-    if (selectedRobot->inMainShip)
+    if (selectedRobot->m_inMainShip)
         return false;
 
     switch(id)
     {
-    case 0: return selectedRobot->hp < selectedRobot->hp_total;
+    case 0: return selectedRobot->m_hp < selectedRobot->m_hp_total;
     case 1: return true;
     case 2: return true;
     case 3: return true;
@@ -878,7 +881,7 @@ void SceneMain::attack(Robot *enemy2)
 
     map->UnshowMoveRange();
 
-    map->showAttackGif(selectedRobot->x, selectedRobot->y, enemy->x, enemy->y);
+    map->showAttackGif(selectedRobot->m_x, selectedRobot->m_y, enemy->m_x, enemy->m_y);
 
 
 
@@ -897,13 +900,13 @@ void SceneMain::showAttackRangeAfterMove()
 {
     map->UnshowMoveRange();
 
-    if (selectedRobot->weapon1->range == 1)
+    if (selectedRobot->m_weapon1->range == 1)
     {
-        map->showAttackRange(selectedRobot, selectedRobot->weapon1);
+        map->showAttackRange(selectedRobot, selectedRobot->m_weapon1);
     }
-    else if (selectedRobot->weapon2->range == 1)
+    else if (selectedRobot->m_weapon2->range == 1)
     {
-        map->showAttackRange(selectedRobot, selectedRobot->weapon2);
+        map->showAttackRange(selectedRobot, selectedRobot->m_weapon2);
     }
     else {
         map->showCannotAttackRange(selectedRobot);
@@ -913,13 +916,13 @@ void SceneMain::attackDone()
 {
     deleteMenu();
 
-    if (enemy->hp <= 0)
+    if (enemy->m_hp <= 0)
     {
         map->removeRobot(enemy);
 
         // 获得经验
-        int diffLevel = enemy->level - selectedRobot->level;
-        int exp = enemy->property.exp_dievalue * enemy->level;
+        int diffLevel = enemy->m_level - selectedRobot->m_level;
+        int exp = enemy->m_property.exp_dievalue * enemy->m_level;
         if (diffLevel >= 0)
         {
             diffLevel = diffLevel > 8 ? 8 : diffLevel;
@@ -932,10 +935,10 @@ void SceneMain::attackDone()
 
 
         selectedRobot->gotExp(exp);
-        map->showText(selectedRobot->x, selectedRobot->y, "EXP +" + QString::number(exp));
+        map->showText(selectedRobot->m_x, selectedRobot->m_y, "EXP +" + QString::number(exp));
 
     }
-    if (selectedRobot->hp <= 0)
+    if (selectedRobot->m_hp <= 0)
     {
         map->removeRobot(selectedRobot);
 
@@ -962,9 +965,9 @@ void SceneMain::showDiagDone()
 
 void SceneMain::use_sprit_begin(int id)
 {
-    selectedRobot->pilot->spirit -= PeopleProperty::spirit_consume_table[id];
+    selectedRobot->m_pilot->spirit -= PeopleProperty::spirit_consume_table[id];
 
-    selectedRobot->spirit[id] = true;
+    selectedRobot->m_spirit[id] = true;
 
     deleteMenu();
 }
@@ -979,13 +982,13 @@ void SceneMain::use_sprit_0()	//毅力
     use_sprit_begin(0);
     
     qDebug() << "use_sprit_0";
-    selectedRobot->hp += 50;
+    selectedRobot->m_hp += 50;
 
-    if (selectedRobot->hp > selectedRobot->hp_total)
+    if (selectedRobot->m_hp > selectedRobot->m_hp_total)
     {
-        selectedRobot->hp = selectedRobot->hp_total;
+        selectedRobot->m_hp = selectedRobot->m_hp_total;
     }
-    map->showText(selectedRobot->x, selectedRobot->y, QString("+50"));
+    map->showText(selectedRobot->m_x, selectedRobot->m_y, QString("+50"));
     robotStatus->showRobot(selectedRobot);
 
 
@@ -996,7 +999,7 @@ void SceneMain::use_sprit_1()	//加速
     use_sprit_begin(1);
     
     qDebug() << "use_sprit_1";
-    selectedRobot->spirit[1] = true;
+    selectedRobot->m_spirit[1] = true;
 
     map->UnshowMoveRange();
     map->showMoveRange(selectedRobot);
@@ -1008,7 +1011,7 @@ void SceneMain::use_sprit_2()	//瞄准
     use_sprit_begin(2);
     
     qDebug() << "use_sprit_2";
-    selectedRobot->spirit[2] = true;
+    selectedRobot->m_spirit[2] = true;
 
 
     use_sprit_end(2);
@@ -1018,7 +1021,7 @@ void SceneMain::use_sprit_3()	//防守
     use_sprit_begin(3);
     
     qDebug() << "use_sprit_3";
-    selectedRobot->spirit[3] = true;
+    selectedRobot->m_spirit[3] = true;
 
 
     use_sprit_end(3);
@@ -1028,7 +1031,7 @@ void SceneMain::use_sprit_4()	//强攻
     use_sprit_begin(4);
     
     qDebug() << "use_sprit_4";
-    selectedRobot->spirit[4] = true;
+    selectedRobot->m_spirit[4] = true;
 
 
     use_sprit_end(4);
@@ -1047,7 +1050,7 @@ void SceneMain::use_sprit_6()	//必杀
     use_sprit_begin(6);
     
     qDebug() << "use_sprit_6";
-    selectedRobot->spirit[6] = true;
+    selectedRobot->m_spirit[6] = true;
 
 
     use_sprit_end(6);
@@ -1057,7 +1060,7 @@ void SceneMain::use_sprit_7()	//疾风
     use_sprit_begin(7);
     
     qDebug() << "use_sprit_7";
-    selectedRobot->spirit[7] = true;
+    selectedRobot->m_spirit[7] = true;
 
     map->UnshowMoveRange();
     map->showMoveRange(selectedRobot);
@@ -1069,7 +1072,7 @@ void SceneMain::use_sprit_8()	//回避
     use_sprit_begin(8);
     
     qDebug() << "use_sprit_8";
-    selectedRobot->spirit[8] = true;
+    selectedRobot->m_spirit[8] = true;
 
 
     use_sprit_end(8);
@@ -1080,14 +1083,14 @@ void SceneMain::use_sprit_9()	//潜力
     
     qDebug() << "use_sprit_9";
 
-    int hp_plus = selectedRobot->hp_total - selectedRobot->hp;
-    selectedRobot->hp += hp_plus;
+    int hp_plus = selectedRobot->m_hp_total - selectedRobot->m_hp;
+    selectedRobot->m_hp += hp_plus;
 
-    if (selectedRobot->hp > selectedRobot->hp_total)
+    if (selectedRobot->m_hp > selectedRobot->m_hp_total)
     {
-        selectedRobot->hp = selectedRobot->hp_total;
+        selectedRobot->m_hp = selectedRobot->m_hp_total;
     }
-    map->showText(selectedRobot->x, selectedRobot->y, QString("+" + QString::number(hp_plus)));
+    map->showText(selectedRobot->m_x, selectedRobot->m_y, QString("+" + QString::number(hp_plus)));
     robotStatus->showRobot(selectedRobot);
 
     use_sprit_end(9);
@@ -1097,7 +1100,7 @@ void SceneMain::use_sprit_10()	//热血
     use_sprit_begin(10);
     
     qDebug() << "use_sprit_10";
-    selectedRobot->spirit[10] = true;
+    selectedRobot->m_spirit[10] = true;
 
 
     use_sprit_end(10);
