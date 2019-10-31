@@ -1,7 +1,8 @@
 #include "game.h"
 
-#include "datahelper.h"
+#include "datareader/datahelper.h"
 #include "scene_main.h"
+#include "scenestart.h"
 
 #include <QCoreApplication>
 
@@ -20,6 +21,8 @@ void waitVariableToBeTrueExcludeUserInput(bool & b)
 
 Game::Game()
 {
+    musicManager = new MusicManager();
+
     // init view settings
     init();
 
@@ -34,21 +37,13 @@ void Game::start()
 
     Robot::exp_update_table = DataHelper::getExpUpdateTable();
 
-
-
-    scene = new SceneMain();
-
-
-    scene->init();
-
-    setScene(scene);
-
-
+    sceneStart = new SceneStart();
+    sceneStart->init();
+    setScene(sceneStart);
     this->show();
+    connect(sceneStart, SIGNAL(StartClicked()), this, SLOT(StartClicked()));
+musicManager->PlayStartMusic();
 
-
-
-    scene->story->showConversition(1);
 
 }
 
@@ -62,4 +57,29 @@ void Game::init()
 
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
     this->resize(1024, 768);
+}
+
+void Game::StartClicked()
+{
+    scene = new SceneMain();
+
+
+    scene->init();
+
+    setScene(scene);
+
+
+    this->show();
+
+
+
+    scene->story->showConversition(1);
+}
+
+void Game::cancel()
+{
+    if (scene)
+    {
+        scene->cancel();
+    }
 }

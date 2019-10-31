@@ -6,7 +6,7 @@
 
 #include <QObject>
 
-#include "datahelper.h"
+#include "datareader/datahelper.h"
 
 class Map : public QObject
 {

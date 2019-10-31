@@ -8,7 +8,7 @@ extern Game * game;
 
 #include "point.h"
 
-#include "imageresourcemanager.h"
+#include "datareader/imageresourcemanager.h"
 #include "people.h"
 
 #include <QTime>

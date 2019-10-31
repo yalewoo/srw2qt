@@ -1,8 +1,8 @@
 #include "map.h"
 
-#include "datahelper.h"
+#include "datareader/datahelper.h"
 
-#include "config.h"
+#include "datareader/config.h"
 extern Config *config;
 
 #include "game.h"

@@ -6,7 +6,7 @@
 
 extern Game * game;
 
-#include "config.h"
+#include "datareader/config.h"
 extern Config * config;
 
 Button::Button(QString name, QGraphicsItem *parent) : QGraphicsRectItem(parent)
@@ -29,14 +29,15 @@ Button::Button(QString name, QGraphicsItem *parent) : QGraphicsRectItem(parent)
     setAcceptHoverEvents(true);
 
 
-    game->connect(this, SIGNAL(rightButtonClicked()), game->scene, SLOT(cancel()));
+    game->connect(this, SIGNAL(rightButtonClicked()), game, SLOT(cancel()));
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        game->scene->music_effect->setMusicOnce(config->button_press_music);
+        game->musicManager->PlayButtonClicked();
+
         if (id == -1)
         {
             emit leftButtonClicked();
@@ -73,4 +74,9 @@ void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 void Button::setText(QString s)
 {
     text->setPlainText(s);
+}
+
+void Button::setWidthAndHeight(int width, int height)
+{
+    setRect(0, 0, width, height);
 }

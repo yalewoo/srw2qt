@@ -1,9 +1,9 @@
 #include <QApplication>
 
-#include "config.h"
+#include "DataReader/config.h"
 #include "game.h"
 
-#include "imageresourcemanager.h"
+#include "DataReader/imageresourcemanager.h"
 
 Config *config;
 Game * game;

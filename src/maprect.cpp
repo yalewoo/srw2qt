@@ -1,9 +1,9 @@
 #include "maprect.h"
 
-#include "datahelper.h"
+#include "datareader/datahelper.h"
 #include "game.h"
 
-#include "imageresourcemanager.h"
+#include "datareader/imageresourcemanager.h"
 
 #include <QGraphicsSceneMouseEvent>
 

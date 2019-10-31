@@ -26,7 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
+    Battle/battle.cpp \
+    Battle/battleground.cpp \
+    DataReader/imageresourcemanager.cpp \
+    Music/music.cpp \
+    Music/musicmanager.cpp \
+    UI/button.cpp \
+    UI/menu.cpp \
+    UI/robotstatusview.cpp \
+    main.cpp \
     game.cpp \
     scene_main.cpp \
     rect.cpp \
@@ -35,44 +43,40 @@ SOURCES += \
     scene.cpp \
     robot.cpp \
     people.cpp \
-    robotstatusview.cpp \
-    button.cpp \
-    menu.cpp \
-    music.cpp \
     point.cpp \
-    battle.cpp \
-    battleground.cpp \
     ai.cpp \
+    scenestart.cpp \
     story.cpp \
     storydiag.cpp \
-    imageresourcemanager.cpp
 
 HEADERS += \
+    Battle/battle.h \
+    Battle/battleground.h \
+    DataReader/config.h \
+    DataReader/datahelper.h \
+    DataReader/imageresourcemanager.h \
+    Music/music.h \
+    Music/musicmanager.h \
+    UI/button.h \
+    UI/menu.h \
+    UI/robotstatusview.h \
     game.h \
     scene_main.h \
-    datahelper.h \
     rect.h \
     maprect.h \
     map.h \
-    config.h \
     scene.h \
     robot.h \
     robotproperty.h \
     people.h \
     peopleproperty.h \
-    robotstatusview.h \
+    scenestart.h \
     weapon.h \
-    button.h \
-    menu.h \
-    music.h \
     point.h \
-    battle.h \
-    battleground.h \
     ai.h \
     story.h \
     storydiag.h \
     conversation.h \
-    imageresourcemanager.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

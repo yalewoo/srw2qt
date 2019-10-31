@@ -1,5 +1,5 @@
-#include "battle.h"
-#include "battleground.h"
+#include "battle/battle.h"
+#include "battle/battleground.h"
 #include "scene_main.h"
 
 SceneMain::SceneMain()
@@ -46,7 +46,6 @@ void SceneMain::init()
 
 
     exp_table = QVector<int>(200, 0);
-
 }
 
 void SceneMain::loadStage(int stage, bool useDefaultRobot)

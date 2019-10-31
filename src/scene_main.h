@@ -2,13 +2,13 @@
 #define SCENEMAIN_H
 
 #include "scene.h"
-#include "robotstatusview.h"
+#include "ui/robotstatusview.h"
 
 #include "ai.h"
-#include "battle.h"
+#include "battle/battle.h"
 #include "map.h"
-#include "menu.h"
-#include "music.h"
+#include "ui/menu.h"
+#include "music/music.h"
 #include "point.h"
 #include "story.h"
 

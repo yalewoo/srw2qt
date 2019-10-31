@@ -1,4 +1,4 @@
-#include "datahelper.h"
+#include "datareader/datahelper.h"
 #include "people.h"
 
 QVector<QString> PeopleProperty::spirit_name ={"毅力", "加速", "瞄准", "防守", "强攻", "友情", "必杀", "疾风", "回避", "潜力", "热血", "情义", "传真", "援助", "怒", "祈祷", "干扰", "狂怒", "爱心"};

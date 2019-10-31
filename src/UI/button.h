@@ -18,6 +18,7 @@ public:
 
     void setText(QString s);
 
+    void setWidthAndHeight(int width, int height);
 
     int width = 30;
     int height = 30;

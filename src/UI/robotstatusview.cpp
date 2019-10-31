@@ -11,8 +11,8 @@ extern Game * game;
 
 #include "robot.h"
 
-#include "config.h"
-#include "imageresourcemanager.h"
+#include "datareader/config.h"
+#include "datareader/imageresourcemanager.h"
 extern Config * config;
 
 #include <QDebug>

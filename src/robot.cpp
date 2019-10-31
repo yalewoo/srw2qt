@@ -1,8 +1,8 @@
-#include "datahelper.h"
+#include "datareader/datahelper.h"
 #include "robot.h"
 
 #include "game.h"
-#include "imageresourcemanager.h"
+#include "datareader/imageresourcemanager.h"
 #include "scene_main.h"
 
 #include <QCoreApplication>

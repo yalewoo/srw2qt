@@ -1,6 +1,6 @@
 #include "rect.h"
 
-#include "config.h"
+#include "datareader/config.h"
 extern Config * config;
 #include "game.h"
 extern Game * game;

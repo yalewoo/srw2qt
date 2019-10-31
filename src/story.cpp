@@ -7,7 +7,7 @@ extern Game * game;
 
 #include <QTextCodec>
 
-#include "config.h"
+#include "datareader/config.h"
 extern Config * config;
 
 Story::Story(int stage)

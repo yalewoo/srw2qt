@@ -28,6 +28,7 @@ struct Config
     QString background_music_path_root;
     QString background_music_path;
     QString background_music_path_enemy;
+    QString background_music_start;
 
     QString button_press_music;
 
@@ -76,6 +77,7 @@ struct Config
         background_music_path_root = workDir + "/res/music/";
         background_music_path = workDir + "/res/music/87.wav";
         background_music_path_enemy = workDir + "/res/music/88.wav";
+        background_music_start = workDir + "/res/music/85.wav";
 
         button_press_music = workDir + "res/wav/pushbutton.mp3";
 
