@@ -69,11 +69,6 @@ public:
     Button * saveButton = 0;
     Button * loadButton = 0;
 
-    //music
-    Music * music_background = 0;
-    Music * music_effect = 0;
-    Music * music_battle = 0;
-
     //战斗画面
     Battle * battle = 0;
 

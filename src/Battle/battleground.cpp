@@ -36,7 +36,7 @@ void BattleGround::setSize(int width, int height)
 
 void BattleGround::showAttackAnimation(Robot *robot)
 {
-    game->scene->music_effect->setMusicOnce(config->attack_fire_music);
+    game->musicManager->PlayButtonClicked();
 
     weapon_image = new QGraphicsPixmapItem(this);
     if (robot->m_player == 0)
@@ -92,8 +92,7 @@ BattleGround::BattleGround(Robot *robot2, Weapon *weapon2, Robot *enemy2):
     QString s;
 
     s.sprintf("%X.wav", music_id);
-    game->scene->music_battle->setMusicLoop(config->background_music_path_root + s);
-
+    game->musicManager->PlayBattleMusic(s);
 
     s = robot->m_property.robotName + QString("攻击!");
     battle_text = new QGraphicsTextItem(s, this);
@@ -277,13 +276,13 @@ void BattleGround::mousePressEvent(QGraphicsSceneMouseEvent *event)
         }
         else
         {
-            game->scene->music_battle->stop();
+            game->musicManager->StopBattle();
             battlefinished = true;
         }
     }
     else
     {
-        game->scene->music_battle->stop();
+        game->musicManager->StopBattle();
         battlefinished = true;
     }
 }

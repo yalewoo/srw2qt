@@ -10,7 +10,7 @@
 
 void waitVariableToBeTrueAllEvents(bool & b);
 void waitVariableToBeTrueExcludeUserInput(bool & b);
-
+void waitForTimeAllEvents(int ms);
 
 class SceneStart;
 

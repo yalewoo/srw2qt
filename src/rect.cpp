@@ -44,5 +44,5 @@ void Rect::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 void Rect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     // qDebug() << "base rect mouse press";
-    game->scene->music_effect->setMusicOnce(config->button_press_music);
+    game->musicManager->PlayButtonClicked();
 }

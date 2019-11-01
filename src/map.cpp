@@ -206,6 +206,35 @@ bool Map::placeEnemy(int stage, int round, bool wait)
     return has;
 }
 
+bool Map::placeEnemy(const QVector<EnemyData> & robots)
+{
+    bool has = false;
+    for (int i = 0; i < robots.length(); ++i)
+    {
+
+        EnemyData robotData = robots[i];
+
+        int x = robotData.x;
+        int y = robotData.y;
+        Robot * robot = new Robot(robotData.robotId, 1);
+        robot->setPilot(robotData.peopleId);
+        robot->m_hp = robot->m_hp_total;
+
+        robot->m_level = robotData.robotLevel+1;
+        robot->updateLevel();
+
+        robot->m_robotBehavior = robotData.robotBehavior;
+
+        addRobot(robot, x, y);
+        has = true;
+
+        waitForTimeAllEvents(700);
+
+    }
+
+    return has;
+}
+
 void Map::placeRobotRunTime(RunTimeRobotData robotData)
 {
     Robot * c = getCaptain();

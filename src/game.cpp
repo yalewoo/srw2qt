@@ -5,7 +5,7 @@
 #include "scenestart.h"
 
 #include <QCoreApplication>
-
+#include <QTime>
 
 
 void waitVariableToBeTrueAllEvents(bool & b)
@@ -18,6 +18,14 @@ void waitVariableToBeTrueExcludeUserInput(bool & b)
     while (!b)
         QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents, 100);
 }
+
+void waitForTimeAllEvents(int msec)
+{
+    QTime dieTime = QTime::currentTime().addMSecs(msec);
+        while( QTime::currentTime() < dieTime )
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
 
 Game::Game()
 {
@@ -42,7 +50,7 @@ void Game::start()
     setScene(sceneStart);
     this->show();
     connect(sceneStart, SIGNAL(StartClicked()), this, SLOT(StartClicked()));
-musicManager->PlayStartMusic();
+    musicManager->PlayStartMusic();
 
 
 }
@@ -73,7 +81,7 @@ void Game::StartClicked()
 
 
 
-    scene->story->showConversition(1);
+    scene->story->execute(1);
 }
 
 void Game::cancel()
@@ -83,3 +91,5 @@ void Game::cancel()
         scene->cancel();
     }
 }
+
+

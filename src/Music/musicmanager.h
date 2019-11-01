@@ -5,8 +5,10 @@
 
 
 
-class MusicManager
+class MusicManager : public QObject
 {
+    Q_OBJECT
+
     //music
     Music * music_background = nullptr;
     Music * music_effect = nullptr;
@@ -18,6 +20,12 @@ public:
     void PlayButtonClicked();
 
     void PlayStartMusic();
+
+    void PlayBackgroundMusic(int player);
+
+    void PlayBattleMusic(QString path);
+    void PlayOnceMusic(QString path);
+    void StopBattle();
 };
 
 #endif // MUSICMANAGER_H

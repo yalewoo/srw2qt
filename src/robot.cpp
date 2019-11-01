@@ -253,7 +253,7 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
         // 给自己修理加hp
         if (game->scene->selectedRobot == this && game->scene->selectedWeapon && game->scene->selectedWeapon->id == 164)
         {
-            game->scene->music_effect->setMusicOnce(config->button_press_music);
+            game->musicManager->PlayButtonClicked();
             game->scene->attack(this);
         }
         // 点击的不是自己时
@@ -263,7 +263,7 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
             if (game->scene->selectedWeapon && game->scene->map->AttackMap[m_x][m_y] >= 0)
             {
 
-                game->scene->music_effect->setMusicOnce(config->button_press_music);
+                game->musicManager->PlayButtonClicked();
                 game->scene->attack(this);
             }
             //两个武器都能攻击时，显示菜单让玩家选择武器
@@ -278,14 +278,14 @@ void Robot::mousePressEvent(QGraphicsSceneMouseEvent *event)
             else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->m_weapon1, this))
             {
                 game->scene->selectedWeapon = game->scene->selectedRobot->m_weapon1;
-                game->scene->music_effect->setMusicOnce(config->button_press_music);
+                game->musicManager->PlayButtonClicked();
                 game->scene->attack(this);
             }
             // 只有武器2能攻击到时自动使用武器2
             else if (game->scene->selectedRobot && game->scene->map->canAttack(game->scene->selectedRobot, game->scene->selectedRobot->m_weapon2, this))
             {
                 game->scene->selectedWeapon = game->scene->selectedRobot->m_weapon2;
-                game->scene->music_effect->setMusicOnce(config->button_press_music);
+                game->musicManager->PlayButtonClicked();
                 game->scene->attack(this);
             }
             else if (game->scene->selectedRobot)

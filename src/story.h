@@ -10,12 +10,14 @@
 
 class Story
 {
+    int m_stage;
 public:
     Story(int stage);
+    void setStage(int stage);
 
     void showConversition(int turn);
 
-    QVector<QVector<Conversation> > conversitions;
+    void execute(int turn);
 };
 
 #endif // STORY_H

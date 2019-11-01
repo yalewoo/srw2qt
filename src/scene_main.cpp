@@ -2,6 +2,11 @@
 #include "battle/battleground.h"
 #include "scene_main.h"
 
+
+#include "game.h"
+
+extern Game * game;
+
 SceneMain::SceneMain()
 {
     //setSceneRect(0,0,1024,768);
@@ -36,14 +41,7 @@ void SceneMain::init()
     loadStage(1);
 
 
-
-    music_background = new Music();
-    music_background->setMusicLoop(config->background_music_path);
-    music_battle = new Music();
-    music_effect = new Music();
-
-    connect(music_battle, SIGNAL(stateChanged(QMediaPlayer::State)), music_background, SLOT(state_change_slot(QMediaPlayer::State)));
-
+    game->musicManager->PlayBackgroundMusic(0); // 我方音乐
 
     exp_table = QVector<int>(200, 0);
 }
@@ -340,22 +338,17 @@ void SceneMain::next_turn()
         map->UpdateRobotLevelUsingExpTable(exp_table);
 
         round = 1;
+        story->setStage(stage);
+        story->execute(round);
         return;
     }
-    music_background->setMusicLoop(config->background_music_path_enemy);
+
+    game->musicManager->PlayBackgroundMusic(1); // 敌方音乐
 
     ++round;
 
-    //检查是否有敌人增援
-    bool hasAdd = map->hasAddRobot(stage, round, 1);
-    if (hasAdd)
-    {
-        map->placeEnemy(stage, round);
-    }
-
-
-    story->showConversition(round);
-
+    // 执行本回合脚本 对话或增员
+    story->execute(round);
 
 
     for (int i = 1; i < map->width - 1; ++i)
@@ -413,7 +406,7 @@ void SceneMain::next_turn()
 
     }
 
-    music_background->setMusicLoop(config->background_music_path);
+    game->musicManager->PlayBackgroundMusic(0); // 我方音乐
 
 }
 
@@ -602,14 +595,14 @@ void SceneMain::attack2()
 void SceneMain::do_attack1()
 {
     selectedWeapon = selectedRobot->m_weapon1;
-    music_effect->setMusicOnce(config->button_press_music);
+    game->musicManager->PlayButtonClicked();
     attack(enemy);
 }
 
 void SceneMain::do_attack2()
 {
     selectedWeapon = selectedRobot->m_weapon2;
-    music_effect->setMusicOnce(config->button_press_music);
+    game->musicManager->PlayButtonClicked();
     attack(enemy);
 }
 

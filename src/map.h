@@ -32,6 +32,8 @@ public:
 
     void placeRobot(int stage, int round, bool wait = false);
     bool placeEnemy(int stage, int round, bool wait =false);
+    bool placeEnemy(const QVector<EnemyData> & robots);
+
     bool hasAddRobot(int stage, int round, int player);
 
 

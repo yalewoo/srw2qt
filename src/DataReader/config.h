@@ -93,9 +93,9 @@ struct Config
         html_path = workDir + "html/robotStatus.html";
     }
 
-    QString getConversitionPathOfStage(int stage)
+    QString getPlaybookPath(int stage, int turn)
     {
-        QString s = workDir + "input/stage/" + QString::number(stage) + "/conversitions.csv";
+        QString s = workDir + "input/stage/" + QString::number(stage) + "/" + QString::number(turn) + ".csv";
         return s;
     }
 
