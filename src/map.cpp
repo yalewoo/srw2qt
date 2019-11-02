@@ -256,8 +256,14 @@ void Map::placeRobotRunTime(RunTimeRobotData robotData)
 
     robot->m_level = robotData.level;
     robot->m_pilot->exp = robotData.exp;
-    robot->m_hp = robotData.hp;
-    robot->m_pilot->spirit = robotData.sprit;
+
+    robot->m_hp = robotData.hp == -1 ? robot->m_hp_total : robotData.hp;
+    if (robotData.sprit != -1)
+    {
+        robot->m_pilot->spirit = robotData.sprit;
+    }
+
+
 
     robot->m_inMainShip = robotData.inMainShip;
 
@@ -274,6 +280,13 @@ void Map::placeRobotRunTime(RunTimeRobotData robotData)
             game->scene->remove(robot);
         }
 
+    }
+}
+void Map::placeRobotRunTime(QVector<RunTimeRobotData> & robotData)
+{
+    for (int i = 0; i < robotData.size(); ++i)
+    {
+        placeRobotRunTime(robotData[i]);
     }
 }
 

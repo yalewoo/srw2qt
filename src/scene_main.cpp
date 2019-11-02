@@ -326,6 +326,8 @@ void SceneMain::next_turn()
     // 检查是否胜利
     if (!map->hasAnyRobot(1))
     {
+        story->execute(-1);
+
         robotActionFinished();
 
         map->UpdateExpTable(exp_table);

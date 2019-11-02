@@ -95,8 +95,11 @@ struct Config
 
     QString getPlaybookPath(int stage, int turn)
     {
-        QString s = workDir + "input/stage/" + QString::number(stage) + "/" + QString::number(turn) + ".csv";
-        return s;
+        if (turn == -1)
+        {
+            return workDir + "input/stage/" + QString::number(stage) + "/end.csv";
+        }
+        return workDir + "input/stage/" + QString::number(stage) + "/" + QString::number(turn) + ".csv";
     }
 
     QString getMapPathOfLevel(int level)

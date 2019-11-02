@@ -38,6 +38,8 @@ public:
 
 
     void placeRobotRunTime(RunTimeRobotData data);
+    void placeRobotRunTime(QVector<RunTimeRobotData> & robotData);
+
 
     //显示可移动范围 不能移动的格子加灰色
     void showMoveRange(Robot * robot);

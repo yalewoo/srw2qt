@@ -39,6 +39,7 @@ void Story::execute(int turn)
     //in.setCodec(codec);
     QVector<Conversation> conversations;
     QVector<EnemyData> enemys;
+    QVector<RunTimeRobotData> robots;
 
     QString state = "start";
     while ( in.atEnd()==0 )
@@ -77,6 +78,13 @@ void Story::execute(int turn)
                 // 放置结束
                 game->musicManager->PlayOnceMusic("8D.wav");
                 game->scene->map->placeEnemy(enemys);
+                enemys.clear();
+            }
+            else if (type == QString("add robot"))
+            {
+                // 放置结束
+                game->musicManager->PlayOnceMusic("85.wav");
+                game->scene->map->placeRobotRunTime(robots);
             }
             continue;
         }
@@ -88,6 +96,11 @@ void Story::execute(int turn)
         else if (type == QString("add enemy"))
         {
             state = QString("add enemy");
+            continue;
+        }
+        else if (type == QString("add robot"))
+        {
+            state = QString("add robot");
             continue;
         }
 
@@ -123,6 +136,19 @@ void Story::execute(int turn)
             enemy.robotBehavior = QString(t[i++]).toInt();
 
             enemys.push_back(enemy);
+        }
+        else if (state == QString("add robot"))
+        {
+            RunTimeRobotData robotData;
+            int i = 0;
+            robotData.x = QString(t[i++]).toInt() + 1;
+            robotData.y = QString(t[i++]).toInt() + 1;
+            robotData.level = QString(t[i++]).toInt();
+            robotData.peopleId = QString(t[i++]).toInt();
+            i++;    // people Name
+            robotData.robotId = QString(t[i++]).toInt();
+
+            robots.push_back(robotData);
         }
     }
 }

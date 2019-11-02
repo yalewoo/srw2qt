@@ -40,10 +40,10 @@ struct RunTimeRobotData
     int peopleId = 0;
 
     int player = 0;
-    int level = 0;
+    int level = 1;
     int exp = 0;
-    int hp = 0;
-    int sprit = 0;
+    int hp = -1;
+    int sprit = -1;
 
     int robotBehavior = 1;
 
