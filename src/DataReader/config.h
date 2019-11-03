@@ -20,6 +20,8 @@ struct Config
     QString robot_image_path;
     QString people_image_path;
 
+    QString start_map_image_path;
+
     QString exp_table_path;
 
     QString robot_init_path;
@@ -29,6 +31,7 @@ struct Config
     QString background_music_path;
     QString background_music_path_enemy;
     QString background_music_start;
+    QString background_music_title;
 
     QString button_press_music;
 
@@ -69,6 +72,8 @@ struct Config
         people_image_path = workDir + "res/images/people/";
         robot_image_path = workDir + "res/images/robotImg/";
 
+        start_map_image_path = workDir + "res/images/background/start_map.png";
+
         map_path = workDir + "input/map/map1.csv";
 
         robot_init_path = workDir + "input/stage/robot_init.csv";
@@ -78,6 +83,8 @@ struct Config
         background_music_path = workDir + "/res/music/87.wav";
         background_music_path_enemy = workDir + "/res/music/88.wav";
         background_music_start = workDir + "/res/music/85.wav";
+        background_music_title = workDir + "/res/music/92.wav";
+
 
         button_press_music = workDir + "res/wav/pushbutton.mp3";
 

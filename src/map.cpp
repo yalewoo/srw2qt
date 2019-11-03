@@ -6,7 +6,6 @@
 extern Config *config;
 
 #include "game.h"
-#include "point.h"
 
 #include <QCoreApplication>
 #include <QGraphicsColorizeEffect>
@@ -14,6 +13,7 @@ extern Config *config;
 extern Game * game;
 
 #include "ai.h"
+#include "common.h"
 
 Map::Map(QObject *parent) : QObject(parent)
 {
@@ -192,10 +192,11 @@ bool Map::placeEnemy(int stage, int round, bool wait)
         int y = robotData.y;
         Robot * robot = new Robot(robotData.robotId, 1);
         robot->setPilot(robotData.peopleId);
-        robot->m_hp = robot->m_hp_total;
 
         robot->m_level = robotData.robotLevel+1;
         robot->updateLevel();
+
+        robot->m_hp = robot->m_hp_total;
 
         robot->m_robotBehavior = robotData.robotBehavior;
 

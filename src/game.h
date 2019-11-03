@@ -13,6 +13,8 @@ void waitVariableToBeTrueExcludeUserInput(bool & b);
 void waitForTimeAllEvents(int ms);
 
 class SceneStart;
+class SceneBeforeMain;
+class SceneTitle;
 
 class Game : public QGraphicsView
 {
@@ -23,14 +25,24 @@ public:
 
     SceneMain * scene;
     SceneStart * sceneStart;
+    SceneBeforeMain * sceneBeforeMain;
+    SceneTitle * sceneTitle;
 
     Game();
 
     void start();
 
     void init();
+
+    // 剧情画面
+    Story * story = 0;
+    int stage;
+
 public slots:
-    void StartClicked();
+    void showSceneBeforeMain();
+    void showSceneTitle();
+    void showSceneMain();
+
     void cancel();
 
 

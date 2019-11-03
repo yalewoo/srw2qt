@@ -31,6 +31,10 @@ SOURCES += \
     DataReader/imageresourcemanager.cpp \
     Music/music.cpp \
     Music/musicmanager.cpp \
+    Scene/scene.cpp \
+    Scene/scenebeforemain.cpp \
+    Scene/scenestart.cpp \
+    Scene/scenetitle.cpp \
     UI/button.cpp \
     UI/menu.cpp \
     UI/robotstatusview.cpp \
@@ -40,12 +44,9 @@ SOURCES += \
     rect.cpp \
     maprect.cpp \
     map.cpp \
-    scene.cpp \
     robot.cpp \
     people.cpp \
-    point.cpp \
     ai.cpp \
-    scenestart.cpp \
     story.cpp \
     storydiag.cpp \
 
@@ -57,22 +58,24 @@ HEADERS += \
     DataReader/imageresourcemanager.h \
     Music/music.h \
     Music/musicmanager.h \
+    Scene/scene.h \
+    Scene/scenebeforemain.h \
+    Scene/scenestart.h \
+    Scene/scenetitle.h \
     UI/button.h \
     UI/menu.h \
     UI/robotstatusview.h \
+    common.h \
     game.h \
     scene_main.h \
     rect.h \
     maprect.h \
     map.h \
-    scene.h \
     robot.h \
     robotproperty.h \
     people.h \
     peopleproperty.h \
-    scenestart.h \
     weapon.h \
-    point.h \
     ai.h \
     story.h \
     storydiag.h \

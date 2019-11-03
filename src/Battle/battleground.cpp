@@ -9,8 +9,6 @@
 #include "game.h"
 extern Game * game;
 
-#include "point.h"
-
 #include "people.h"
 
 #include <QTime>

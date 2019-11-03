@@ -46,6 +46,11 @@ void SceneMain::init()
     exp_table = QVector<int>(200, 0);
 }
 
+PositionAndSize SceneMain::getConversationPosition()
+{
+    return PositionAndSize(0,0,map->width*32, map->height*32);
+}
+
 void SceneMain::loadStage(int stage, bool useDefaultRobot)
 {
     if (map)
@@ -58,7 +63,7 @@ void SceneMain::loadStage(int stage, bool useDefaultRobot)
     if (this->stage != stage)
     {
         delete story;
-        story = new Story(stage);
+        story = new Story(stage, this);
     }
 
     this->stage = stage;
@@ -333,7 +338,7 @@ void SceneMain::next_turn()
         map->UpdateExpTable(exp_table);
 
         this->stage++;
-        if (this->stage == 28)
+        if (this->stage == 27)
             this->stage = 1;
 
         this->loadStage(this->stage);
@@ -948,12 +953,6 @@ void SceneMain::attackDone()
     }
 
 }
-
-void SceneMain::showDiagDone()
-{
-
-}
-
 
 
 

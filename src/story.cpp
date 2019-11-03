@@ -10,9 +10,10 @@ extern Game * game;
 #include "datareader/config.h"
 extern Config * config;
 
-Story::Story(int stage)
+Story::Story(int stage, Scene * scene)
 {
     m_stage = stage;
+    this->scene = scene;
 }
 void Story::setStage(int stage)
 {
@@ -62,14 +63,13 @@ void Story::execute(int turn)
                 // 对话结束
                 StoryDiag * storyDiag = new StoryDiag(conversations);
 
-                storyDiag->setSize(game->scene->map->width*32, game->scene->map->height*32);
-                game->scene->addItem(storyDiag);
+                storyDiag->setSize(this->scene->getConversationPosition());
+                this->scene->addItem(storyDiag);
 
                 waitVariableToBeTrueAllEvents(storyDiag->finished);
 
 
-                game->scene->showDiagDone();
-                game->scene->removeItem(storyDiag);
+                this->scene->removeItem(storyDiag);
                 delete storyDiag;
                 conversations.clear();
             }

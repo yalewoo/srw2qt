@@ -6,7 +6,6 @@
 #include "game.h"
 extern Game * game;
 
-#include "point.h"
 
 #include "datareader/imageresourcemanager.h"
 #include "people.h"
@@ -25,6 +24,17 @@ void StoryDiag::setSize(int width, int height)
     int y = 0;
 
     setRect(x, y, width, height);
+
+
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
+    brush.setColor(Qt::gray);
+    setBrush(brush);
+    setOpacity(0.85);
+}
+void StoryDiag::setSize(PositionAndSize position)
+{
+    setRect(position.x, position.y, position.width, position.height);
 
 
     QBrush brush;

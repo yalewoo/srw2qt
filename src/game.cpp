@@ -2,10 +2,13 @@
 
 #include "datareader/datahelper.h"
 #include "scene_main.h"
-#include "scenestart.h"
+#include "scene/scenestart.h"
 
 #include <QCoreApplication>
 #include <QTime>
+
+#include <Scene/scenebeforemain.h>
+#include <Scene/scenetitle.h>
 
 
 void waitVariableToBeTrueAllEvents(bool & b)
@@ -49,7 +52,7 @@ void Game::start()
     sceneStart->init();
     setScene(sceneStart);
     this->show();
-    connect(sceneStart, SIGNAL(StartClicked()), this, SLOT(StartClicked()));
+    connect(sceneStart, SIGNAL(StartClicked()), this, SLOT(showSceneBeforeMain()));
     musicManager->PlayStartMusic();
 
 
@@ -67,7 +70,40 @@ void Game::init()
     this->resize(1024, 768);
 }
 
-void Game::StartClicked()
+void Game::showSceneBeforeMain()
+{
+
+
+
+    sceneBeforeMain = new SceneBeforeMain();
+
+    story = new Story(1, sceneBeforeMain);
+
+    setScene(sceneBeforeMain);
+
+    musicManager->PlayBackgroundMusic(0); // 我方音乐
+
+    sceneBeforeMain->showConversation();
+
+    showSceneTitle();
+
+
+
+}
+
+void Game::showSceneTitle()
+{
+    sceneTitle = new SceneTitle();
+
+    setScene(sceneTitle);
+    musicManager->StopAll();
+    sceneTitle->PlayMusic();
+    connect(sceneTitle, SIGNAL(StartClicked()), this, SLOT(showSceneMain()));
+
+    //showSceneMain();
+}
+
+void Game::showSceneMain()
 {
     scene = new SceneMain();
 

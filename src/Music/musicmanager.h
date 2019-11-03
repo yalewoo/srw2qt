@@ -14,6 +14,9 @@ class MusicManager : public QObject
     Music * music_effect = nullptr;
     Music * music_battle = nullptr;
 
+    Music * music_once = nullptr;
+
+
 public:
     MusicManager();
 
@@ -21,11 +24,17 @@ public:
 
     void PlayStartMusic();
 
+    void PlayTitleMusic();
+
     void PlayBackgroundMusic(int player);
 
     void PlayBattleMusic(QString path);
     void PlayOnceMusic(QString path);
+    void PlayOnceMusicNonStopBackground(QString path);
+
     void StopBattle();
+
+    void StopAll();
 };
 
 #endif // MUSICMANAGER_H

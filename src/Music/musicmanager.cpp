@@ -24,6 +24,11 @@ void MusicManager::PlayStartMusic()
     music_background->setMusicLoop(config->background_music_start);
 }
 
+void MusicManager::PlayTitleMusic()
+{
+    music_background->setMusicLoop(config->background_music_title);
+}
+
 void MusicManager::PlayBackgroundMusic(int player)
 {
     if (player == 0)
@@ -47,7 +52,19 @@ void MusicManager::PlayOnceMusic(QString path)
     music_battle->setMusicOnce(config->background_music_path_root + path);
 }
 
+void MusicManager::PlayOnceMusicNonStopBackground(QString path)
+{
+    music_effect->setMusicOnce(config->background_music_path_root + path);
+}
+
 void MusicManager::StopBattle()
 {
+    music_battle->stop();
+}
+
+void MusicManager::StopAll()
+{
+    music_background->stop();
+    music_effect->stop();
     music_battle->stop();
 }

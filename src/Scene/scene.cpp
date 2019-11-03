@@ -19,3 +19,9 @@ void Scene::init()
 {
 
 }
+
+PositionAndSize Scene::getConversationPosition()
+{
+    return PositionAndSize();
+}
+

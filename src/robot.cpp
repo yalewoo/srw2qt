@@ -3,6 +3,7 @@
 
 #include "game.h"
 #include "datareader/imageresourcemanager.h"
+#include "common.h"
 #include "scene_main.h"
 
 #include <QCoreApplication>

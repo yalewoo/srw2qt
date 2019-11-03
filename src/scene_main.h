@@ -1,7 +1,7 @@
 #ifndef SCENEMAIN_H
 #define SCENEMAIN_H
 
-#include "scene.h"
+#include "scene/scene.h"
 #include "ui/robotstatusview.h"
 
 #include "ai.h"
@@ -9,7 +9,7 @@
 #include "map.h"
 #include "ui/menu.h"
 #include "music/music.h"
-#include "point.h"
+#include "common.h"
 #include "story.h"
 
 class SceneMain : public Scene
@@ -22,6 +22,9 @@ public:
     SceneMain();
 
     void init();
+
+    PositionAndSize getConversationPosition();
+
 
     int stage = 0;  //关数
 
@@ -79,7 +82,6 @@ public:
 
     // 剧情画面
     Story * story = 0;
-    void showDiagDone();
 
     // AI
     void AI();  //

@@ -8,6 +8,7 @@
 #include "robot.h"
 #include "weapon.h"
 
+#include "common.h"
 #include "conversation.h"
 
 class StoryDiag : public QObject, public QGraphicsRectItem
@@ -16,6 +17,8 @@ class StoryDiag : public QObject, public QGraphicsRectItem
 public:
     StoryDiag(QVector<Conversation> conversitions);
     void setSize(int width, int height);
+    void setSize(PositionAndSize position);
+
 
     bool finished = false;
 
